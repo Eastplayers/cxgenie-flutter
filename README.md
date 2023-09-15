@@ -1,6 +1,6 @@
 # CXGenie
 
-CXGenie is a flutter package for [CXGenie](https://cxgenie.ai)
+The cxgenie Flutter Package seamlessly integrates https://cxgenie.ai cutting-edge Conversational AI and NLP capabilities into Flutter apps. Effortlessly deploy chatbots, leverage multilingual support, customize the UI, and access rich media features for immersive user interactions. With flexible deployment options and comprehensive documentation, developers can create intelligent, user-centric Flutter applications, enhancing user engagement and satisfaction.
 
 ## Installation
 

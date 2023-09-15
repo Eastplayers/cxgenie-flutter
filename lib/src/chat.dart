@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ChatContainer extends StatefulWidget {
-  const ChatContainer({
-    Key? key, 
-    required this.virtualAgentId,
-    this.userToken,
-    this.showChatWithAgent = false
-  }) : super(key: key);
+  const ChatContainer(
+      {Key? key,
+      required this.virtualAgentId,
+      this.userToken,
+      this.showChatWithAgent = false})
+      : super(key: key);
 
   final String virtualAgentId;
   final String? userToken;
@@ -23,9 +23,9 @@ class _ChatContainerState extends State<ChatContainer> {
       width: (MediaQuery.of(context).size.width),
       height: (MediaQuery.of(context).size.height),
       color: Colors.white,
-      child:  Column(
+      child: Column(
         children: <Widget>[
-           Expanded(
+          Expanded(
             flex: 1,
             child: Container(),
           ),
@@ -33,15 +33,13 @@ class _ChatContainerState extends State<ChatContainer> {
             child: const Row(
               children: <Widget>[
                 TextField(
-                  decoration: InputDecoration(
-                    hintText: "Type message"
-                  ),
+                  decoration: InputDecoration(hintText: "Type message"),
                 )
               ],
             ),
           )
         ],
       ),
-    )
+    );
   }
 }

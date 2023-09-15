@@ -1,3 +1,3 @@
 library cxgenie;
 
-export 'src/chat.dart'
+export 'src/chat.dart';

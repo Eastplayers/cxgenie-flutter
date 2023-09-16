@@ -1,4 +1,4 @@
 library cxgenie;
 
-export 'src/chat.dart';
-export 'src/tickets.dart';
+export 'screens/chat_container.dart';
+export 'screens/tickets.dart';

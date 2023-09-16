@@ -26,7 +26,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(child: ChatContainer(virtualAgentId: "")),
+      body: Center(
+          child: ChatContainer(
+              virtualAgentId: "87ed2f7b-fa46-4175-b765-4d0a6f2e205d")),
     );
   }
 }

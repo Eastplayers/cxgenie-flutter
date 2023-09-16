@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cxgenie/providers/virtual_agent_provider.dart';
 import 'package:cxgenie/screens/contact_information.dart';
 import 'package:flutter/material.dart';
@@ -37,15 +35,17 @@ class _ChatState extends State<Chat> {
     return Consumer<VirtualAgentProvider>(builder: (context, value, child) {
       final virtualAgent = value.virtualAgent;
       String color = virtualAgent.themeColor.replaceAll("#", "0xff");
-      developer.log('chat', name: color)
+      final customer = value.customer;
 
       return SizedBox(
         width: (MediaQuery.of(context).size.width),
         height: (MediaQuery.of(context).size.height),
         child: SafeArea(
-            child: widget.userToken == "" || widget.userToken == null
+            child: (widget.userToken == "" || widget.userToken == null) &&
+                    customer == null
                 ? ContactInformation(
-                    // themeColor: Color(int.parse(color)),
+                    virtualAgentId: widget.virtualAgentId,
+                    themeColor: Color(int.parse(color)),
                   )
                 : Column(
                     children: <Widget>[

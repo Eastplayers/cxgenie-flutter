@@ -1,5 +1,6 @@
-import 'package:cxgenie/providers/virtual_agent_provider.dart';
+import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:cxgenie/screens/contact_information.dart';
+import 'package:cxgenie/screens/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:developer' as developer;
@@ -25,48 +26,33 @@ class _ChatState extends State<Chat> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<VirtualAgentProvider>(context, listen: false)
+      Provider.of<ChatProvider>(context, listen: false)
           .getVirtualAgentDetail(widget.virtualAgentId);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<VirtualAgentProvider>(builder: (context, value, child) {
+    return Consumer<ChatProvider>(builder: (context, value, child) {
       final virtualAgent = value.virtualAgent;
       String color = virtualAgent.themeColor.replaceAll("#", "0xff");
       final customer = value.customer;
 
       return SizedBox(
-        width: (MediaQuery.of(context).size.width),
-        height: (MediaQuery.of(context).size.height),
-        child: SafeArea(
+          width: (MediaQuery.of(context).size.width),
+          height: (MediaQuery.of(context).size.height),
+          child: SafeArea(
             child: (widget.userToken == "" || widget.userToken == null) &&
                     customer == null
                 ? ContactInformation(
                     virtualAgentId: widget.virtualAgentId,
                     themeColor: Color(int.parse(color)),
                   )
-                : Column(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 1,
-                        child: Container(),
-                      ),
-                      const Row(
-                        children: <Widget>[
-                          Expanded(
-                              flex: 1,
-                              child: TextField(
-                                decoration:
-                                    InputDecoration(hintText: "Type message"),
-                                textInputAction: TextInputAction.send,
-                              ))
-                        ],
-                      )
-                    ],
-                  )),
-      );
+                : Messages(
+                    customerId: customer!.id,
+                    virtualAgentId: widget.virtualAgentId,
+                  ),
+          ));
     });
   }
 }

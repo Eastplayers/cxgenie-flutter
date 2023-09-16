@@ -1,4 +1,4 @@
-import 'package:cxgenie/providers/virtual_agent_provider.dart';
+import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:cxgenie/screens/chat.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -23,7 +23,7 @@ class _ChatContainerState extends State<ChatContainer> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => VirtualAgentProvider(),
+      create: (context) => ChatProvider(),
       child: Chat(virtualAgentId: widget.virtualAgentId),
     );
   }

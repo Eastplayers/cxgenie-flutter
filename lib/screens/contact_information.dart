@@ -1,5 +1,7 @@
-import 'package:cxgenie/providers/virtual_agent_provider.dart';
+import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
 class ContactInformation extends StatefulWidget {
@@ -17,7 +19,7 @@ class ContactInformation extends StatefulWidget {
 }
 
 class _ContactInformationState extends State<ContactInformation> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class _ContactInformationState extends State<ContactInformation> {
       height: (MediaQuery.of(context).size.height),
       color: const Color(0xffF2F3F5),
       child: SafeArea(
-        child: Form(
+        child: FormBuilder(
             key: _formKey,
             child: Padding(
               padding: const EdgeInsets.all(12),
@@ -62,7 +64,8 @@ class _ContactInformationState extends State<ContactInformation> {
                                 ),
                               ),
                               SizedBox(
-                                child: TextFormField(
+                                child: FormBuilderTextField(
+                                    name: 'name',
                                     decoration: InputDecoration(
                                         hintText: "Enter your name",
                                         hintStyle: const TextStyle(
@@ -97,12 +100,10 @@ class _ContactInformationState extends State<ContactInformation> {
                                               width: 1.0),
                                         )),
                                     style: const TextStyle(fontSize: 14),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter your name';
-                                      }
-                                      return null;
-                                    }),
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(
+                                          errorText: 'Please enter your name'),
+                                    ])),
                               )
                             ],
                           ),
@@ -122,7 +123,8 @@ class _ContactInformationState extends State<ContactInformation> {
                               ),
                               SizedBox(
                                 // height: 40,
-                                child: TextFormField(
+                                child: FormBuilderTextField(
+                                    name: 'email',
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
                                       hintText: "Enter your email",
@@ -155,12 +157,13 @@ class _ContactInformationState extends State<ContactInformation> {
                                       ),
                                     ),
                                     style: const TextStyle(fontSize: 14),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Please enter your email';
-                                      }
-                                      return null;
-                                    }),
+                                    validator: FormBuilderValidators.compose([
+                                      FormBuilderValidators.required(
+                                          errorText: 'Please enter your email'),
+                                      FormBuilderValidators.email(
+                                          errorText:
+                                              'Please enter a valid email'),
+                                    ])),
                               )
                             ],
                           ),
@@ -178,11 +181,17 @@ class _ContactInformationState extends State<ContactInformation> {
                                         borderRadius:
                                             BorderRadius.circular(8))),
                                 onPressed: () {
+                                  _formKey.currentState!.save();
                                   if (_formKey.currentState!.validate()) {
-                                    // Provider.of<VirtualAgentProvider>(context,
-                                    //         listen: false)
-                                    //     .startNormalSession(
-                                    //         widget.virtualAgentId);
+                                    final formData =
+                                        _formKey.currentState?.value;
+                                    print(formData);
+                                    Provider.of<ChatProvider>(context,
+                                            listen: false)
+                                        .startNormalSession(
+                                            widget.virtualAgentId,
+                                            formData?['name'],
+                                            formData?['email']);
                                   }
                                 },
                                 child: const Text("Submit",

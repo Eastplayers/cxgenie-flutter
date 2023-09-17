@@ -27,7 +27,7 @@ class _ChatState extends State<Chat> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<ChatProvider>(context, listen: false)
-          .getVirtualAgentDetail(widget.virtualAgentId);
+          .getVirtualAgentDetail(widget.virtualAgentId, widget.userToken);
     });
   }
 
@@ -42,16 +42,25 @@ class _ChatState extends State<Chat> {
           width: (MediaQuery.of(context).size.width),
           height: (MediaQuery.of(context).size.height),
           child: SafeArea(
-            child: (widget.userToken == "" || widget.userToken == null) &&
-                    customer == null
-                ? ContactInformation(
-                    virtualAgentId: widget.virtualAgentId,
-                    themeColor: Color(int.parse(color)),
+            child: value.isLoading
+                ? const SizedBox(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xffD6DAE1),
+                      ),
+                    ),
                   )
-                : Messages(
-                    customerId: customer!.id,
-                    virtualAgentId: widget.virtualAgentId,
-                  ),
+                : widget.userToken == "" ||
+                        widget.userToken == null ||
+                        customer == null
+                    ? ContactInformation(
+                        virtualAgentId: widget.virtualAgentId,
+                        themeColor: Color(int.parse(color)),
+                      )
+                    : Messages(
+                        customerId: customer!.id,
+                        virtualAgentId: widget.virtualAgentId,
+                      ),
           ));
     });
   }

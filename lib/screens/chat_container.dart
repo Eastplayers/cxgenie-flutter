@@ -24,7 +24,11 @@ class _ChatContainerState extends State<ChatContainer> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ChatProvider(),
-      child: Chat(virtualAgentId: widget.virtualAgentId),
+      child: Chat(
+        virtualAgentId: widget.virtualAgentId,
+        userToken: widget.userToken,
+        showChatWithAgent: widget.showChatWithAgent,
+      ),
     );
   }
 }

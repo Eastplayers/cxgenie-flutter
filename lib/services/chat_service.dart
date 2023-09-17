@@ -24,6 +24,8 @@ class ChatService {
         createdAt: data['created_at'],
         updatedAt: data['updated_at'],
         workspaceId: data['workspace_id'],
+        workspaceRequiredLogin: data['workspace_required_login'],
+        isTicketEnable: data['is_ticket_enable'],
       );
     }
 
@@ -42,6 +44,31 @@ class ChatService {
           'chatbot_id': virtualAgentId,
           'name': name,
           'email': email
+        }));
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final data = json['data'];
+      return Customer(
+        id: data['id'],
+        name: data['name'],
+        avatar: data['avatar'],
+      );
+    }
+
+    throw "Cannot start session";
+  }
+
+  Future<Customer> startAuthorizedSession(
+      String virtualAgentId, String token) async {
+    final url = '$baseUrl/api/v1/chat-sessions/start-chatbot-session';
+    final uri = Uri.parse(url);
+    final response = await http.post(uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+        body: jsonEncode(<String, String>{
+          'chatbot_id': virtualAgentId,
+          'customer_auth_token': token
         }));
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
@@ -103,7 +130,9 @@ class ChatService {
                 : VirtualAgent(
                     id: virtualAgent['id'],
                     name: virtualAgent['name'],
-                    themeColor: virtualAgent['theme_color'],
+                    themeColor: virtualAgent['theme_color'] == null
+                        ? '#364DE7'
+                        : virtualAgent['theme_color'],
                     createdAt: virtualAgent['created_at'],
                     updatedAt: virtualAgent['updated_at'],
                     workspaceId: virtualAgent['workspace_id'],

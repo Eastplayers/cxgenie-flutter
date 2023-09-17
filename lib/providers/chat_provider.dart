@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 
 class ChatProvider extends ChangeNotifier {
   final ChatService _service = ChatService();
-  bool isLoading = false;
+  bool isLoading = true;
+  bool isStartingSession = true;
+  bool isLoadingMessages = true;
   VirtualAgent _virtualAgent = VirtualAgent(
       id: "",
       name: "",
@@ -21,34 +23,40 @@ class ChatProvider extends ChangeNotifier {
   List<Message> _messages = [];
   List<Message> get messages => _messages;
 
-  Future<void> getVirtualAgentDetail(String id) async {
+  Future<void> getVirtualAgentDetail(String id, String? token) async {
     isLoading = true;
     notifyListeners();
 
     final response = await _service.getDetail(id);
     _virtualAgent = response;
+    print(response.workspaceRequiredLogin);
+    print(token);
+    if (response.workspaceRequiredLogin != null && token != null) {
+      final customerResponse = await _service.startAuthorizedSession(id, token);
+      _customer = customerResponse;
+    }
     isLoading = false;
     notifyListeners();
   }
 
   Future<void> startNormalSession(
       String virtualAgentId, String name, String email) async {
-    isLoading = true;
+    isStartingSession = true;
     notifyListeners();
 
     final response = await _service.startSession(virtualAgentId, name, email);
     _customer = response;
-    isLoading = false;
+    isStartingSession = false;
     notifyListeners();
   }
 
   Future<void> getMessages(String customerId) async {
-    isLoading = true;
+    isLoadingMessages = true;
     notifyListeners();
 
     final response = await _service.getMessages(customerId);
     _messages = response;
-    isLoading = false;
+    isLoadingMessages = false;
     notifyListeners();
   }
 

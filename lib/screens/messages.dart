@@ -133,6 +133,7 @@ class _MessagesState extends State<Messages> {
   /// Build message list
   Widget _buildMessageList(List<Message> messages, VirtualAgent virtualAgent) {
     return ListView.builder(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         itemCount: messages.length,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         reverse: true,
@@ -240,6 +241,7 @@ class _MessagesState extends State<Messages> {
           Expanded(
               flex: 1,
               child: TextField(
+                autofocus: true,
                 controller: textController,
                 decoration: const InputDecoration(
                   hintText: "Type message",
@@ -247,6 +249,8 @@ class _MessagesState extends State<Messages> {
                 ),
                 style: const TextStyle(fontSize: 14),
                 textInputAction: TextInputAction.send,
+                onSubmitted: (value) => sendMessage(value),
+                onEditingComplete: () {},
               )),
           const SizedBox(
             width: 16,

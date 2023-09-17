@@ -25,11 +25,13 @@ class _MessagesState extends State<Messages> {
   final ChatService _chatService = ChatService();
   late IO.Socket socket;
 
+  /// Send message
   void sendMessage(String content) async {
     await _chatService
         .sendMessage(widget.virtualAgentId, widget.customerId, content, []);
   }
 
+  /// Connect to socket to receive messages in real-time
   void connectSocket() {
     socket = IO.io('https://api-staging.cxgenie.ai',
         IO.OptionBuilder().setTransports(['websocket']).build());
@@ -111,6 +113,7 @@ class _MessagesState extends State<Messages> {
     });
   }
 
+  /// Build message list
   Widget _buildMessageList(List<Message> messages, VirtualAgent virtualAgent) {
     return ListView.builder(
         itemCount: messages.length,
@@ -121,6 +124,7 @@ class _MessagesState extends State<Messages> {
         });
   }
 
+  /// Build message item
   Widget _buildMessageItem(Message message, VirtualAgent virtualAgent) {
     String color = virtualAgent.themeColor.replaceAll("#", "0xff");
     var isMine = message.senderId == widget.customerId;
@@ -157,6 +161,7 @@ class _MessagesState extends State<Messages> {
     );
   }
 
+  /// Build composer
   Widget _buildComposer() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),

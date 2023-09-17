@@ -51,4 +51,11 @@ class ChatProvider extends ChangeNotifier {
     isLoading = false;
     notifyListeners();
   }
+
+  Future<void> addMessage(Message newMessage) async {
+    notifyListeners();
+
+    _messages = [newMessage, ..._messages];
+    notifyListeners();
+  }
 }

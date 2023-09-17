@@ -1,3 +1,4 @@
+import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/virtual_agent.dart';
 import 'package:cxgenie/providers/chat_provider.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Messages extends StatefulWidget {
   const Messages(
@@ -21,10 +23,62 @@ class Messages extends StatefulWidget {
 
 class _MessagesState extends State<Messages> {
   final ChatService _chatService = ChatService();
+  late IO.Socket socket;
 
   void sendMessage(String content) async {
     await _chatService
         .sendMessage(widget.virtualAgentId, widget.customerId, content, []);
+  }
+
+  void connectSocket() {
+    socket = IO.io('https://api-staging.cxgenie.ai',
+        IO.OptionBuilder().setTransports(['websocket']).build());
+    socket.onConnect((_) {
+      print('connect');
+      socket.emit('msg', 'test');
+    });
+    socket.on('new_message', (data) {
+      if (data['sender_id'] == widget.customerId ||
+          data['receiver_id'] == widget.customerId) {
+        final virtualAgent = data['chatbot'];
+        final sender = data['sender'];
+        final receiver = data['receiver'];
+        Message newMessage = Message(
+            id: data['id'],
+            content: data['content'],
+            receiverId: data['receiver_id'],
+            type: data['type'],
+            virtualAgentId: data['chatbot_id'],
+            senderId: data['sender_id'],
+            createdAt: data['created_at'],
+            virtualAgent: virtualAgent == null
+                ? null
+                : VirtualAgent(
+                    id: virtualAgent['id'],
+                    name: virtualAgent['name'],
+                    themeColor: virtualAgent['theme_color'],
+                    createdAt: virtualAgent['created_at'],
+                    updatedAt: virtualAgent['updated_at'],
+                    workspaceId: virtualAgent['workspace_id'],
+                  ),
+            sender: sender == null
+                ? null
+                : Customer(
+                    id: sender['id'],
+                    name: sender['name'],
+                    avatar: sender['avatar']),
+            receiver: receiver == null
+                ? null
+                : Customer(
+                    id: receiver['id'],
+                    name: receiver['name'],
+                    avatar: receiver['avatar']));
+
+        Provider.of<ChatProvider>(context, listen: false)
+            .addMessage(newMessage);
+      }
+    });
+    socket.onDisconnect((_) => print('disconnect'));
   }
 
   @override
@@ -34,6 +88,7 @@ class _MessagesState extends State<Messages> {
       Provider.of<ChatProvider>(context, listen: false)
           .getMessages(widget.customerId);
     });
+    connectSocket();
   }
 
   @override

@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
     return const Scaffold(
       body: Center(
           child: ChatContainer(
-              virtualAgentId: "87ed2f7b-fa46-4175-b765-4d0a6f2e205d")),
+              virtualAgentId: "dff631ac-07bc-4e0c-902f-20201958d7eb")),
     );
   }
 }

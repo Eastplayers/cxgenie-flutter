@@ -70,7 +70,7 @@ class _MessagesState extends State<Messages> {
     String color = virtualAgent.themeColor.replaceAll("#", "0xff");
     var isMine = message.senderId == widget.customerId;
     DateTime createdAt = DateTime.parse("${message.createdAt}");
-    var formatter = DateFormat("hh:mm");
+    var formatter = DateFormat("dd/MM/yy, hh:mm");
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6),

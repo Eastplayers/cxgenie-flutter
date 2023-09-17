@@ -50,9 +50,7 @@ class _ChatState extends State<Chat> {
                       ),
                     ),
                   )
-                : widget.userToken == "" ||
-                        widget.userToken == null ||
-                        customer == null
+                : customer == null
                     ? ContactInformation(
                         virtualAgentId: widget.virtualAgentId,
                         themeColor: Color(int.parse(color)),

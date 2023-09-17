@@ -29,8 +29,6 @@ class ChatProvider extends ChangeNotifier {
 
     final response = await _service.getDetail(id);
     _virtualAgent = response;
-    print(response.workspaceRequiredLogin);
-    print(token);
     if (response.workspaceRequiredLogin != null &&
         response.workspaceRequiredLogin != false &&
         token != null) {

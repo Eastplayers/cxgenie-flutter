@@ -52,8 +52,7 @@ class _MessagesState extends State<Messages> {
     socket = IO.io('https://api.cxgenie.ai',
         IO.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
-      print('connect');
-      socket.emit('msg', 'test');
+      print("Socket connected");
     });
     socket.on('new_message', (data) {
       if (data['sender_id'] == widget.customerId ||
@@ -96,7 +95,7 @@ class _MessagesState extends State<Messages> {
             .addMessage(newMessage);
       }
     });
-    socket.onDisconnect((_) => print('disconnect'));
+    socket.onDisconnect((_) => print('Socket disconnected'));
   }
 
   @override

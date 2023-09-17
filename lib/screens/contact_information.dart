@@ -192,7 +192,6 @@ class _ContactInformationState extends State<ContactInformation> {
                                         if (_formKey.currentState!.validate()) {
                                           final formData =
                                               _formKey.currentState?.value;
-                                          print(formData);
                                           Provider.of<ChatProvider>(context,
                                                   listen: false)
                                               .startNormalSession(

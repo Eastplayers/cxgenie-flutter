@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class ChatProvider extends ChangeNotifier {
   final ChatService _service = ChatService();
   bool isLoading = true;
-  bool isStartingSession = true;
+  bool isStartingSession = false;
   bool isLoadingMessages = true;
   VirtualAgent _virtualAgent = VirtualAgent(
       id: "",
@@ -31,7 +31,9 @@ class ChatProvider extends ChangeNotifier {
     _virtualAgent = response;
     print(response.workspaceRequiredLogin);
     print(token);
-    if (response.workspaceRequiredLogin != null && token != null) {
+    if (response.workspaceRequiredLogin != null &&
+        response.workspaceRequiredLogin != false &&
+        token != null) {
       final customerResponse = await _service.startAuthorizedSession(id, token);
       _customer = customerResponse;
     }

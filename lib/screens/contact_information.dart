@@ -66,6 +66,7 @@ class _ContactInformationState extends State<ContactInformation> {
                               SizedBox(
                                 child: FormBuilderTextField(
                                     name: 'name',
+                                    cursorColor: widget.themeColor,
                                     decoration: InputDecoration(
                                         hintText: "Enter your name",
                                         hintStyle: const TextStyle(
@@ -74,8 +75,8 @@ class _ContactInformationState extends State<ContactInformation> {
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius:
                                               BorderRadius.circular(8),
-                                          borderSide: const BorderSide(
-                                              color: Color(0xff364DE7),
+                                          borderSide: BorderSide(
+                                              color: widget.themeColor,
                                               width: 1.0),
                                         ),
                                         enabledBorder: OutlineInputBorder(
@@ -126,6 +127,7 @@ class _ContactInformationState extends State<ContactInformation> {
                                 child: FormBuilderTextField(
                                     name: 'email',
                                     keyboardType: TextInputType.emailAddress,
+                                    cursorColor: widget.themeColor,
                                     decoration: InputDecoration(
                                       hintText: "Enter your email",
                                       hintStyle: const TextStyle(
@@ -133,8 +135,8 @@ class _ContactInformationState extends State<ContactInformation> {
                                       contentPadding: const EdgeInsets.all(8),
                                       focusedBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8),
-                                        borderSide: const BorderSide(
-                                            color: Color(0xff364DE7),
+                                        borderSide: BorderSide(
+                                            color: widget.themeColor,
                                             width: 1.0),
                                       ),
                                       enabledBorder: OutlineInputBorder(
@@ -171,8 +173,9 @@ class _ContactInformationState extends State<ContactInformation> {
                             height: 24,
                           ),
                           SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
+                              width: double.infinity,
+                              height: 40,
+                              child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     elevation: 0,
                                     backgroundColor: widget.themeColor,
@@ -180,26 +183,41 @@ class _ContactInformationState extends State<ContactInformation> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(8))),
-                                onPressed: () {
-                                  _formKey.currentState!.save();
-                                  if (_formKey.currentState!.validate()) {
-                                    final formData =
-                                        _formKey.currentState?.value;
-                                    print(formData);
-                                    Provider.of<ChatProvider>(context,
+                                onPressed: Provider.of<ChatProvider>(context,
                                             listen: false)
-                                        .startNormalSession(
-                                            widget.virtualAgentId,
-                                            formData?['name'],
-                                            formData?['email']);
-                                  }
-                                },
-                                child: const Text("Submit",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                    ))),
-                          )
+                                        .isStartingSession
+                                    ? null
+                                    : () {
+                                        _formKey.currentState!.save();
+                                        if (_formKey.currentState!.validate()) {
+                                          final formData =
+                                              _formKey.currentState?.value;
+                                          print(formData);
+                                          Provider.of<ChatProvider>(context,
+                                                  listen: false)
+                                              .startNormalSession(
+                                                  widget.virtualAgentId,
+                                                  formData?['name'],
+                                                  formData?['email']);
+                                        }
+                                      },
+                                child: Provider.of<ChatProvider>(context,
+                                            listen: false)
+                                        .isStartingSession
+                                    ? const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 3,
+                                        ),
+                                      )
+                                    : const Text("Submit",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        )),
+                              ))
                         ],
                       ))
                 ],

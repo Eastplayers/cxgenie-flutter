@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 
 class ChatService {
-  final baseUrl = 'https://api-staging.cxgenie.ai';
+  final baseUrl = 'https://api.cxgenie.ai';
 
   Future<VirtualAgent> getDetail(String id) async {
     final url = '$baseUrl/api/v1/chatbots/public/$id';

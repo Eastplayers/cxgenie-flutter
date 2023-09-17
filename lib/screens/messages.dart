@@ -4,7 +4,6 @@ import 'package:cxgenie/models/virtual_agent.dart';
 import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:cxgenie/services/chat_service.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +49,7 @@ class _MessagesState extends State<Messages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api-staging.cxgenie.ai',
+    socket = IO.io('https://api.cxgenie.ai',
         IO.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
       print('connect');

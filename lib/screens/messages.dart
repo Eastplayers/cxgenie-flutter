@@ -136,17 +136,42 @@ class _MessagesState extends State<Messages> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         reverse: true,
         itemBuilder: (context, int index) {
-          return _buildMessageItem(messages[index], virtualAgent);
+          return _buildMessageItem(
+              messages[index], virtualAgent, index, messages);
         });
   }
 
+  /// Check to group messages
+  // bool _checkIsSameSender(int index, Message message, List<Message> messages) {
+  //   if (index == messages.length - 1) {
+  //     return false;
+  //   }
+
+  //   DateTime previousMessageCreatedAt =
+  //       DateTime.parse("${messages[index + 1].createdAt}");
+  //   DateTime createdAt = DateTime.parse("${message.createdAt}");
+  //   var formatter = DateFormat("dd/MM/yy");
+  //   if (formatter.format(previousMessageCreatedAt) !=
+  //       formatter.format(createdAt)) {
+  //     return true;
+  //   }
+
+  //   if (message.senderId != widget.customerId) {
+  //     return message.senderId == messages[index - 1].senderId;
+  //   } else {
+  //     return true;
+  //   }
+  // }
+
   /// Build message item
-  Widget _buildMessageItem(Message message, VirtualAgent virtualAgent) {
+  Widget _buildMessageItem(Message message, VirtualAgent virtualAgent,
+      int index, List<Message> messages) {
     String color = virtualAgent.themeColor.replaceAll("#", "0xff");
     String foregroundColor = virtualAgent.themeColor.replaceAll("#", "0x22");
-    var isMine = message.senderId == widget.customerId;
+    bool isMine = message.senderId == widget.customerId;
     DateTime createdAt = DateTime.parse("${message.createdAt}");
     var formatter = DateFormat("dd/MM/yy, hh:mm");
+    // bool isSameSender = _checkIsSameSender(index, message, messages);
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -207,9 +232,12 @@ class _MessagesState extends State<Messages> {
               const SizedBox(
                 height: 4,
               ),
-              Text(
-                formatter.format(createdAt),
-                style: const TextStyle(fontSize: 12, color: Color(0xffA3A9B3)),
+              SizedBox(
+                child: Text(
+                  formatter.format(createdAt),
+                  style:
+                      const TextStyle(fontSize: 12, color: Color(0xffA3A9B3)),
+                ),
               )
             ],
           ))

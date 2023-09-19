@@ -169,7 +169,7 @@ class _MessagesState extends State<Messages> {
       return Container(
           width: (MediaQuery.of(context).size.width),
           height: (MediaQuery.of(context).size.height),
-          color: Color(0xffF2F3F5),
+          color: const Color(0xffF2F3F5),
           child: Column(
             children: <Widget>[
               Expanded(
@@ -257,7 +257,7 @@ class _MessagesState extends State<Messages> {
                               context: context,
                               builder: (BuildContext context) {
                                 return CupertinoActionSheet(
-                                    title: Text('Choose media'),
+                                    title: const Text('Choose media'),
                                     actions: <Widget>[
                                       CupertinoActionSheetAction(
                                         child: const Text(
@@ -421,13 +421,13 @@ class _MessagesState extends State<Messages> {
                         child: Text(
                           "${message.content}",
                           style: TextStyle(
-                              color: isMine ? Colors.white : Color(0xff2C2E33),
+                              color: isMine ? Colors.white : const Color(0xff2C2E33),
                               fontSize: 14),
                         ),
                       ),
               ),
               Container(
-                decoration: BoxDecoration(),
+                decoration: const BoxDecoration(),
                 child: message.media != null && message.media!.isNotEmpty
                     ? Column(
                         children: message.media!

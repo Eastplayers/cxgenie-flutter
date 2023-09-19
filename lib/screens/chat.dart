@@ -4,7 +4,6 @@ import 'package:cxgenie/screens/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'dart:developer' as developer;
 
 class Chat extends StatefulWidget {
   const Chat(
@@ -68,7 +67,7 @@ class _ChatState extends State<Chat> {
                     : Stack(
                         children: [
                           Messages(
-                            customerId: customer!.id,
+                            customerId: customer.id,
                             virtualAgentId: widget.virtualAgentId,
                             themeColor: virtualAgent.themeColor,
                           ),
@@ -95,7 +94,7 @@ class _ChatState extends State<Chat> {
                                             borderRadius:
                                                 BorderRadius.circular(20),
                                             border: Border.all(
-                                                color: Color(0xffDBDEE3),
+                                                color: const Color(0xffDBDEE3),
                                                 width: 1)),
                                         child: Center(
                                           child: SizedBox(

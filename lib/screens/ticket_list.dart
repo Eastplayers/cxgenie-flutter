@@ -77,7 +77,7 @@ class _TicketListState extends State<TicketList> {
                     insetPadding: const EdgeInsets.all(16),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
-                    content: Container(
+                    content: SizedBox(
                       width: (MediaQuery.of(context).size.width),
                       height: 270,
                       child: Column(
@@ -141,7 +141,7 @@ class _TicketListState extends State<TicketList> {
                                     hintStyle: const TextStyle(
                                         color: Color(0xffA3A9B3)),
                                     border: InputBorder.none,
-                                    contentPadding: EdgeInsets.all(8),
+                                    contentPadding: const EdgeInsets.all(8),
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
@@ -244,10 +244,10 @@ class _TicketListState extends State<TicketList> {
                 });
           },
           backgroundColor: Color(int.parse(color)),
-          child: const Icon(Icons.add),
           elevation: 0,
+          child: const Icon(Icons.add),
         ),
-        backgroundColor: Color(0xffF2F3F5),
+        backgroundColor: const Color(0xffF2F3F5),
         body: SafeArea(
             child: ListView.builder(
                 padding:
@@ -257,7 +257,7 @@ class _TicketListState extends State<TicketList> {
                   var ticket = value.tickets[index];
 
                   return Container(
-                    padding: EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     child: GestureDetector(
                       onTap: () {
                         showCupertinoModalPopup(
@@ -297,7 +297,7 @@ class _TicketListState extends State<TicketList> {
                                                 width: 12,
                                               ),
                                               GestureDetector(
-                                                child: Icon(Icons.close),
+                                                child: const Icon(Icons.close),
                                                 onTap: () {
                                                   Navigator.pop(
                                                       context, 'Cancel');

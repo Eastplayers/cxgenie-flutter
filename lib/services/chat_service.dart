@@ -21,7 +21,7 @@ class ChatService {
         name: data['name'],
         avatar: data['avatar'],
         themeColor:
-            data['theme_color'] == null ? '#364DE7' : data['theme_color'],
+            data['theme_color'] ?? '#364DE7',
         createdAt: data['created_at'],
         updatedAt: data['updated_at'],
         workspaceId: data['workspace_id'],

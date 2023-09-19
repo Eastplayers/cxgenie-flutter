@@ -1,5 +1,6 @@
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/screens/ticket_messages.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +47,8 @@ class TicketList extends StatefulWidget {
 }
 
 class _TicketListState extends State<TicketList> {
+  final TextEditingController textController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -62,7 +65,184 @@ class _TicketListState extends State<TicketList> {
 
       return Scaffold(
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+                barrierDismissible: false,
+                context: context,
+                builder: (content) {
+                  return AlertDialog(
+                    contentPadding: const EdgeInsets.all(0),
+                    elevation: 0,
+                    shadowColor: const Color.fromRGBO(23, 24, 26, 0.5),
+                    insetPadding: const EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    content: Container(
+                      width: (MediaQuery.of(context).size.width),
+                      height: 270,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  'Create ticket',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                GestureDetector(
+                                  child: const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 18,
+                                        color: Color(0xffA3A9B3),
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    textController.clear();
+                                    Navigator.pop(context, 'Cancel');
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                              child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'What issue do you want us to support? *',
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                TextField(
+                                  controller: textController,
+                                  autofocus: true,
+                                  maxLines: 4,
+                                  cursorColor: Color(int.parse(color)),
+                                  decoration: InputDecoration(
+                                    hintText: "Type support detail",
+                                    hintStyle: const TextStyle(
+                                        color: Color(0xffA3A9B3)),
+                                    border: InputBorder.none,
+                                    contentPadding: EdgeInsets.all(8),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                          color: Color(int.parse(color)),
+                                          width: 1.0),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xffD6DAE1), width: 1.0),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xffED4245), width: 1.0),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                          color: Color(0xffED4245), width: 1.0),
+                                    ),
+                                  ),
+                                  style: const TextStyle(fontSize: 14),
+                                )
+                              ],
+                            ),
+                          )),
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                SizedBox(
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor: Colors.white,
+                                        padding: const EdgeInsets.all(8),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8))),
+                                    onPressed: value.isCreatingTicket
+                                        ? null
+                                        : () {
+                                            textController.clear();
+                                            Navigator.pop(context, 'Cancel');
+                                          },
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xff202225)),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                SizedBox(
+                                  height: 40,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor:
+                                            Color(int.parse(color)),
+                                        padding: const EdgeInsets.all(8),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8))),
+                                    onPressed: value.isCreatingTicket
+                                        ? null
+                                        : () {
+                                            value.createTicket(
+                                                widget.workspaceId,
+                                                "${value.customer?.name}",
+                                                "${value.customer?.email}",
+                                                textController.text,
+                                                "${widget.chatUserId}");
+                                            textController.clear();
+                                            Navigator.pop(context, 'Cancel');
+                                          },
+                                    child: const Text(
+                                      'Create',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                });
+          },
           backgroundColor: Color(int.parse(color)),
           child: const Icon(Icons.add),
           elevation: 0,
@@ -81,7 +261,7 @@ class _TicketListState extends State<TicketList> {
                     child: GestureDetector(
                       onTap: () {
                         print("ON ITEM TAP");
-                        showAdaptiveDialog(
+                        showCupertinoModalPopup(
                             context: context,
                             builder: (content) {
                               return ChangeNotifierProvider(

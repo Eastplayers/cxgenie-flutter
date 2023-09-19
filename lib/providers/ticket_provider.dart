@@ -1,3 +1,4 @@
+import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
 import 'package:cxgenie/services/chat_service.dart';
@@ -9,12 +10,16 @@ class TicketProvider extends ChangeNotifier {
   String? chatUserId;
   String? currentWorkspaceId;
   bool isLoadingMessages = true;
+  bool isCreatingTicket = false;
 
   List<Ticket> _tickets = [];
   List<Ticket> get tickets => _tickets;
 
   List<Message> _messages = [];
   List<Message> get messages => _messages;
+
+  Customer? _customer;
+  Customer? get customer => _customer;
 
   Future<void> getTickets(String customerId, String workspaceId) async {
     chatUserId = customerId;
@@ -24,7 +29,23 @@ class TicketProvider extends ChangeNotifier {
 
     final response = await _service.getTickets(customerId, workspaceId);
     _tickets = response;
+
+    final customerResponse = await _service.getCustomerDetail(customerId);
+    _customer = customerResponse;
+
     isTicketListLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> createTicket(String workspaceId, String name, String email,
+      String content, String customerId) async {
+    isCreatingTicket = true;
+    notifyListeners();
+
+    await _service.createTicket(workspaceId, name, email, content);
+    final ticketsResponse = await _service.getTickets(customerId, workspaceId);
+    _tickets = ticketsResponse;
+    isCreatingTicket = false;
     notifyListeners();
   }
 

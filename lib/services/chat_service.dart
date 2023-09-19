@@ -267,4 +267,38 @@ class ChatService {
           'ticket_id': ticketId
         }));
   }
+
+  Future<void> createTicket(
+      String workspaceId, String name, String email, String content) async {
+    final url = '$baseUrl/api/v1/tickets';
+    final uri = Uri.parse(url);
+    final response = await http.post(uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+        body: jsonEncode(<String, dynamic>{
+          'name': name,
+          'content': content,
+          'email': email,
+          'workspace_id': workspaceId,
+        }));
+  }
+
+  Future<Customer> getCustomerDetail(String id) async {
+    final url = '$baseUrl/api/v1/chat-users/$id';
+    final uri = Uri.parse(url);
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final data = json['data'];
+      return Customer(
+        id: data['id'],
+        name: data['name'],
+        avatar: data['avatar'],
+        email: data['email'],
+      );
+    }
+
+    throw "Virtual agent not found";
+  }
 }

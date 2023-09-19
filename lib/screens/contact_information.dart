@@ -66,7 +66,6 @@ class _ContactInformationState extends State<ContactInformation> {
                               SizedBox(
                                 child: FormBuilderTextField(
                                     name: 'name',
-                                    initialValue: "Quyen",
                                     cursorColor: widget.themeColor,
                                     decoration: InputDecoration(
                                         hintText: "Enter your name",
@@ -127,7 +126,6 @@ class _ContactInformationState extends State<ContactInformation> {
                                 // height: 40,
                                 child: FormBuilderTextField(
                                     name: 'email',
-                                    initialValue: "quyen.le@eastplayers.io",
                                     keyboardType: TextInputType.emailAddress,
                                     cursorColor: widget.themeColor,
                                     decoration: InputDecoration(

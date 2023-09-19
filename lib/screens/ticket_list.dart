@@ -285,13 +285,15 @@ class _TicketListState extends State<TicketList> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              Text(
+                                              Expanded(
+                                                  child: Text(
                                                 ticket.name,
+                                                overflow: TextOverflow.ellipsis,
                                                 style: const TextStyle(
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.w600),
-                                              ),
+                                              )),
                                               const SizedBox(
                                                 width: 12,
                                               ),

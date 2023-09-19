@@ -54,9 +54,6 @@ class _TicketMessagesState extends State<TicketMessages> {
   final ChatService _chatService = ChatService();
   late IO.Socket socket;
   final TextEditingController textController = TextEditingController();
-  final ImagePicker _picker = ImagePicker();
-  dynamic _pickImageError;
-  bool isVideo = false;
 
   /// Send message
   void sendMessage(String content) async {
@@ -124,7 +121,9 @@ class _TicketMessagesState extends State<TicketMessages> {
       Provider.of<TicketProvider>(context, listen: false)
           .getMessages(widget.ticketId);
     });
-    connectSocket();
+    if (context.mounted) {
+      connectSocket();
+    }
   }
 
   @override

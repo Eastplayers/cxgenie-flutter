@@ -28,6 +28,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          title: const Text('Chat'),
+          backgroundColor: const Color(0xFF364de7),
+          elevation: 0),
       body: Center(
           child: ChatContainer(
         virtualAgentId: "800e01df-16d2-4741-b59e-bed800c08a44",

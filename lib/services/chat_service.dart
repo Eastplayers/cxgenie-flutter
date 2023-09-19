@@ -192,4 +192,79 @@ class ChatService {
 
     throw "Cannot get tickets";
   }
+
+  Future<List<Message>> getTicketMessages(String ticketId) async {
+    final url =
+        '$baseUrl/api/v1/chat-logs/ticket?limit=1000&offset=0&order=desc&ticket_id=$ticketId';
+    final uri = Uri.parse(url);
+    final response = await http.get(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+    );
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final data = json['data']['chat_logs'] as List;
+      final messages = data.map((message) {
+        final virtualAgent = message['chatbot'];
+        final sender = message['sender'];
+        final receiver = message['receiver'];
+        return Message(
+            id: message['id'],
+            content: message['content'],
+            receiverId: message['receiver_id'],
+            type: message['type'],
+            virtualAgentId: message['chatbot_id'],
+            senderId: message['sender_id'],
+            createdAt: message['created_at'],
+            virtualAgent: virtualAgent == null
+                ? null
+                : VirtualAgent(
+                    id: virtualAgent['id'],
+                    name: virtualAgent['name'],
+                    themeColor: virtualAgent['theme_color'] == null
+                        ? '#364DE7'
+                        : virtualAgent['theme_color'],
+                    createdAt: virtualAgent['created_at'],
+                    updatedAt: virtualAgent['updated_at'],
+                    workspaceId: virtualAgent['workspace_id'],
+                  ),
+            sender: sender == null
+                ? null
+                : Customer(
+                    id: sender['id'],
+                    name: sender['name'],
+                    avatar: sender['avatar']),
+            receiver: receiver == null
+                ? null
+                : Customer(
+                    id: receiver['id'],
+                    name: receiver['name'],
+                    avatar: receiver['avatar']));
+      }).toList();
+
+      return messages;
+    }
+
+    throw "Cannot get ticket messages";
+  }
+
+  Future<void> sendTicketMessage(String workspaceId, String ticketId,
+      String senderId, String content, List<String>? media) async {
+    final url = '$baseUrl/api/v1/chat-logs/ticket';
+    final uri = Uri.parse(url);
+    final response = await http.post(uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+        body: jsonEncode(<String, dynamic>{
+          'sender_id': senderId,
+          'content': content,
+          'chat_user_id': senderId,
+          'workspace_id': workspaceId,
+          'media': media,
+          'ticket_id': ticketId
+        }));
+  }
 }

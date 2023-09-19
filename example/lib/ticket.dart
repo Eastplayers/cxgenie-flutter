@@ -33,6 +33,10 @@ class TicketList extends StatelessWidget {
     final args = ModalRoute.of(context)!.settings.arguments as ScreenArguments;
 
     return Scaffold(
+      appBar: AppBar(
+          title: const Text('Ticket list'),
+          backgroundColor: const Color(0xFF364de7),
+          elevation: 0),
       body: Center(
           child: TicketContainer(
               chatUserId: args.userId,

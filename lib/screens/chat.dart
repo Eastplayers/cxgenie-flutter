@@ -75,32 +75,42 @@ class _ChatState extends State<Chat> {
                           Positioned(
                               top: 16,
                               right: 16,
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (widget.onChatWithAgentClick != null) {
-                                    widget.onChatWithAgentClick!(
-                                        customer.id,
-                                        virtualAgent.workspaceId,
-                                        virtualAgent.themeColor);
-                                  }
-                                },
-                                child: Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                          color: Color(0xffDBDEE3), width: 1)),
-                                  child: Center(
-                                    child: SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: SvgPicture.string(supportIcon),
-                                    ),
-                                  ),
-                                ),
-                              ))
+                              child: (widget.showChatWithAgent == true &&
+                                      virtualAgent.isTicketEnable == true)
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        if (widget.onChatWithAgentClick !=
+                                            null) {
+                                          widget.onChatWithAgentClick!(
+                                              customer.id,
+                                              virtualAgent.workspaceId,
+                                              virtualAgent.themeColor);
+                                        }
+                                      },
+                                      child: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            border: Border.all(
+                                                color: Color(0xffDBDEE3),
+                                                width: 1)),
+                                        child: Center(
+                                          child: SizedBox(
+                                            width: 24,
+                                            height: 24,
+                                            child:
+                                                SvgPicture.string(supportIcon),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(
+                                      width: 0,
+                                      height: 0,
+                                    ))
                         ],
                       ),
           ));

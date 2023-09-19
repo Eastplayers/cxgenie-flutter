@@ -40,7 +40,7 @@ class Example extends StatelessWidget {
           virtualAgentId: 'string',
           userToken: 'string',
           showChatWithAgent: true,
-          onChatWithAgentClick: (),
+          onChatWithAgentClick: (String userId, String workspaceId, String themeColor) {},
         ),
       ),
     );

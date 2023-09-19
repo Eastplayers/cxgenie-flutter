@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
+import 'package:cxgenie/models/ticket.dart';
 import 'package:cxgenie/models/virtual_agent.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
@@ -151,11 +152,44 @@ class ChatService {
                     avatar: receiver['avatar']));
       }).toList();
 
-      developer.log(customerId, name: "${response.statusCode}", error: data);
-
       return messages;
     }
 
     throw "Cannot start session";
+  }
+
+  Future<List<Ticket>> getTickets(String customerId, String workspaceId) async {
+    final url =
+        '$baseUrl/api/v1/tickets/public?creator_id=$customerId&workspace_id=$workspaceId';
+    final uri = Uri.parse(url);
+    final response = await http.get(
+      uri,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+    );
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final data = json['data']['tickets'] as List;
+      final tickets = data.map((ticket) {
+        final assignee = ticket['assignee'];
+
+        return Ticket(
+            id: ticket['id'],
+            name: ticket['name'],
+            status: ticket['status'],
+            code: ticket['code'],
+            createdAt: ticket['created_at'],
+            updatedAt: ticket['updated_at'],
+            creatorId: ticket['creator_id'],
+            assignee: assignee == null
+                ? null
+                : Customer(id: assignee['id'], name: assignee['name']));
+      }).toList();
+
+      return tickets;
+    }
+
+    throw "Cannot get tickets";
   }
 }

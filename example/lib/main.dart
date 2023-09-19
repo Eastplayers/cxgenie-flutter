@@ -1,4 +1,5 @@
 import 'package:cxgenie/cxgenie.dart';
+import 'package:example/ticket.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const HomeScreen(),
+      routes: {TicketList.routeName: (context) => const TicketList()},
     );
   }
 }
@@ -25,11 +27,19 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
           child: ChatContainer(
         virtualAgentId: "800e01df-16d2-4741-b59e-bed800c08a44",
         userToken: '0ec9f333eabacc46c3b049864272781c614dc87c',
+        showChatWithAgent: true,
+        onChatWithAgentClick:
+            (String userId, String workspaceId, String themeColor) {
+          print("userId: " + userId);
+          print("workspaceId:" + workspaceId);
+          Navigator.pushNamed(context, TicketList.routeName,
+              arguments: ScreenArguments(userId, workspaceId, themeColor));
+        },
       )),
     );
   }

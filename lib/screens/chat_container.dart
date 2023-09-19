@@ -8,12 +8,15 @@ class ChatContainer extends StatefulWidget {
       {Key? key,
       required this.virtualAgentId,
       this.userToken,
-      this.showChatWithAgent = false})
+      this.showChatWithAgent = false,
+      this.onChatWithAgentClick})
       : super(key: key);
 
   final String virtualAgentId;
   final String? userToken;
   final bool? showChatWithAgent;
+  final Function(String userId, String workspaceId, String themeColor)?
+      onChatWithAgentClick;
 
   @override
   _ChatContainerState createState() => _ChatContainerState();
@@ -28,6 +31,7 @@ class _ChatContainerState extends State<ChatContainer> {
         virtualAgentId: widget.virtualAgentId,
         userToken: widget.userToken,
         showChatWithAgent: widget.showChatWithAgent,
+        onChatWithAgentClick: widget.onChatWithAgentClick,
       ),
     );
   }

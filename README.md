@@ -8,7 +8,7 @@ The cxgenie Flutter Package seamlessly integrates https://cxgenie.ai cutting-edg
 
 ```yaml
 dependencies:
-  cxgenie: ^0.0.3
+  cxgenie: ^0.0.6
 ```
 
 2. Import the package and use it in your Flutter App.
@@ -53,8 +53,8 @@ class Example extends StatelessWidget {
 There are a number of properties that you can modify:
 
 - workspaceId
-- chatUserId (optional)
-- userToken (optional)
+- chatUserId
+- themeColor (optional)
 
 ```dart
 class Example extends StatelessWidget {
@@ -67,7 +67,7 @@ class Example extends StatelessWidget {
         child: const Tickets(
           workspaceId: 'string',
           chatUserId: 'string',
-          userToken: 'string',
+          themeColor: 'string',
         ),
       ),
     );

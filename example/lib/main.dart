@@ -39,8 +39,6 @@ class HomeScreen extends StatelessWidget {
         showChatWithAgent: true,
         onChatWithAgentClick:
             (String userId, String workspaceId, String themeColor) {
-          print("userId: " + userId);
-          print("workspaceId:" + workspaceId);
           Navigator.pushNamed(context, TicketList.routeName,
               arguments: ScreenArguments(userId, workspaceId, themeColor));
         },

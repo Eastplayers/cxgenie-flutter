@@ -54,12 +54,22 @@ class _TicketMessagesState extends State<TicketMessages> {
   final ChatService _chatService = ChatService();
   late IO.Socket socket;
   final TextEditingController textController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
+  List<MessageMedia> _uploadedFiles = [];
+  bool _isSendingMessage = false;
 
   /// Send message
   void sendMessage(String content) async {
-    textController.clear();
-    await _chatService.sendTicketMessage(
-        widget.workspaceId, widget.ticketId, widget.chatUserId, content, []);
+    if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
+      _isSendingMessage = true;
+      textController.clear();
+      await _chatService.sendTicketMessage(widget.workspaceId, widget.ticketId,
+          widget.chatUserId, content, _uploadedFiles);
+      setState(() {
+        _uploadedFiles = [];
+      });
+      _isSendingMessage = false;
+    }
   }
 
   /// Connect to socket to receive messages in real-time
@@ -76,6 +86,7 @@ class _TicketMessagesState extends State<TicketMessages> {
         final virtualAgent = data['chatbot'];
         final sender = data['sender'];
         final receiver = data['receiver'];
+        final media = data['media'] == null ? null : data['media'] as List;
         Message newMessage = Message(
             id: data['id'],
             content: data['content'],
@@ -84,6 +95,11 @@ class _TicketMessagesState extends State<TicketMessages> {
             virtualAgentId: data['chatbot_id'],
             senderId: data['sender_id'],
             createdAt: data['created_at'],
+            media: media == null
+                ? []
+                : media.map((mediaItem) {
+                    return MessageMedia(url: mediaItem['url']);
+                  }).toList(),
             virtualAgent: virtualAgent == null
                 ? null
                 : VirtualAgent(
@@ -114,6 +130,32 @@ class _TicketMessagesState extends State<TicketMessages> {
     socket.onDisconnect((_) => print('Socket disconnected'));
   }
 
+  /// onImagePicketPressed
+  void _onImageButtonPressed(
+    ImageSource source, {
+    required BuildContext context,
+  }) async {
+    if (context.mounted) {
+      try {
+        // final List<XFile> pickedFileList = await _picker.pickMultiImage(
+        //     imageQuality: 70, maxWidth: 1000, maxHeight: 1000);
+        final XFile? pickedFile = await _picker.pickImage(
+            source: source, imageQuality: 70, maxWidth: 1000, maxHeight: 1000);
+        // setState(() {
+        //   _mediaFileList = pickedFileList;
+        // });
+        if (pickedFile != null) {
+          var result = await _chatService.uploadFile(pickedFile);
+          setState(() {
+            _uploadedFiles = [..._uploadedFiles, MessageMedia(url: result)];
+          });
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -139,7 +181,166 @@ class _TicketMessagesState extends State<TicketMessages> {
                 flex: 1,
                 child: _buildMessageList(value.messages),
               ),
-              _buildComposer()
+              Container(
+                  width: (MediaQuery.of(context).size.width),
+                  height: _uploadedFiles.isNotEmpty ? 100 : 0,
+                  color: Colors.white,
+                  padding: const EdgeInsets.only(top: 6),
+                  child: _uploadedFiles.isNotEmpty
+                      ? ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _uploadedFiles.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 100,
+                              height: 100,
+                              color: Colors.white,
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 80,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: const Color(0xffD6DAE1),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Image.network(
+                                        _uploadedFiles[index].url,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _uploadedFiles = _uploadedFiles
+                                                .where((file) =>
+                                                    file.url !=
+                                                    _uploadedFiles[index].url)
+                                                .toList();
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          child: const Icon(
+                                            Icons.close,
+                                            size: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ))
+                                ],
+                              ),
+                            );
+                          })
+                      : null),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                color: Colors.white,
+                child: Column(children: [
+                  Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        child: SvgPicture.string(
+                          imageIcon,
+                          width: 24,
+                          height: 24,
+                        ),
+                        onTap: () {
+                          showCupertinoModalPopup(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CupertinoActionSheet(
+                                    title: Text('Choose media'),
+                                    actions: <Widget>[
+                                      CupertinoActionSheetAction(
+                                        child: const Text(
+                                          'Choose from gallery',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          _onImageButtonPressed(
+                                              ImageSource.gallery,
+                                              context: context);
+                                        },
+                                      ),
+                                      // CupertinoActionSheetAction(
+                                      //   child: const Text(
+                                      //     'Take picture from camera',
+                                      //     style: TextStyle(fontSize: 16),
+                                      //   ),
+                                      //   onPressed: () {},
+                                      // )
+                                    ],
+                                    cancelButton: CupertinoActionSheetAction(
+                                        isDestructiveAction: true,
+                                        onPressed: () {
+                                          Navigator.pop(context, 'Cancel');
+                                        },
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(fontSize: 16),
+                                        )));
+                              });
+                        },
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: TextField(
+                            autofocus: true,
+                            controller: textController,
+                            cursorColor: Color(int.parse(
+                                widget.themeColor.replaceAll("#", "0xff"))),
+                            decoration: const InputDecoration(
+                              hintText: "Type message",
+                              border: InputBorder.none,
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (value) => sendMessage(value),
+                            onEditingComplete: () {},
+                          )),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      GestureDetector(
+                        child: _isSendingMessage
+                            ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Color(int.parse(widget.themeColor
+                                      .replaceAll("#", "0xff"))),
+                                ),
+                              )
+                            : SvgPicture.string(
+                                sendIcon,
+                                width: 24,
+                                height: 24,
+                              ),
+                        onTap: () {
+                          sendMessage(textController.text);
+                        },
+                      )
+                    ],
+                  )
+                ]),
+              )
             ],
           ));
     });
@@ -174,7 +375,8 @@ class _TicketMessagesState extends State<TicketMessages> {
         children: [
           SizedBox(
             child: !isMine
-                ? message.sender?.avatar == null
+                ? message.sender?.avatar == null &&
+                        message.virtualAgent?.avatar == null
                     ? Container(
                         width: 32,
                         height: 32,
@@ -183,7 +385,7 @@ class _TicketMessagesState extends State<TicketMessages> {
                             color: Color(int.parse(foregroundColor))),
                         child: Center(
                           child: Text(
-                            "${message.sender?.name[0].toUpperCase()}",
+                            "${message.sender?.name[0].toUpperCase() ?? message.virtualAgent?.name[0].toUpperCase()}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Color(int.parse(color))),
@@ -192,7 +394,7 @@ class _TicketMessagesState extends State<TicketMessages> {
                       )
                     : ClipOval(
                         child: Image.network(
-                          "${message.sender?.avatar}",
+                          "${message.sender?.avatar ?? message.virtualAgent?.avatar}",
                           width: 32,
                           height: 32,
                           fit: BoxFit.cover,
@@ -209,18 +411,43 @@ class _TicketMessagesState extends State<TicketMessages> {
                 isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
               Container(
-                constraints: BoxConstraints(
-                    maxWidth: (MediaQuery.of(context).size.width) - 100),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                    color: isMine ? Color(int.parse(color)) : Colors.white,
-                    borderRadius: BorderRadius.circular(8)),
-                child: Text(
-                  message.content,
-                  style: TextStyle(
-                      color: isMine ? Colors.white : Color(0xff2C2E33),
-                      fontSize: 14),
-                ),
+                child: message.content == null || message.content!.isEmpty
+                    ? null
+                    : Container(
+                        constraints: BoxConstraints(
+                            maxWidth:
+                                (MediaQuery.of(context).size.width) - 100),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                            color:
+                                isMine ? Color(int.parse(color)) : Colors.white,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Text(
+                          "${message.content}",
+                          style: TextStyle(
+                              color: isMine ? Colors.white : Color(0xff2C2E33),
+                              fontSize: 14),
+                        ),
+                      ),
+              ),
+              Container(
+                decoration: BoxDecoration(),
+                child: message.media != null && message.media!.isNotEmpty
+                    ? Column(
+                        children: message.media!
+                            .map((mediaItem) => Container(
+                                  margin: const EdgeInsets.only(top: 4),
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.white,
+                                  ),
+                                  child: Image.network(mediaItem.url),
+                                ))
+                            .toList(),
+                      )
+                    : null,
               ),
               const SizedBox(
                 height: 4,
@@ -234,90 +461,6 @@ class _TicketMessagesState extends State<TicketMessages> {
               )
             ],
           ))
-        ],
-      ),
-    );
-  }
-
-  /// Build composer
-  Widget _buildComposer() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      color: Colors.white,
-      child: Row(
-        children: <Widget>[
-          GestureDetector(
-            child: SvgPicture.string(
-              imageIcon,
-              width: 24,
-              height: 24,
-            ),
-            onTap: () {
-              showCupertinoModalPopup(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return CupertinoActionSheet(
-                        title: Text('Choose media'),
-                        actions: <Widget>[
-                          CupertinoActionSheetAction(
-                            child: const Text(
-                              'Choose from gallery',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          CupertinoActionSheetAction(
-                            child: const Text(
-                              'Take picture from camera',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {},
-                          )
-                        ],
-                        cancelButton: CupertinoActionSheetAction(
-                            isDestructiveAction: true,
-                            onPressed: () {
-                              Navigator.pop(context, 'Cancel');
-                            },
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(fontSize: 16),
-                            )));
-                  });
-            },
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          Expanded(
-              flex: 1,
-              child: TextField(
-                autofocus: true,
-                controller: textController,
-                decoration: const InputDecoration(
-                  hintText: "Type message",
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(fontSize: 14),
-                textInputAction: TextInputAction.send,
-                onSubmitted: (value) => sendMessage(value),
-                onEditingComplete: () {},
-              )),
-          const SizedBox(
-            width: 16,
-          ),
-          GestureDetector(
-            child: SvgPicture.string(
-              sendIcon,
-              width: 24,
-              height: 24,
-            ),
-            onTap: () {
-              sendMessage(textController.text);
-            },
-          )
         ],
       ),
     );

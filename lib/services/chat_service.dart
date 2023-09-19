@@ -4,7 +4,7 @@ import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
 import 'package:cxgenie/models/virtual_agent.dart';
 import 'package:http/http.dart' as http;
-import 'dart:developer' as developer;
+import 'package:image_picker/image_picker.dart';
 
 class ChatService {
   final baseUrl = 'https://api.cxgenie.ai';
@@ -85,7 +85,7 @@ class ChatService {
   }
 
   Future<void> sendMessage(String virtualAgentId, String senderId,
-      String content, List<String>? media) async {
+      String content, List<MessageMedia>? media) async {
     final url = '$baseUrl/api/v1/chat-logs/chatbot';
     final uri = Uri.parse(url);
     final response = await http.post(uri,
@@ -118,6 +118,9 @@ class ChatService {
         final virtualAgent = message['chatbot'];
         final sender = message['sender'];
         final receiver = message['receiver'];
+        final media =
+            message['media'] == null ? null : message['media'] as List;
+
         return Message(
             id: message['id'],
             content: message['content'],
@@ -126,14 +129,17 @@ class ChatService {
             virtualAgentId: message['chatbot_id'],
             senderId: message['sender_id'],
             createdAt: message['created_at'],
+            media: media == null
+                ? []
+                : media.map((mediaItem) {
+                    return MessageMedia(url: mediaItem['url']);
+                  }).toList(),
             virtualAgent: virtualAgent == null
                 ? null
                 : VirtualAgent(
                     id: virtualAgent['id'],
                     name: virtualAgent['name'],
-                    themeColor: virtualAgent['theme_color'] == null
-                        ? '#364DE7'
-                        : virtualAgent['theme_color'],
+                    themeColor: virtualAgent['theme_color'] ?? '#364DE7',
                     createdAt: virtualAgent['created_at'],
                     updatedAt: virtualAgent['updated_at'],
                     workspaceId: virtualAgent['workspace_id'],
@@ -210,6 +216,9 @@ class ChatService {
         final virtualAgent = message['chatbot'];
         final sender = message['sender'];
         final receiver = message['receiver'];
+        final media =
+            message['media'] == null ? null : message['media'] as List;
+
         return Message(
             id: message['id'],
             content: message['content'],
@@ -218,14 +227,17 @@ class ChatService {
             virtualAgentId: message['chatbot_id'],
             senderId: message['sender_id'],
             createdAt: message['created_at'],
+            media: media == null
+                ? []
+                : media.map((mediaItem) {
+                    return MessageMedia(url: mediaItem['url']);
+                  }).toList(),
             virtualAgent: virtualAgent == null
                 ? null
                 : VirtualAgent(
                     id: virtualAgent['id'],
                     name: virtualAgent['name'],
-                    themeColor: virtualAgent['theme_color'] == null
-                        ? '#364DE7'
-                        : virtualAgent['theme_color'],
+                    themeColor: virtualAgent['theme_color'] ?? '#364DE7',
                     createdAt: virtualAgent['created_at'],
                     updatedAt: virtualAgent['updated_at'],
                     workspaceId: virtualAgent['workspace_id'],
@@ -251,7 +263,7 @@ class ChatService {
   }
 
   Future<void> sendTicketMessage(String workspaceId, String ticketId,
-      String senderId, String content, List<String>? media) async {
+      String senderId, String content, List<MessageMedia>? media) async {
     final url = '$baseUrl/api/v1/chat-logs/ticket';
     final uri = Uri.parse(url);
     final response = await http.post(uri,
@@ -300,5 +312,43 @@ class ChatService {
     }
 
     throw "Virtual agent not found";
+  }
+
+  Future<List<String>> uploadFiles(List<XFile> files) async {
+    final url = '$baseUrl/api/v1/files/multiple-upload';
+    final uri = Uri.parse(url);
+    var request = http.MultipartRequest("POST", uri);
+
+    for (var i = 0; i < files.length; i++) {
+      var file = await http.MultipartFile.fromPath('files', files[i].path);
+      request.files.add(file);
+    }
+
+    var streamResponse = await request.send();
+    var response = await http.Response.fromStream(streamResponse);
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+
+      return json['urls'] as List<String>;
+    }
+
+    throw 'Cannot upload files';
+  }
+
+  Future<String> uploadFile(XFile xFile) async {
+    final url = '$baseUrl/api/v1/files/upload';
+    final uri = Uri.parse(url);
+    var request = http.MultipartRequest("POST", uri);
+    var file = await http.MultipartFile.fromPath('file', xFile.path);
+    request.files.add(file);
+
+    var streamResponse = await request.send();
+    var response = await http.Response.fromStream(streamResponse);
+    if (response.statusCode == 200) {
+      var json = jsonDecode(response.body);
+      return json['url'];
+    }
+
+    throw 'Cannot uploda file';
   }
 }

@@ -53,14 +53,21 @@ class _MessagesState extends State<Messages> {
   late IO.Socket socket;
   final TextEditingController textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  dynamic _pickImageError;
-  bool isVideo = false;
+  List<MessageMedia> _uploadedFiles = [];
+  bool _isSendingMessage = false;
 
   /// Send message
   void sendMessage(String content) async {
-    textController.clear();
-    await _chatService
-        .sendMessage(widget.virtualAgentId, widget.customerId, content, []);
+    if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
+      _isSendingMessage = true;
+      textController.clear();
+      await _chatService.sendMessage(
+          widget.virtualAgentId, widget.customerId, content, _uploadedFiles);
+      setState(() {
+        _uploadedFiles = [];
+      });
+      _isSendingMessage = false;
+    }
   }
 
   /// Connect to socket to receive messages in real-time
@@ -76,6 +83,7 @@ class _MessagesState extends State<Messages> {
         final virtualAgent = data['chatbot'];
         final sender = data['sender'];
         final receiver = data['receiver'];
+        final media = data['media'] == null ? null : data['media'] as List;
         Message newMessage = Message(
             id: data['id'],
             content: data['content'],
@@ -84,6 +92,11 @@ class _MessagesState extends State<Messages> {
             virtualAgentId: data['chatbot_id'],
             senderId: data['sender_id'],
             createdAt: data['created_at'],
+            media: media == null
+                ? []
+                : media.map((mediaItem) {
+                    return MessageMedia(url: mediaItem['url']);
+                  }).toList(),
             virtualAgent: virtualAgent == null
                 ? null
                 : VirtualAgent(
@@ -115,86 +128,30 @@ class _MessagesState extends State<Messages> {
   }
 
   /// onImagePicketPressed
-  // void _onImageButtonPressed(
-  //   ImageSource source, {
-  //   required BuildContext context,
-  //   bool isMultiImage = false,
-  //   bool isMedia = false,
-  // } async {
-  //   if (context.mounted) {
-  //     if (isVideo) {
-  //       final XFile? file = await _picker.pickVideo(
-  //           source: source, maxDuration: const Duration(seconds: 10));
-  //       // await _playVideo(file);
-  //     } else if (isMultiImage) {
-  //       await _displayPickImageDialog(context,
-  //           (double? maxWidth, double? maxHeight, int? quality) async {
-  //         try {
-  //           final List<XFile> pickedFileList = isMedia
-  //               ? await _picker.pickMultipleMedia(
-  //                   maxWidth: maxWidth,
-  //                   maxHeight: maxHeight,
-  //                   imageQuality: quality,
-  //                 )
-  //               : await _picker.pickMultiImage(
-  //                   maxWidth: maxWidth,
-  //                   maxHeight: maxHeight,
-  //                   imageQuality: quality,
-  //                 );
-  //           setState(() {
-  //             _mediaFileList = pickedFileList;
-  //           });
-  //         } catch (e) {
-  //           setState(() {
-  //             _pickImageError = e;
-  //           });
-  //         }
-  //       });
-  //     } else if (isMedia) {
-  //       await _displayPickImageDialog(context,
-  //           (double? maxWidth, double? maxHeight, int? quality) async {
-  //         try {
-  //           final List<XFile> pickedFileList = <XFile>[];
-  //           final XFile? media = await _picker.pickMedia(
-  //             maxWidth: maxWidth,
-  //             maxHeight: maxHeight,
-  //             imageQuality: quality,
-  //           );
-  //           if (media != null) {
-  //             pickedFileList.add(media);
-  //             setState(() {
-  //               _mediaFileList = pickedFileList;
-  //             });
-  //           }
-  //         } catch (e) {
-  //           setState(() {
-  //             _pickImageError = e;
-  //           });
-  //         }
-  //       });
-  //     } else {
-  //       await _displayPickImageDialog(context,
-  //           (double? maxWidth, double? maxHeight, int? quality) async {
-  //         try {
-  //           final XFile? pickedFile = await _picker.pickImage(
-  //             source: source,
-  //             maxWidth: maxWidth,
-  //             maxHeight: maxHeight,
-  //             imageQuality: quality,
-  //           );
-  //           setState(() {
-  //             _setImageFileListFromFile(pickedFile);
-  //           });
-  //         } catch (e) {
-  //           setState(() {
-  //             _pickImageError = e;
-  //           });
-  //         }
-  //       });
-  //     }
-  //   }
-
-  // }
+  void _onImageButtonPressed(
+    ImageSource source, {
+    required BuildContext context,
+  }) async {
+    if (context.mounted) {
+      try {
+        // final List<XFile> pickedFileList = await _picker.pickMultiImage(
+        //     imageQuality: 70, maxWidth: 1000, maxHeight: 1000);
+        final XFile? pickedFile = await _picker.pickImage(
+            source: source, imageQuality: 70, maxWidth: 1000, maxHeight: 1000);
+        // setState(() {
+        //   _mediaFileList = pickedFileList;
+        // });
+        if (pickedFile != null) {
+          var result = await _chatService.uploadFile(pickedFile);
+          setState(() {
+            _uploadedFiles = [..._uploadedFiles, MessageMedia(url: result)];
+          });
+        }
+      } catch (e) {
+        print(e);
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -219,7 +176,166 @@ class _MessagesState extends State<Messages> {
                 flex: 1,
                 child: _buildMessageList(value.messages, value.virtualAgent),
               ),
-              _buildComposer()
+              Container(
+                  width: (MediaQuery.of(context).size.width),
+                  height: _uploadedFiles.isNotEmpty ? 100 : 0,
+                  color: Colors.white,
+                  padding: const EdgeInsets.only(top: 6),
+                  child: _uploadedFiles.isNotEmpty
+                      ? ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _uploadedFiles.length,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              width: 100,
+                              height: 100,
+                              color: Colors.white,
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      height: 80,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: const Color(0xffD6DAE1),
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      child: Image.network(
+                                        _uploadedFiles[index].url,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _uploadedFiles = _uploadedFiles
+                                                .where((file) =>
+                                                    file.url !=
+                                                    _uploadedFiles[index].url)
+                                                .toList();
+                                          });
+                                        },
+                                        child: Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(12)),
+                                          child: const Icon(
+                                            Icons.close,
+                                            size: 18,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ))
+                                ],
+                              ),
+                            );
+                          })
+                      : null),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                color: Colors.white,
+                child: Column(children: [
+                  Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        child: SvgPicture.string(
+                          imageIcon,
+                          width: 24,
+                          height: 24,
+                        ),
+                        onTap: () {
+                          showCupertinoModalPopup(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CupertinoActionSheet(
+                                    title: Text('Choose media'),
+                                    actions: <Widget>[
+                                      CupertinoActionSheetAction(
+                                        child: const Text(
+                                          'Choose from gallery',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          _onImageButtonPressed(
+                                              ImageSource.gallery,
+                                              context: context);
+                                        },
+                                      ),
+                                      // CupertinoActionSheetAction(
+                                      //   child: const Text(
+                                      //     'Take picture from camera',
+                                      //     style: TextStyle(fontSize: 16),
+                                      //   ),
+                                      //   onPressed: () {},
+                                      // )
+                                    ],
+                                    cancelButton: CupertinoActionSheetAction(
+                                        isDestructiveAction: true,
+                                        onPressed: () {
+                                          Navigator.pop(context, 'Cancel');
+                                        },
+                                        child: const Text(
+                                          'Cancel',
+                                          style: TextStyle(fontSize: 16),
+                                        )));
+                              });
+                        },
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: TextField(
+                            autofocus: true,
+                            controller: textController,
+                            cursorColor: Color(int.parse(
+                                widget.themeColor.replaceAll("#", "0xff"))),
+                            decoration: const InputDecoration(
+                              hintText: "Type message",
+                              border: InputBorder.none,
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (value) => sendMessage(value),
+                            onEditingComplete: () {},
+                          )),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      GestureDetector(
+                        child: _isSendingMessage
+                            ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Color(int.parse(widget.themeColor
+                                      .replaceAll("#", "0xff"))),
+                                ),
+                              )
+                            : SvgPicture.string(
+                                sendIcon,
+                                width: 24,
+                                height: 24,
+                              ),
+                        onTap: () {
+                          sendMessage(textController.text);
+                        },
+                      )
+                    ],
+                  )
+                ]),
+              )
             ],
           ));
     });
@@ -237,28 +353,6 @@ class _MessagesState extends State<Messages> {
               messages[index], virtualAgent, index, messages);
         });
   }
-
-  /// Check to group messages
-  // bool _checkIsSameSender(int index, Message message, List<Message> messages) {
-  //   if (index == messages.length - 1) {
-  //     return false;
-  //   }
-
-  //   DateTime previousMessageCreatedAt =
-  //       DateTime.parse("${messages[index + 1].createdAt}");
-  //   DateTime createdAt = DateTime.parse("${message.createdAt}");
-  //   var formatter = DateFormat("dd/MM/yy");
-  //   if (formatter.format(previousMessageCreatedAt) !=
-  //       formatter.format(createdAt)) {
-  //     return true;
-  //   }
-
-  //   if (message.senderId != widget.customerId) {
-  //     return message.senderId == messages[index - 1].senderId;
-  //   } else {
-  //     return true;
-  //   }
-  // }
 
   /// Build message item
   Widget _buildMessageItem(Message message, VirtualAgent virtualAgent,
@@ -313,18 +407,43 @@ class _MessagesState extends State<Messages> {
                 isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
               Container(
-                constraints: BoxConstraints(
-                    maxWidth: (MediaQuery.of(context).size.width) - 100),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                    color: isMine ? Color(int.parse(color)) : Colors.white,
-                    borderRadius: BorderRadius.circular(8)),
-                child: Text(
-                  message.content,
-                  style: TextStyle(
-                      color: isMine ? Colors.white : Color(0xff2C2E33),
-                      fontSize: 14),
-                ),
+                child: message.content == null || message.content!.isEmpty
+                    ? null
+                    : Container(
+                        constraints: BoxConstraints(
+                            maxWidth:
+                                (MediaQuery.of(context).size.width) - 100),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                            color:
+                                isMine ? Color(int.parse(color)) : Colors.white,
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Text(
+                          "${message.content}",
+                          style: TextStyle(
+                              color: isMine ? Colors.white : Color(0xff2C2E33),
+                              fontSize: 14),
+                        ),
+                      ),
+              ),
+              Container(
+                decoration: BoxDecoration(),
+                child: message.media != null && message.media!.isNotEmpty
+                    ? Column(
+                        children: message.media!
+                            .map((mediaItem) => Container(
+                                  margin: const EdgeInsets.only(top: 4),
+                                  width: 120,
+                                  height: 120,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.white,
+                                  ),
+                                  child: Image.network(mediaItem.url),
+                                ))
+                            .toList(),
+                      )
+                    : null,
               ),
               const SizedBox(
                 height: 4,
@@ -342,88 +461,7 @@ class _MessagesState extends State<Messages> {
       ),
     );
   }
-
-  /// Build composer
-  Widget _buildComposer() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      color: Colors.white,
-      child: Row(
-        children: <Widget>[
-          GestureDetector(
-            child: SvgPicture.string(
-              imageIcon,
-              width: 24,
-              height: 24,
-            ),
-            onTap: () {
-              showCupertinoModalPopup(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return CupertinoActionSheet(
-                        title: Text('Choose media'),
-                        actions: <Widget>[
-                          CupertinoActionSheetAction(
-                            child: const Text(
-                              'Choose from gallery',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                          CupertinoActionSheetAction(
-                            child: const Text(
-                              'Take picture from camera',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            onPressed: () {},
-                          )
-                        ],
-                        cancelButton: CupertinoActionSheetAction(
-                            isDestructiveAction: true,
-                            onPressed: () {
-                              Navigator.pop(context, 'Cancel');
-                            },
-                            child: const Text(
-                              'Cancel',
-                              style: TextStyle(fontSize: 16),
-                            )));
-                  });
-            },
-          ),
-          const SizedBox(
-            width: 16,
-          ),
-          Expanded(
-              flex: 1,
-              child: TextField(
-                autofocus: true,
-                controller: textController,
-                decoration: const InputDecoration(
-                  hintText: "Type message",
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(fontSize: 14),
-                textInputAction: TextInputAction.send,
-                onSubmitted: (value) => sendMessage(value),
-                onEditingComplete: () {},
-              )),
-          const SizedBox(
-            width: 16,
-          ),
-          GestureDetector(
-            child: SvgPicture.string(
-              sendIcon,
-              width: 24,
-              height: 24,
-            ),
-            onTap: () {
-              sendMessage(textController.text);
-            },
-          )
-        ],
-      ),
-    );
-  }
 }
+
+typedef OnPickImageCallback = void Function(
+    double? maxWidth, double? maxHeight, int? quality);

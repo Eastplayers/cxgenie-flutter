@@ -260,7 +260,6 @@ class _TicketListState extends State<TicketList> {
                     padding: EdgeInsets.symmetric(vertical: 6),
                     child: GestureDetector(
                       onTap: () {
-                        print("ON ITEM TAP");
                         showCupertinoModalPopup(
                             context: context,
                             builder: (content) {

@@ -52,7 +52,6 @@ class TicketProvider extends ChangeNotifier {
   Future<void> getMessages(String ticketId) async {
     isLoadingMessages = true;
     notifyListeners();
-
     final response = await _service.getTicketMessages(ticketId);
     _messages = response;
     isLoadingMessages = false;

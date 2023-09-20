@@ -179,7 +179,13 @@ class _TicketMessagesState extends State<TicketMessages> {
             children: <Widget>[
               Expanded(
                 flex: 1,
-                child: _buildMessageList(value.messages),
+                child: value.isLoadingMessages
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xffD6DAE1),
+                        ),
+                      )
+                    : _buildMessageList(value.messages),
               ),
               Container(
                   width: (MediaQuery.of(context).size.width),
@@ -363,7 +369,7 @@ class _TicketMessagesState extends State<TicketMessages> {
     String color = widget.themeColor.replaceAll("#", "0xff");
     String foregroundColor = widget.themeColor.replaceAll("#", "0x22");
     bool isMine = message.senderId == widget.chatUserId;
-    DateTime createdAt = DateTime.parse("${message.createdAt}");
+    DateTime createdAt = DateTime.parse("${message.createdAt}").toLocal();
     var formatter = DateFormat("dd/MM/yy, hh:mm");
     // bool isSameSender = _checkIsSameSender(index, message, messages);
 
@@ -466,8 +472,9 @@ class _TicketMessagesState extends State<TicketMessages> {
                                                   children: [
                                                     Center(
                                                       child: Container(
-                                                        padding: const EdgeInsets
-                                                            .symmetric(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
                                                                 vertical: 32),
                                                         child: Image.network(
                                                           mediaItem.url,
@@ -488,11 +495,8 @@ class _TicketMessagesState extends State<TicketMessages> {
                                                             height: 32,
                                                             decoration: BoxDecoration(
                                                                 color: const Color
-                                                                    .fromRGBO(
-                                                                        0,
-                                                                        0,
-                                                                        0,
-                                                                        0.7),
+                                                                    .fromRGBO(0,
+                                                                    0, 0, 0.7),
                                                                 borderRadius:
                                                                     BorderRadius
                                                                         .circular(

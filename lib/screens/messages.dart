@@ -174,7 +174,13 @@ class _MessagesState extends State<Messages> {
             children: <Widget>[
               Expanded(
                 flex: 1,
-                child: _buildMessageList(value.messages, value.virtualAgent),
+                child: value.isLoadingMessages
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: Color(0xffD6DAE1),
+                        ),
+                      )
+                    : _buildMessageList(value.messages, value.virtualAgent),
               ),
               Container(
                   width: (MediaQuery.of(context).size.width),
@@ -361,7 +367,7 @@ class _MessagesState extends State<Messages> {
     String color = virtualAgent.themeColor.replaceAll("#", "0xff");
     String foregroundColor = virtualAgent.themeColor.replaceAll("#", "0x22");
     bool isMine = message.senderId == widget.customerId;
-    DateTime createdAt = DateTime.parse("${message.createdAt}");
+    DateTime createdAt = DateTime.parse("${message.createdAt}").toLocal();
     var formatter = DateFormat("dd/MM/yy, hh:mm");
     // bool isSameSender = _checkIsSameSender(index, message, messages);
 

@@ -249,129 +249,135 @@ class _TicketListState extends State<TicketList> {
         ),
         backgroundColor: const Color(0xffF2F3F5),
         body: SafeArea(
-            child: ListView.builder(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                itemCount: value.tickets.length,
-                itemBuilder: (context, index) {
-                  var ticket = value.tickets[index];
+            child: RefreshIndicator(
+          color: Color(int.parse(color)),
+          onRefresh: _pullRefresh,
+          child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              itemCount: value.tickets.length,
+              itemBuilder: (context, index) {
+                var ticket = value.tickets[index];
 
-                  return Container(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: GestureDetector(
-                      onTap: () {
-                        showCupertinoModalPopup(
-                            context: context,
-                            builder: (content) {
-                              return ChangeNotifierProvider(
-                                create: (context) => TicketProvider(),
-                                child: Scaffold(
-                                  body: Container(
-                                    width: (MediaQuery.of(context).size.width),
-                                    height:
-                                        (MediaQuery.of(context).size.height),
-                                    color: Colors.white,
-                                    child: SafeArea(
-                                        child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 16),
-                                          color: Colors.white,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Expanded(
-                                                  child: Text(
-                                                ticket.name,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              )),
-                                              const SizedBox(
-                                                width: 12,
-                                              ),
-                                              GestureDetector(
-                                                child: const Icon(Icons.close),
-                                                onTap: () {
-                                                  Navigator.pop(
-                                                      context, 'Cancel');
-                                                },
-                                              )
-                                            ],
-                                          ),
+                return Container(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: GestureDetector(
+                    onTap: () {
+                      showCupertinoModalPopup(
+                          context: context,
+                          builder: (content) {
+                            return ChangeNotifierProvider(
+                              create: (context) => TicketProvider(),
+                              child: Scaffold(
+                                body: Container(
+                                  width: (MediaQuery.of(context).size.width),
+                                  height: (MediaQuery.of(context).size.height),
+                                  color: Colors.white,
+                                  child: SafeArea(
+                                      child: Column(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 16),
+                                        color: Colors.white,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                                child: Text(
+                                              ticket.name,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w600),
+                                            )),
+                                            const SizedBox(
+                                              width: 12,
+                                            ),
+                                            GestureDetector(
+                                              child: const Icon(Icons.close),
+                                              onTap: () {
+                                                Navigator.pop(
+                                                    context, 'Cancel');
+                                              },
+                                            )
+                                          ],
                                         ),
-                                        Expanded(
-                                            child: TicketMessages(
-                                          ticketId: ticket.id,
-                                          themeColor: widget.themeColor,
-                                          chatUserId: "${widget.chatUserId}",
-                                          workspaceId: widget.workspaceId,
-                                        ))
-                                      ],
-                                    )),
-                                  ),
+                                      ),
+                                      Expanded(
+                                          child: TicketMessages(
+                                        ticketId: ticket.id,
+                                        themeColor: widget.themeColor,
+                                        chatUserId: "${widget.chatUserId}",
+                                        workspaceId: widget.workspaceId,
+                                      ))
+                                    ],
+                                  )),
                                 ),
-                              );
-                            });
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "#${ticket.code}",
-                                    style: const TextStyle(
-                                        color: Color(0xff7D828B), fontSize: 14),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                              ),
+                            );
+                          });
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "#${ticket.code}",
+                                  style: const TextStyle(
+                                      color: Color(0xff7D828B), fontSize: 14),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: colorMap[ticket.status]
+                                          ?['background']),
+                                  child: Text(
+                                    "${toBeginningOfSentenceCase(ticket.status.toLowerCase())}",
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
                                         color: colorMap[ticket.status]
-                                            ?['background']),
-                                    child: Text(
-                                      "${toBeginningOfSentenceCase(ticket.status.toLowerCase())}",
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: colorMap[ticket.status]
-                                              ?['color']),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 8,
-                              ),
-                              Text(
-                                ticket.name,
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                    color: Color(0xff2C2E33),
-                                    fontWeight: FontWeight.w700),
-                              )
-                            ]),
-                      ),
+                                            ?['color']),
+                                  ),
+                                )
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              ticket.name,
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                  color: Color(0xff2C2E33),
+                                  fontWeight: FontWeight.w700),
+                            )
+                          ]),
                     ),
-                  );
-                })),
+                  ),
+                );
+              }),
+        )),
       );
     });
+  }
+
+  Future<void> _pullRefresh() async {
+    Provider.of<TicketProvider>(context, listen: false)
+        .getTickets("${widget.chatUserId}", widget.workspaceId);
+    await Future.delayed(const Duration(seconds: 1));
   }
 }

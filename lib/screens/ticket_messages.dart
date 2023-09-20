@@ -425,7 +425,9 @@ class _TicketMessagesState extends State<TicketMessages> {
                         child: Text(
                           "${message.content}",
                           style: TextStyle(
-                              color: isMine ? Colors.white : const Color(0xff2C2E33),
+                              color: isMine
+                                  ? Colors.white
+                                  : const Color(0xff2C2E33),
                               fontSize: 14),
                         ),
                       ),
@@ -435,15 +437,96 @@ class _TicketMessagesState extends State<TicketMessages> {
                 child: message.media != null && message.media!.isNotEmpty
                     ? Column(
                         children: message.media!
-                            .map((mediaItem) => Container(
-                                  margin: const EdgeInsets.only(top: 4),
-                                  width: 120,
-                                  height: 120,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: Colors.white,
+                            .map((mediaItem) => GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            contentPadding:
+                                                const EdgeInsets.all(0),
+                                            insetPadding:
+                                                const EdgeInsets.all(16),
+                                            elevation: 0,
+                                            shadowColor: const Color.fromRGBO(
+                                                23, 24, 26, 0.5),
+                                            backgroundColor: Colors.transparent,
+                                            content: GestureDetector(
+                                              onTap: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: SizedBox(
+                                                width: (MediaQuery.of(context)
+                                                    .size
+                                                    .width),
+                                                height: (MediaQuery.of(context)
+                                                    .size
+                                                    .height),
+                                                child: Stack(
+                                                  children: [
+                                                    Center(
+                                                      child: Container(
+                                                        padding: const EdgeInsets
+                                                            .symmetric(
+                                                                vertical: 32),
+                                                        child: Image.network(
+                                                          mediaItem.url,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Positioned(
+                                                      top: 0,
+                                                      right: 0,
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        },
+                                                        child: Container(
+                                                            width: 32,
+                                                            height: 32,
+                                                            decoration: BoxDecoration(
+                                                                color: const Color
+                                                                    .fromRGBO(
+                                                                        0,
+                                                                        0,
+                                                                        0,
+                                                                        0.7),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            16)),
+                                                            child: const Icon(
+                                                              Icons.close,
+                                                              color:
+                                                                  Colors.white,
+                                                            )),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                  },
+                                  child: Container(
+                                    clipBehavior: Clip.hardEdge,
+                                    margin: const EdgeInsets.only(top: 4),
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Colors.white,
+                                        border: Border.all(
+                                            color: const Color(0xffD6DAE1),
+                                            width: 1)),
+                                    child: Image.network(
+                                      mediaItem.url,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
-                                  child: Image.network(mediaItem.url),
                                 ))
                             .toList(),
                       )

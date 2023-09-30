@@ -10,7 +10,7 @@ class ChatService {
   final baseUrl = 'https://api.cxgenie.ai';
 
   Future<VirtualAgent> getDetail(String id) async {
-    final url = '$baseUrl/api/v1/chatbots/public/$id';
+    final url = '$baseUrl/api/v1/bots/public/$id';
     final uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -20,8 +20,7 @@ class ChatService {
         id: data['id'],
         name: data['name'],
         avatar: data['avatar'],
-        themeColor:
-            data['theme_color'] ?? '#364DE7',
+        themeColor: data['theme_color'] ?? '#364DE7',
         createdAt: data['created_at'],
         updatedAt: data['updated_at'],
         workspaceId: data['workspace_id'],
@@ -35,14 +34,14 @@ class ChatService {
 
   Future<Customer> startSession(
       String virtualAgentId, String name, String email) async {
-    final url = '$baseUrl/api/v1/chat-sessions/start-chatbot-session';
+    final url = '$baseUrl/api/v1/chat-sessions/start-bot-session';
     final uri = Uri.parse(url);
     final response = await http.post(uri,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8'
         },
         body: jsonEncode(<String, String>{
-          'chatbot_id': virtualAgentId,
+          'bot_id': virtualAgentId,
           'name': name,
           'email': email
         }));
@@ -61,14 +60,14 @@ class ChatService {
 
   Future<Customer> startAuthorizedSession(
       String virtualAgentId, String token) async {
-    final url = '$baseUrl/api/v1/chat-sessions/start-chatbot-session';
+    final url = '$baseUrl/api/v1/chat-sessions/start-bot-session';
     final uri = Uri.parse(url);
     final response = await http.post(uri,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8'
         },
         body: jsonEncode(<String, String>{
-          'chatbot_id': virtualAgentId,
+          'bot_id': virtualAgentId,
           'customer_auth_token': token
         }));
     if (response.statusCode == 200) {
@@ -86,7 +85,7 @@ class ChatService {
 
   Future<void> sendMessage(String virtualAgentId, String senderId,
       String content, List<MessageMedia>? media) async {
-    final url = '$baseUrl/api/v1/chat-logs/chatbot';
+    final url = '$baseUrl/api/v1/messages/bot';
     final uri = Uri.parse(url);
     final response = await http.post(uri,
         headers: <String, String>{
@@ -95,15 +94,15 @@ class ChatService {
         body: jsonEncode(<String, dynamic>{
           'sender_id': senderId,
           'content': content,
-          'chat_user_id': senderId,
-          'chatbot_id': virtualAgentId,
+          'customer_id': senderId,
+          'bot_id': virtualAgentId,
           'media': media
         }));
   }
 
   Future<List<Message>> getMessages(String customerId) async {
     final url =
-        '$baseUrl/api/v1/chat-logs/customer?limit=1000&offset=0&order=desc&chat_user_id=$customerId';
+        '$baseUrl/api/v1/messages/user?limit=1000&offset=0&order=desc&customer_id=$customerId';
     final uri = Uri.parse(url);
     final response = await http.get(
       uri,
@@ -113,9 +112,9 @@ class ChatService {
     );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      final data = json['data']['chat_logs'] as List;
+      final data = json['data']['messages'] as List;
       final messages = data.map((message) {
-        final virtualAgent = message['chatbot'];
+        final virtualAgent = message['bot'];
         final sender = message['sender'];
         final receiver = message['receiver'];
         final media =
@@ -126,7 +125,7 @@ class ChatService {
             content: message['content'],
             receiverId: message['receiver_id'],
             type: message['type'],
-            virtualAgentId: message['chatbot_id'],
+            virtualAgentId: message['bot_id'],
             senderId: message['sender_id'],
             createdAt: message['created_at'],
             media: media == null
@@ -201,7 +200,7 @@ class ChatService {
 
   Future<List<Message>> getTicketMessages(String ticketId) async {
     final url =
-        '$baseUrl/api/v1/chat-logs/ticket?limit=1000&offset=0&order=desc&ticket_id=$ticketId';
+        '$baseUrl/api/v1/messages/ticket?limit=1000&offset=0&order=desc&ticket_id=$ticketId';
     final uri = Uri.parse(url);
     final response = await http.get(
       uri,
@@ -211,9 +210,9 @@ class ChatService {
     );
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      final data = json['data']['chat_logs'] as List;
+      final data = json['data']['messages'] as List;
       final messages = data.map((message) {
-        final virtualAgent = message['chatbot'];
+        final virtualAgent = message['bot'];
         final sender = message['sender'];
         final receiver = message['receiver'];
         final media =
@@ -224,7 +223,7 @@ class ChatService {
             content: message['content'],
             receiverId: message['receiver_id'],
             type: message['type'],
-            virtualAgentId: message['chatbot_id'],
+            virtualAgentId: message['bot_id'],
             senderId: message['sender_id'],
             createdAt: message['created_at'],
             media: media == null
@@ -264,7 +263,7 @@ class ChatService {
 
   Future<void> sendTicketMessage(String workspaceId, String ticketId,
       String senderId, String content, List<MessageMedia>? media) async {
-    final url = '$baseUrl/api/v1/chat-logs/ticket';
+    final url = '$baseUrl/api/v1/messages/ticket';
     final uri = Uri.parse(url);
     final response = await http.post(uri,
         headers: <String, String>{
@@ -273,7 +272,7 @@ class ChatService {
         body: jsonEncode(<String, dynamic>{
           'sender_id': senderId,
           'content': content,
-          'chat_user_id': senderId,
+          'customer_id': senderId,
           'workspace_id': workspaceId,
           'media': media,
           'ticket_id': ticketId
@@ -297,7 +296,7 @@ class ChatService {
   }
 
   Future<Customer> getCustomerDetail(String id) async {
-    final url = '$baseUrl/api/v1/chat-users/$id';
+    final url = '$baseUrl/api/v1/customers/$id';
     final uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {

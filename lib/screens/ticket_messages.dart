@@ -83,7 +83,7 @@ class _TicketMessagesState extends State<TicketMessages> {
       if ((data['sender_id'] == widget.chatUserId ||
               data['receiver_id'] == widget.chatUserId) &&
           data['ticket_id'] == widget.ticketId) {
-        final virtualAgent = data['chatbot'];
+        final virtualAgent = data['bot'];
         final sender = data['sender'];
         final receiver = data['receiver'];
         final media = data['media'] == null ? null : data['media'] as List;
@@ -92,7 +92,7 @@ class _TicketMessagesState extends State<TicketMessages> {
             content: data['content'],
             receiverId: data['receiver_id'],
             type: data['type'],
-            virtualAgentId: data['chatbot_id'],
+            virtualAgentId: data['bot_id'],
             senderId: data['sender_id'],
             createdAt: data['created_at'],
             media: media == null

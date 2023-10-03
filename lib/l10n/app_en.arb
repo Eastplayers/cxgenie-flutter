@@ -1,0 +1,10 @@
+{
+  "language": "English",
+  "@language": {
+    "description": "The current language"
+  },
+  "contactNote": "Please give us your information to support you better",
+  "@contactNode": {
+    "description": "Form title"
+  }
+}

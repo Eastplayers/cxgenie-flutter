@@ -1,3 +1,4 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:cxgenie/screens/chat.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +10,13 @@ class ChatContainer extends StatefulWidget {
       required this.virtualAgentId,
       this.userToken,
       this.showChatWithAgent = false,
+      this.language = LanguageOptions.en,
       this.onChatWithAgentClick})
       : super(key: key);
 
   final String virtualAgentId;
   final String? userToken;
+  final LanguageOptions? language;
   final bool? showChatWithAgent;
   final Function(String userId, String workspaceId, String themeColor)?
       onChatWithAgentClick;

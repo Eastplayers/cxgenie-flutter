@@ -1,4 +1,5 @@
 import 'package:cxgenie/cxgenie.dart';
+import 'package:cxgenie/enums/language.dart';
 import 'package:example/ticket.dart';
 import 'package:flutter/material.dart';
 
@@ -34,9 +35,10 @@ class HomeScreen extends StatelessWidget {
           elevation: 0),
       body: Center(
           child: ChatContainer(
-        virtualAgentId: "800e01df-16d2-4741-b59e-bed800c08a44",
-        userToken: '0ec9f333eabacc46c3b049864272781c614dc87c',
+        virtualAgentId: "21df8f52-2900-4f4c-a0e5-8843be12a171",
+        // userToken: '0ec9f333eabacc46c3b049864272781c614dc87c',
         showChatWithAgent: true,
+        language: LanguageOptions.vi,
         onChatWithAgentClick:
             (String userId, String workspaceId, String themeColor) {
           Navigator.pushNamed(context, TicketList.routeName,

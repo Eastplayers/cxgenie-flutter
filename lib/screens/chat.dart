@@ -1,3 +1,4 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:cxgenie/screens/contact_information.dart';
 import 'package:cxgenie/screens/messages.dart';
@@ -11,12 +12,14 @@ class Chat extends StatefulWidget {
       required this.virtualAgentId,
       this.userToken,
       this.showChatWithAgent = false,
+      this.language = LanguageOptions.en,
       this.onChatWithAgentClick})
       : super(key: key);
 
   final String virtualAgentId;
   final String? userToken;
   final bool? showChatWithAgent;
+  final LanguageOptions? language;
   final Function(String userId, String workspaceId, String themeColor)?
       onChatWithAgentClick;
 

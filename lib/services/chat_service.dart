@@ -296,7 +296,7 @@ class ChatService {
   }
 
   Future<Customer> getCustomerDetail(String id) async {
-    final url = '$baseUrl/api/v1/customers/$id';
+    final url = '$baseUrl/api/v1/customers/$id/public';
     final uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -310,7 +310,7 @@ class ChatService {
       );
     }
 
-    throw "Virtual agent not found";
+    throw "Customer not found";
   }
 
   Future<List<String>> uploadFiles(List<XFile> files) async {

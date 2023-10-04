@@ -1,3 +1,4 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/virtual_agent.dart';
@@ -37,12 +38,14 @@ class Messages extends StatefulWidget {
       {Key? key,
       required this.customerId,
       required this.virtualAgentId,
+      this.language = LanguageOptions.en,
       this.themeColor = "#364DE7"})
       : super(key: key);
 
   final String customerId;
   final String virtualAgentId;
   final String themeColor;
+  final LanguageOptions? language;
 
   @override
   _MessagesState createState() => _MessagesState();
@@ -175,7 +178,7 @@ class _MessagesState extends State<Messages> {
               Expanded(
                 flex: 1,
                 child: value.isLoadingMessages
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(
                           color: Color(0xffD6DAE1),
                         ),
@@ -263,12 +266,17 @@ class _MessagesState extends State<Messages> {
                               context: context,
                               builder: (BuildContext context) {
                                 return CupertinoActionSheet(
-                                    title: const Text('Choose media'),
+                                    title: Text(
+                                        widget.language == LanguageOptions.en
+                                            ? 'Choose media'
+                                            : 'Chọn hình ảnh'),
                                     actions: <Widget>[
                                       CupertinoActionSheetAction(
-                                        child: const Text(
-                                          'Choose from gallery',
-                                          style: TextStyle(fontSize: 16),
+                                        child: Text(
+                                          widget.language == LanguageOptions.en
+                                              ? 'Choose from gallery'
+                                              : 'Chọn ảnh từ thư viện',
+                                          style: const TextStyle(fontSize: 16),
                                         ),
                                         onPressed: () {
                                           Navigator.of(context).pop();
@@ -290,9 +298,11 @@ class _MessagesState extends State<Messages> {
                                         onPressed: () {
                                           Navigator.pop(context, 'Cancel');
                                         },
-                                        child: const Text(
-                                          'Cancel',
-                                          style: TextStyle(fontSize: 16),
+                                        child: Text(
+                                          widget.language == LanguageOptions.en
+                                              ? 'Cancel'
+                                              : 'Huỷ bỏ',
+                                          style: const TextStyle(fontSize: 16),
                                         )));
                               });
                         },
@@ -307,8 +317,10 @@ class _MessagesState extends State<Messages> {
                             controller: textController,
                             cursorColor: Color(int.parse(
                                 widget.themeColor.replaceAll("#", "0xff"))),
-                            decoration: const InputDecoration(
-                              hintText: "Type message",
+                            decoration: InputDecoration(
+                              hintText: widget.language == LanguageOptions.en
+                                  ? "Type message"
+                                  : "Nhập tin nhắn",
                               border: InputBorder.none,
                             ),
                             style: const TextStyle(fontSize: 14),

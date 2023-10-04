@@ -66,6 +66,7 @@ class _ChatState extends State<Chat> {
                     ? ContactInformation(
                         virtualAgentId: widget.virtualAgentId,
                         themeColor: Color(int.parse(color)),
+                        language: widget.language,
                       )
                     : Stack(
                         children: [
@@ -73,6 +74,7 @@ class _ChatState extends State<Chat> {
                             customerId: customer.id,
                             virtualAgentId: widget.virtualAgentId,
                             themeColor: virtualAgent.themeColor,
+                            language: widget.language,
                           ),
                           Positioned(
                               top: 16,

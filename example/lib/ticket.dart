@@ -1,4 +1,5 @@
 import 'package:cxgenie/cxgenie.dart';
+import 'package:cxgenie/enums/language.dart';
 import 'package:flutter/material.dart';
 
 class ScreenArguments {
@@ -39,9 +40,11 @@ class TicketList extends StatelessWidget {
           elevation: 0),
       body: Center(
           child: TicketContainer(
-              chatUserId: args.userId,
-              workspaceId: args.workspaceId,
-              themeColor: args.themeColor)),
+        chatUserId: args.userId,
+        workspaceId: args.workspaceId,
+        themeColor: args.themeColor,
+        language: LanguageOptions.vi,
+      )),
     );
   }
 }

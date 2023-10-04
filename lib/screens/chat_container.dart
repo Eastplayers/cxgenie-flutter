@@ -27,6 +27,12 @@ class ChatContainer extends StatefulWidget {
 
 class _ChatContainerState extends State<ChatContainer> {
   @override
+  void initState() {
+    super.initState();
+    print(widget.language);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => ChatProvider(),
@@ -35,6 +41,7 @@ class _ChatContainerState extends State<ChatContainer> {
         userToken: widget.userToken,
         showChatWithAgent: widget.showChatWithAgent,
         onChatWithAgentClick: widget.onChatWithAgentClick,
+        language: widget.language,
       ),
     );
   }

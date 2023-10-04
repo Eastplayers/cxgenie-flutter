@@ -1,3 +1,4 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/virtual_agent.dart';
@@ -38,6 +39,7 @@ class TicketMessages extends StatefulWidget {
       required this.ticketId,
       required this.workspaceId,
       required this.chatUserId,
+      this.language = LanguageOptions.en,
       this.themeColor = "#364DE7"})
       : super(key: key);
 
@@ -45,6 +47,7 @@ class TicketMessages extends StatefulWidget {
   final String workspaceId;
   final String chatUserId;
   final String themeColor;
+  final LanguageOptions? language;
 
   @override
   _TicketMessagesState createState() => _TicketMessagesState();
@@ -268,12 +271,17 @@ class _TicketMessagesState extends State<TicketMessages> {
                               context: context,
                               builder: (BuildContext context) {
                                 return CupertinoActionSheet(
-                                    title: const Text('Choose media'),
+                                    title: Text(
+                                        widget.language == LanguageOptions.en
+                                            ? 'Choose media'
+                                            : 'Chọn hình ảnh'),
                                     actions: <Widget>[
                                       CupertinoActionSheetAction(
-                                        child: const Text(
-                                          'Choose from gallery',
-                                          style: TextStyle(fontSize: 16),
+                                        child: Text(
+                                          widget.language == LanguageOptions.en
+                                              ? 'Choose from gallery'
+                                              : 'Chọn ảnh từ thư viện',
+                                          style: const TextStyle(fontSize: 16),
                                         ),
                                         onPressed: () {
                                           Navigator.of(context).pop();
@@ -295,9 +303,11 @@ class _TicketMessagesState extends State<TicketMessages> {
                                         onPressed: () {
                                           Navigator.pop(context, 'Cancel');
                                         },
-                                        child: const Text(
-                                          'Cancel',
-                                          style: TextStyle(fontSize: 16),
+                                        child: Text(
+                                          widget.language == LanguageOptions.en
+                                              ? 'Cancel'
+                                              : 'Huỷ bỏ',
+                                          style: const TextStyle(fontSize: 16),
                                         )));
                               });
                         },
@@ -312,8 +322,10 @@ class _TicketMessagesState extends State<TicketMessages> {
                             controller: textController,
                             cursorColor: Color(int.parse(
                                 widget.themeColor.replaceAll("#", "0xff"))),
-                            decoration: const InputDecoration(
-                              hintText: "Type message",
+                            decoration: InputDecoration(
+                              hintText: widget.language == LanguageOptions.en
+                                  ? "Type message"
+                                  : "Nhập tin nhắn",
                               border: InputBorder.none,
                             ),
                             style: const TextStyle(fontSize: 14),

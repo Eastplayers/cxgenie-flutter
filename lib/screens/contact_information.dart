@@ -1,3 +1,4 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -5,14 +6,16 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 
 class ContactInformation extends StatefulWidget {
-  const ContactInformation(
-      {Key? key,
-      required this.virtualAgentId,
-      this.themeColor = const Color(0xff364DE7)})
-      : super(key: key);
+  const ContactInformation({
+    Key? key,
+    required this.virtualAgentId,
+    this.themeColor = const Color(0xff364DE7),
+    this.language = LanguageOptions.en,
+  }) : super(key: key);
 
   final String virtualAgentId;
   final Color themeColor;
+  final LanguageOptions? language;
 
   @override
   _ContactInformationState createState() => _ContactInformationState();
@@ -45,9 +48,11 @@ class _ContactInformationState extends State<ContactInformation> {
                         children: <Widget>[
                           Container(
                             margin: const EdgeInsets.only(bottom: 24),
-                            child: const Text(
-                                "Please give us your information to support you better",
-                                style: TextStyle(
+                            child: Text(
+                                widget.language == LanguageOptions.en
+                                    ? "Please give us your information to support you better"
+                                    : "Vui lòng cung cấp một số thông tin của bạn để chúng tôi hỗ trợ bạn tốt hơn",
+                                style: const TextStyle(
                                     color: Color(0xff2C2E33),
                                     fontWeight: FontWeight.w600,
                                     fontSize: 16)),
@@ -57,9 +62,11 @@ class _ContactInformationState extends State<ContactInformation> {
                             children: [
                               Container(
                                 margin: const EdgeInsets.only(bottom: 4),
-                                child: const Text(
-                                  "Your name *",
-                                  style: TextStyle(
+                                child: Text(
+                                  widget.language == LanguageOptions.en
+                                      ? "Your name *"
+                                      : "Họ và tên *",
+                                  style: const TextStyle(
                                       fontSize: 14, color: Color(0xff7D828B)),
                                 ),
                               ),
@@ -68,7 +75,10 @@ class _ContactInformationState extends State<ContactInformation> {
                                     name: 'name',
                                     cursorColor: widget.themeColor,
                                     decoration: InputDecoration(
-                                        hintText: "Enter your name",
+                                        hintText: widget.language ==
+                                                LanguageOptions.en
+                                            ? "Enter your name"
+                                            : "Nhập họ và tên",
                                         hintStyle: const TextStyle(
                                             color: Color(0xffA3A9B3)),
                                         contentPadding: const EdgeInsets.all(8),
@@ -103,7 +113,10 @@ class _ContactInformationState extends State<ContactInformation> {
                                     style: const TextStyle(fontSize: 14),
                                     validator: FormBuilderValidators.compose([
                                       FormBuilderValidators.required(
-                                          errorText: 'Please enter your name'),
+                                          errorText: widget.language ==
+                                                  LanguageOptions.en
+                                              ? 'Please enter your name'
+                                              : "Xin vui lòng nhập họ và tên"),
                                     ])),
                               )
                             ],
@@ -116,9 +129,11 @@ class _ContactInformationState extends State<ContactInformation> {
                             children: [
                               Container(
                                 margin: const EdgeInsets.only(bottom: 4),
-                                child: const Text(
-                                  "Your email *",
-                                  style: TextStyle(
+                                child: Text(
+                                  widget.language == LanguageOptions.en
+                                      ? "Your email *"
+                                      : "Email *",
+                                  style: const TextStyle(
                                       fontSize: 14, color: Color(0xff7D828B)),
                                 ),
                               ),
@@ -129,7 +144,10 @@ class _ContactInformationState extends State<ContactInformation> {
                                     keyboardType: TextInputType.emailAddress,
                                     cursorColor: widget.themeColor,
                                     decoration: InputDecoration(
-                                      hintText: "Enter your email",
+                                      hintText:
+                                          widget.language == LanguageOptions.en
+                                              ? "Enter your email"
+                                              : "Nhập email",
                                       hintStyle: const TextStyle(
                                           color: Color(0xffA3A9B3)),
                                       contentPadding: const EdgeInsets.all(8),
@@ -161,10 +179,15 @@ class _ContactInformationState extends State<ContactInformation> {
                                     style: const TextStyle(fontSize: 14),
                                     validator: FormBuilderValidators.compose([
                                       FormBuilderValidators.required(
-                                          errorText: 'Please enter your email'),
+                                          errorText: widget.language ==
+                                                  LanguageOptions.en
+                                              ? 'Please enter your email'
+                                              : 'Xin vui lòng nhập email'),
                                       FormBuilderValidators.email(
-                                          errorText:
-                                              'Please enter a valid email'),
+                                          errorText: widget.language ==
+                                                  LanguageOptions.en
+                                              ? 'Please enter a valid email'
+                                              : 'Email không hợp lệ'),
                                     ])),
                               )
                             ],
@@ -211,8 +234,11 @@ class _ContactInformationState extends State<ContactInformation> {
                                           strokeWidth: 3,
                                         ),
                                       )
-                                    : const Text("Submit",
-                                        style: TextStyle(
+                                    : Text(
+                                        widget.language == LanguageOptions.en
+                                            ? "Submit"
+                                            : "Xác nhận",
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 14,
                                         )),

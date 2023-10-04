@@ -1,3 +1,4 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/screens/ticket_list.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ class TicketContainer extends StatefulWidget {
       required this.workspaceId,
       this.chatUserId,
       this.userToken,
+      this.language = LanguageOptions.en,
       this.themeColor = '#364DE7'})
       : super(key: key);
 
@@ -16,6 +18,7 @@ class TicketContainer extends StatefulWidget {
   final String? chatUserId;
   final String? userToken;
   final String? themeColor;
+  final LanguageOptions? language;
 
   @override
   _TicketContainerState createState() => _TicketContainerState();
@@ -31,6 +34,7 @@ class _TicketContainerState extends State<TicketContainer> {
         chatUserId: widget.chatUserId,
         userToken: widget.userToken,
         themeColor: "${widget.themeColor}",
+        language: widget.language,
       ),
     );
   }

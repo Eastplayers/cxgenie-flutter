@@ -1,3 +1,4 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/screens/ticket_messages.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,12 +29,24 @@ Map<String, Map<String, Color>> colorMap = {
   },
 };
 
+Map<String, Map<LanguageOptions, String>> nameMap = {
+  'OPEN': {LanguageOptions.en: 'Open', LanguageOptions.vi: 'Đang mở'},
+  'IN_PROGRESS': {
+    LanguageOptions.en: 'In progress',
+    LanguageOptions.vi: 'Đang xử lý'
+  },
+  'SOLVED': {LanguageOptions.en: 'Solved', LanguageOptions.vi: 'Đã xử lý'},
+  'MERGED': {LanguageOptions.en: 'Merged', LanguageOptions.vi: 'Đã gộp'},
+  'CLOSED': {LanguageOptions.en: 'Closed', LanguageOptions.vi: 'Đã đóng'},
+};
+
 class TicketList extends StatefulWidget {
   const TicketList(
       {Key? key,
       required this.workspaceId,
       this.chatUserId,
       this.userToken,
+      this.language = LanguageOptions.en,
       required this.themeColor})
       : super(key: key);
 
@@ -41,6 +54,7 @@ class TicketList extends StatefulWidget {
   final String? chatUserId;
   final String? userToken;
   final String themeColor;
+  final LanguageOptions? language;
 
   @override
   _TicketListState createState() => _TicketListState();
@@ -89,9 +103,11 @@ class _TicketListState extends State<TicketList> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Text(
-                                  'Create ticket',
-                                  style: TextStyle(
+                                Text(
+                                  widget.language == LanguageOptions.en
+                                      ? 'Create ticket'
+                                      : 'Tạo thẻ hỗ trợ',
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -122,9 +138,11 @@ class _TicketListState extends State<TicketList> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'What issue do you want us to support? *',
-                                  style: TextStyle(
+                                Text(
+                                  widget.language == LanguageOptions.en
+                                      ? 'What issue do you want us to support? *'
+                                      : 'Bạn muốn chúng tôi hỗ trợ vấn đề gì? *',
+                                  style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -137,7 +155,10 @@ class _TicketListState extends State<TicketList> {
                                   maxLines: 4,
                                   cursorColor: Color(int.parse(color)),
                                   decoration: InputDecoration(
-                                    hintText: "Type support detail",
+                                    hintText:
+                                        widget.language == LanguageOptions.en
+                                            ? "Type support detail"
+                                            : "Nhập nội dung cần hỗ trợ",
                                     hintStyle: const TextStyle(
                                         color: Color(0xffA3A9B3)),
                                     border: InputBorder.none,
@@ -190,9 +211,11 @@ class _TicketListState extends State<TicketList> {
                                             textController.clear();
                                             Navigator.pop(context, 'Cancel');
                                           },
-                                    child: const Text(
-                                      'Cancel',
-                                      style: TextStyle(
+                                    child: Text(
+                                      widget.language == LanguageOptions.en
+                                          ? 'Cancel'
+                                          : 'Huỷ bỏ',
+                                      style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
                                           color: Color(0xff202225)),
@@ -225,9 +248,11 @@ class _TicketListState extends State<TicketList> {
                                             textController.clear();
                                             Navigator.pop(context, 'Cancel');
                                           },
-                                    child: const Text(
-                                      'Create',
-                                      style: TextStyle(
+                                    child: Text(
+                                      widget.language == LanguageOptions.en
+                                          ? 'Create'
+                                          : 'Tạo',
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -253,7 +278,7 @@ class _TicketListState extends State<TicketList> {
           color: Color(int.parse(color)),
           onRefresh: _pullRefresh,
           child: value.isTicketListLoading == true
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(
                     color: Color(0xffD6DAE1),
                   ),
@@ -325,6 +350,7 @@ class _TicketListState extends State<TicketList> {
                                             themeColor: widget.themeColor,
                                             chatUserId: "${widget.chatUserId}",
                                             workspaceId: widget.workspaceId,
+                                            language: widget.language,
                                           ))
                                         ],
                                       )),
@@ -361,7 +387,7 @@ class _TicketListState extends State<TicketList> {
                                           color: colorMap[ticket.status]
                                               ?['background']),
                                       child: Text(
-                                        "${toBeginningOfSentenceCase(ticket.status.toLowerCase())}",
+                                        "${nameMap[ticket.status]?[widget.language]}",
                                         style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w600,

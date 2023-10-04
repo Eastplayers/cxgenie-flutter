@@ -10,3 +10,7 @@ Send image, render image
 
 - Open image modal when tapping on it
 - Pull down to refrest ticket list
+
+## 0.0.14
+
+- Add Vietnamese translation

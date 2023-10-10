@@ -6,6 +6,7 @@ import 'package:cxgenie/providers/chat_provider.dart';
 import 'package:cxgenie/services/chat_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -432,18 +433,22 @@ class _MessagesState extends State<Messages> {
                         constraints: BoxConstraints(
                             maxWidth:
                                 (MediaQuery.of(context).size.width) - 100),
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                             color:
                                 isMine ? Color(int.parse(color)) : Colors.white,
                             borderRadius: BorderRadius.circular(8)),
-                        child: Text(
-                          "${message.content}",
-                          style: TextStyle(
-                              color: isMine
-                                  ? Colors.white
-                                  : const Color(0xff2C2E33),
-                              fontSize: 14),
+                        child: Html(
+                          data: "<p>${message.content}<p/>",
+                          style: {
+                            'p': Style(
+                                color: isMine
+                                    ? Colors.white
+                                    : const Color(0xff2C2E33),
+                                fontSize: FontSize.medium,
+                                padding: HtmlPaddings.all(0),
+                                margin: Margins.all(0))
+                          },
                         ),
                       ),
               ),

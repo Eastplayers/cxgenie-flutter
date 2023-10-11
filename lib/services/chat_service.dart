@@ -102,7 +102,7 @@ class ChatService {
 
   Future<List<Message>> getMessages(String customerId) async {
     final url =
-        '$baseUrl/api/v1/messages/user?limit=1000&offset=0&order=desc&customer_id=$customerId';
+        '$baseUrl/api/v1/messages/customer?limit=1000&offset=0&order=desc&customer_id=$customerId';
     final uri = Uri.parse(url);
     final response = await http.get(
       uri,
@@ -160,7 +160,7 @@ class ChatService {
       return messages;
     }
 
-    throw "Cannot start session";
+    throw "Cannot get message";
   }
 
   Future<List<Ticket>> getTickets(String customerId, String workspaceId) async {

@@ -42,7 +42,7 @@ class TicketProvider extends ChangeNotifier {
     isCreatingTicket = true;
     notifyListeners();
 
-    await _service.createTicket(workspaceId, name, email, content);
+    await _service.createTicket(workspaceId, name, email, content, customerId);
     final ticketsResponse = await _service.getTickets(customerId, workspaceId);
     _tickets = ticketsResponse;
     isCreatingTicket = false;

@@ -279,8 +279,8 @@ class ChatService {
         }));
   }
 
-  Future<void> createTicket(
-      String workspaceId, String name, String email, String content) async {
+  Future<void> createTicket(String workspaceId, String name, String email,
+      String content, String customerId) async {
     final url = '$baseUrl/api/v1/tickets';
     final uri = Uri.parse(url);
     final response = await http.post(uri,
@@ -292,6 +292,7 @@ class ChatService {
           'content': content,
           'email': email,
           'workspace_id': workspaceId,
+          'customer_id': customerId
         }));
   }
 

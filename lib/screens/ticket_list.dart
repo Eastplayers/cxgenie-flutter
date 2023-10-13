@@ -3,7 +3,6 @@ import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/screens/ticket_messages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 Map<String, Map<String, Color>> colorMap = {
@@ -351,6 +350,9 @@ class _TicketListState extends State<TicketList> {
                                             chatUserId: "${widget.chatUserId}",
                                             workspaceId: widget.workspaceId,
                                             language: widget.language,
+                                            composerDisabled:
+                                                ticket.status == 'CLOSED' ||
+                                                    ticket.status == 'MERGED',
                                           ))
                                         ],
                                       )),

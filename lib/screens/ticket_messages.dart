@@ -40,6 +40,7 @@ class TicketMessages extends StatefulWidget {
       required this.workspaceId,
       required this.chatUserId,
       this.language = LanguageOptions.en,
+      this.composerDisabled = false,
       this.themeColor = "#364DE7"})
       : super(key: key);
 
@@ -48,6 +49,7 @@ class TicketMessages extends StatefulWidget {
   final String chatUserId;
   final String themeColor;
   final LanguageOptions? language;
+  final bool composerDisabled;
 
   @override
   _TicketMessagesState createState() => _TicketMessagesState();
@@ -60,25 +62,31 @@ class _TicketMessagesState extends State<TicketMessages> {
   final ImagePicker _picker = ImagePicker();
   List<MessageMedia> _uploadedFiles = [];
   bool _isSendingMessage = false;
+  final ScrollController _controller = ScrollController();
 
   /// Send message
   void sendMessage(String content) async {
     if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
       _isSendingMessage = true;
       textController.clear();
-      await _chatService.sendTicketMessage(widget.workspaceId, widget.ticketId,
-          widget.chatUserId, content, _uploadedFiles);
+      var cloneFiles = [..._uploadedFiles];
       setState(() {
         _uploadedFiles = [];
       });
+      _controller.animateTo(_controller.position.minScrollExtent,
+          duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+      await _chatService.sendTicketMessage(widget.workspaceId, widget.ticketId,
+          widget.chatUserId, content, cloneFiles);
       _isSendingMessage = false;
     }
   }
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api.cxgenie.ai',
-        IO.OptionBuilder().setTransports(['websocket']).build());
+    socket = IO.io('https://api.cxgenie.ai', <String, dynamic>{
+      'transports': ['websocket'],
+      'forceNew': true,
+    });
     socket.onConnect((_) {
       print("Socket connected");
     });
@@ -166,9 +174,13 @@ class _TicketMessagesState extends State<TicketMessages> {
       Provider.of<TicketProvider>(context, listen: false)
           .getMessages(widget.ticketId);
     });
-    if (context.mounted) {
-      connectSocket();
-    }
+    connectSocket();
+  }
+
+  @override
+  void dispose() {
+    socket.disconnect();
+    super.dispose();
   }
 
   @override
@@ -183,7 +195,7 @@ class _TicketMessagesState extends State<TicketMessages> {
               Expanded(
                 flex: 1,
                 child: value.isLoadingMessages
-                    ? Center(
+                    ? const Center(
                         child: CircularProgressIndicator(
                           color: Color(0xffD6DAE1),
                         ),
@@ -256,108 +268,128 @@ class _TicketMessagesState extends State<TicketMessages> {
                       : null),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                color: Colors.white,
-                child: Column(children: [
-                  Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        child: SvgPicture.string(
-                          imageIcon,
-                          width: 24,
-                          height: 24,
-                        ),
-                        onTap: () {
-                          showCupertinoModalPopup(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return CupertinoActionSheet(
-                                    title: Text(
-                                        widget.language == LanguageOptions.en
+                color: const Color.fromRGBO(255, 255, 255, 1),
+                child: widget.composerDisabled
+                    ? Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Text(
+                              widget.language == LanguageOptions.en
+                                  ? "You can no longer send message to this ticket"
+                                  : "Bạn không thể gửi tin nhắn cho thẻ hỗ trợ này nữa",
+                              style: TextStyle(color: Color(0xffA3A9B3)),
+                            ),
+                          )
+                        ],
+                      )
+                    : Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            child: SvgPicture.string(
+                              imageIcon,
+                              width: 24,
+                              height: 24,
+                            ),
+                            onTap: () {
+                              showCupertinoModalPopup(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CupertinoActionSheet(
+                                        title: Text(widget.language ==
+                                                LanguageOptions.en
                                             ? 'Choose media'
                                             : 'Chọn hình ảnh'),
-                                    actions: <Widget>[
-                                      CupertinoActionSheetAction(
-                                        child: Text(
-                                          widget.language == LanguageOptions.en
-                                              ? 'Choose from gallery'
-                                              : 'Chọn ảnh từ thư viện',
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          _onImageButtonPressed(
-                                              ImageSource.gallery,
-                                              context: context);
-                                        },
-                                      ),
-                                      // CupertinoActionSheetAction(
-                                      //   child: const Text(
-                                      //     'Take picture from camera',
-                                      //     style: TextStyle(fontSize: 16),
-                                      //   ),
-                                      //   onPressed: () {},
-                                      // )
-                                    ],
-                                    cancelButton: CupertinoActionSheetAction(
-                                        isDestructiveAction: true,
-                                        onPressed: () {
-                                          Navigator.pop(context, 'Cancel');
-                                        },
-                                        child: Text(
-                                          widget.language == LanguageOptions.en
-                                              ? 'Cancel'
-                                              : 'Huỷ bỏ',
-                                          style: const TextStyle(fontSize: 16),
-                                        )));
-                              });
-                        },
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      Expanded(
-                          flex: 1,
-                          child: TextField(
-                            autofocus: true,
-                            controller: textController,
-                            cursorColor: Color(int.parse(
-                                widget.themeColor.replaceAll("#", "0xff"))),
-                            decoration: InputDecoration(
-                              hintText: widget.language == LanguageOptions.en
-                                  ? "Type message"
-                                  : "Nhập tin nhắn",
-                              border: InputBorder.none,
-                            ),
-                            style: const TextStyle(fontSize: 14),
-                            textInputAction: TextInputAction.send,
-                            onSubmitted: (value) => sendMessage(value),
-                            onEditingComplete: () {},
-                          )),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      GestureDetector(
-                        child: _isSendingMessage
-                            ? SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Color(int.parse(widget.themeColor
-                                      .replaceAll("#", "0xff"))),
+                                        actions: <Widget>[
+                                          CupertinoActionSheetAction(
+                                            child: Text(
+                                              widget.language ==
+                                                      LanguageOptions.en
+                                                  ? 'Choose from gallery'
+                                                  : 'Chọn ảnh từ thư viện',
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                              FocusScope.of(context).unfocus();
+                                              _onImageButtonPressed(
+                                                  ImageSource.gallery,
+                                                  context: context);
+                                            },
+                                          ),
+                                          // CupertinoActionSheetAction(
+                                          //   child: const Text(
+                                          //     'Take picture from camera',
+                                          //     style: TextStyle(fontSize: 16),
+                                          //   ),
+                                          //   onPressed: () {},
+                                          // )
+                                        ],
+                                        cancelButton:
+                                            CupertinoActionSheetAction(
+                                                isDestructiveAction: true,
+                                                onPressed: () {
+                                                  Navigator.pop(
+                                                      context, 'Cancel');
+                                                },
+                                                child: Text(
+                                                  widget.language ==
+                                                          LanguageOptions.en
+                                                      ? 'Cancel'
+                                                      : 'Huỷ bỏ',
+                                                  style: const TextStyle(
+                                                      fontSize: 16),
+                                                )));
+                                  });
+                            },
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          Expanded(
+                              flex: 1,
+                              child: TextField(
+                                autofocus: true,
+                                controller: textController,
+                                cursorColor: Color(int.parse(
+                                    widget.themeColor.replaceAll("#", "0xff"))),
+                                decoration: InputDecoration(
+                                  hintText:
+                                      widget.language == LanguageOptions.en
+                                          ? "Type message"
+                                          : "Nhập tin nhắn",
+                                  border: InputBorder.none,
                                 ),
-                              )
-                            : SvgPicture.string(
-                                sendIcon,
-                                width: 24,
-                                height: 24,
-                              ),
-                        onTap: () {
-                          sendMessage(textController.text);
-                        },
-                      )
-                    ],
-                  )
-                ]),
+                                style: const TextStyle(fontSize: 14),
+                                textInputAction: TextInputAction.send,
+                                onSubmitted: (value) => sendMessage(value),
+                                onEditingComplete: () {},
+                              )),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          GestureDetector(
+                            child: _isSendingMessage
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Color(int.parse(widget.themeColor
+                                          .replaceAll("#", "0xff"))),
+                                    ),
+                                  )
+                                : SvgPicture.string(
+                                    sendIcon,
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                            onTap: () {
+                              sendMessage(textController.text);
+                            },
+                          )
+                        ],
+                      ),
               )
             ],
           ));
@@ -367,6 +399,7 @@ class _TicketMessagesState extends State<TicketMessages> {
   /// Build message list
   Widget _buildMessageList(List<Message> messages) {
     return ListView.builder(
+        controller: _controller,
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         itemCount: messages.length,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),

@@ -58,17 +58,22 @@ class _MessagesState extends State<Messages> {
   final ImagePicker _picker = ImagePicker();
   List<MessageMedia> _uploadedFiles = [];
   bool _isSendingMessage = false;
+  final ScrollController _controller = ScrollController();
 
   /// Send message
   void sendMessage(String content) async {
     if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
       _isSendingMessage = true;
       textController.clear();
-      await _chatService.sendMessage(
-          widget.virtualAgentId, widget.customerId, content, _uploadedFiles);
+      var cloneFiles = [..._uploadedFiles];
       setState(() {
         _uploadedFiles = [];
       });
+      _controller.animateTo(_controller.position.minScrollExtent,
+          duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+      await _chatService.sendMessage(
+          widget.virtualAgentId, widget.customerId, content, cloneFiles);
+
       _isSendingMessage = false;
     }
   }
@@ -280,6 +285,7 @@ class _MessagesState extends State<Messages> {
                                         ),
                                         onPressed: () {
                                           Navigator.of(context).pop();
+                                          FocusScope.of(context).unfocus();
                                           _onImageButtonPressed(
                                               ImageSource.gallery,
                                               context: context);
@@ -362,6 +368,7 @@ class _MessagesState extends State<Messages> {
   /// Build message list
   Widget _buildMessageList(List<Message> messages, VirtualAgent virtualAgent) {
     return ListView.builder(
+        controller: _controller,
         physics: const AlwaysScrollableScrollPhysics(),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         itemCount: messages.length,

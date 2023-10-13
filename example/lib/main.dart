@@ -35,8 +35,8 @@ class HomeScreen extends StatelessWidget {
           elevation: 0),
       body: Center(
           child: ChatContainer(
-        virtualAgentId: "-",
-        userToken: '-',
+        virtualAgentId: '2c59bb2c-3073-4a18-96c0-d2f70f63dc85',
+        userToken: '0ec9f333eabacc46c3b049864272781c614dc87c',
         showChatWithAgent: true,
         language: LanguageOptions.vi,
         onChatWithAgentClick:

@@ -53,7 +53,7 @@ class _ChatState extends State<Chat> {
       return SizedBox(
           width: (MediaQuery.of(context).size.width),
           height: (MediaQuery.of(context).size.height),
-          child: SafeArea(
+          child: Container(
             child: value.isLoading
                 ? const SizedBox(
                     child: Center(

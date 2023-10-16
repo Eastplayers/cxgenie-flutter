@@ -30,7 +30,7 @@ class _ContactInformationState extends State<ContactInformation> {
       width: (MediaQuery.of(context).size.width),
       height: (MediaQuery.of(context).size.height),
       color: const Color(0xffF2F3F5),
-      child: SafeArea(
+      child: Container(
         child: FormBuilder(
             key: _formKey,
             child: Padding(

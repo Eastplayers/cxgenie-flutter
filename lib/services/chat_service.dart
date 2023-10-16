@@ -30,7 +30,8 @@ class ChatService {
         );
       }
 
-      throw "Virtual agent not found";
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
     } catch (e) {
       rethrow;
     }
@@ -60,7 +61,8 @@ class ChatService {
         );
       }
 
-      throw "Cannot start session";
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
     } catch (e) {
       rethrow;
     }
@@ -87,9 +89,10 @@ class ChatService {
           name: data['name'],
           avatar: data['avatar'],
         );
+      } else {
+        final json = jsonDecode(response.body);
+        throw Exception(json['error']['message']);
       }
-
-      throw "Cannot start session";
     } catch (e) {
       rethrow;
     }
@@ -113,7 +116,8 @@ class ChatService {
           }));
 
       if (response.statusCode != 200) {
-        throw 'Cannot send message';
+        final json = jsonDecode(response.body);
+        throw Exception(json['error']['message']);
       }
     } catch (e) {
       rethrow;
@@ -181,7 +185,8 @@ class ChatService {
         return messages;
       }
 
-      throw "Cannot get message";
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
     } catch (e) {
       rethrow;
     }
@@ -220,7 +225,8 @@ class ChatService {
         return tickets;
       }
 
-      throw "Cannot get tickets";
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
     } catch (e) {
       rethrow;
     }
@@ -287,7 +293,8 @@ class ChatService {
         return messages;
       }
 
-      throw "Cannot get ticket messages";
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
     } catch (e) {
       rethrow;
     }
@@ -312,7 +319,8 @@ class ChatService {
           }));
 
       if (response.statusCode != 200) {
-        throw 'Cannot send ticket message';
+        final json = jsonDecode(response.body);
+        throw Exception(json['error']['message']);
       }
     } catch (e) {
       rethrow;
@@ -337,7 +345,8 @@ class ChatService {
           }));
 
       if (response.statusCode != 200) {
-        throw 'Create ticket failed';
+        final json = jsonDecode(response.body);
+        throw Exception(json['error']['message']);
       }
     } catch (e) {
       rethrow;
@@ -360,7 +369,8 @@ class ChatService {
         );
       }
 
-      throw "Customer not found";
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
     } catch (e) {
       rethrow;
     }
@@ -384,7 +394,8 @@ class ChatService {
       return json['urls'] as List<String>;
     }
 
-    throw 'Cannot upload files';
+    final json = jsonDecode(response.body);
+    throw Exception(json['error']['message']);
   }
 
   Future<String> uploadFile(XFile xFile) async {
@@ -402,7 +413,8 @@ class ChatService {
         return json['url'];
       }
 
-      throw 'Upload file failed';
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
     } catch (e) {
       rethrow;
     }

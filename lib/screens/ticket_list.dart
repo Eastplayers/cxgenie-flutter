@@ -272,7 +272,7 @@ class _TicketListState extends State<TicketList> {
           child: const Icon(Icons.add),
         ),
         backgroundColor: const Color(0xffF2F3F5),
-        body: SafeArea(
+        body: Container(
             child: RefreshIndicator(
           color: Color(int.parse(color)),
           onRefresh: _pullRefresh,

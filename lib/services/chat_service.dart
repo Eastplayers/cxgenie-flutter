@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class ChatService {
-  final baseUrl = 'https://api.cxgenie.ai/api/v1';
+  final baseUrl = 'https://api-staging.cxgenie.ai/api/v1';
 
   Future<VirtualAgent> getDetail(String id) async {
     try {

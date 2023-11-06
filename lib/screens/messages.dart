@@ -80,7 +80,7 @@ class _MessagesState extends State<Messages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api.cxgenie.ai',
+    socket = IO.io('https://api-staging.cxgenie.ai',
         IO.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
       print("Socket connected");
@@ -398,7 +398,7 @@ class _MessagesState extends State<Messages> {
         children: [
           SizedBox(
             child: !isMine
-                ? virtualAgent.avatar == null
+                ? virtualAgent.avatar == null || virtualAgent.avatar == ""
                     ? Container(
                         width: 32,
                         height: 32,

@@ -1,5 +1,5 @@
 import 'package:cxgenie/enums/language.dart';
-import 'package:cxgenie/providers/chat_provider.dart';
+import 'package:cxgenie/providers/app_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -73,6 +73,7 @@ class _ContactInformationState extends State<ContactInformation> {
                               SizedBox(
                                 child: FormBuilderTextField(
                                     name: 'name',
+                                    initialValue: "Quyen",
                                     cursorColor: widget.themeColor,
                                     decoration: InputDecoration(
                                         hintText: widget.language ==
@@ -141,6 +142,7 @@ class _ContactInformationState extends State<ContactInformation> {
                                 // height: 40,
                                 child: FormBuilderTextField(
                                     name: 'email',
+                                    initialValue: 'quyen@gmail.com',
                                     keyboardType: TextInputType.emailAddress,
                                     cursorColor: widget.themeColor,
                                     decoration: InputDecoration(
@@ -206,7 +208,7 @@ class _ContactInformationState extends State<ContactInformation> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
                                             BorderRadius.circular(8))),
-                                onPressed: Provider.of<ChatProvider>(context,
+                                onPressed: Provider.of<AppProvider>(context,
                                             listen: false)
                                         .isStartingSession
                                     ? null
@@ -215,7 +217,7 @@ class _ContactInformationState extends State<ContactInformation> {
                                         if (_formKey.currentState!.validate()) {
                                           final formData =
                                               _formKey.currentState?.value;
-                                          Provider.of<ChatProvider>(context,
+                                          Provider.of<AppProvider>(context,
                                                   listen: false)
                                               .startNormalSession(
                                                   widget.virtualAgentId,
@@ -223,7 +225,7 @@ class _ContactInformationState extends State<ContactInformation> {
                                                   formData?['email']);
                                         }
                                       },
-                                child: Provider.of<ChatProvider>(context,
+                                child: Provider.of<AppProvider>(context,
                                             listen: false)
                                         .isStartingSession
                                     ? const SizedBox(

@@ -1,16 +1,17 @@
 import 'package:cxgenie/enums/language.dart';
+import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/virtual_agent.dart';
-import 'package:cxgenie/providers/chat_provider.dart';
-import 'package:cxgenie/services/chat_service.dart';
+import 'package:cxgenie/providers/ticket_provider.dart';
+import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:image_picker/image_picker.dart';
 
 const String sendIcon = '''
   <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -33,26 +34,30 @@ const String supportIcon = '''
   </svg>
 ''';
 
-class Messages extends StatefulWidget {
-  const Messages(
+class TicketMessages extends StatefulWidget {
+  const TicketMessages(
       {Key? key,
+      required this.ticketId,
+      required this.workspaceId,
       required this.customerId,
-      required this.virtualAgentId,
       this.language = LanguageOptions.en,
+      this.composerDisabled = false,
       this.themeColor = "#364DE7"})
       : super(key: key);
 
+  final String ticketId;
+  final String workspaceId;
   final String customerId;
-  final String virtualAgentId;
   final String themeColor;
   final LanguageOptions? language;
+  final bool composerDisabled;
 
   @override
-  _MessagesState createState() => _MessagesState();
+  _TicketMessagesState createState() => _TicketMessagesState();
 }
 
-class _MessagesState extends State<Messages> {
-  final ChatService _chatService = ChatService();
+class _TicketMessagesState extends State<TicketMessages> {
+  final AppService _service = AppService();
   late IO.Socket socket;
   final TextEditingController textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
@@ -71,24 +76,26 @@ class _MessagesState extends State<Messages> {
       });
       _controller.animateTo(_controller.position.minScrollExtent,
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
-      await _chatService.sendMessage(
-          widget.virtualAgentId, widget.customerId, content, cloneFiles);
-
+      await _service.sendTicketMessage(widget.workspaceId, widget.ticketId,
+          widget.customerId, content, cloneFiles);
       _isSendingMessage = false;
     }
   }
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api-staging.cxgenie.ai',
-        IO.OptionBuilder().setTransports(['websocket']).build());
+    socket = IO.io('https://api-staging.cxgenie.ai', <String, dynamic>{
+      'transports': ['websocket'],
+      'forceNew': true,
+    });
     socket.onConnect((_) {
       print("Socket connected");
     });
     socket.on('new_message', (data) {
-      if (data['sender_id'] == widget.customerId ||
-          data['receiver_id'] == widget.customerId) {
-        final virtualAgent = data['bot'];
+      if ((data['sender_id'] == widget.customerId ||
+              data['receiver_id'] == widget.customerId) &&
+          data['ticket_id'] == widget.ticketId) {
+        final bot = data['bot'];
         final sender = data['sender'];
         final receiver = data['receiver'];
         final media = data['media'] == null ? null : data['media'] as List;
@@ -97,7 +104,7 @@ class _MessagesState extends State<Messages> {
             content: data['content'],
             receiverId: data['receiver_id'],
             type: data['type'],
-            virtualAgentId: data['bot_id'],
+            botId: data['bot_id'],
             senderId: data['sender_id'],
             createdAt: data['created_at'],
             media: media == null
@@ -105,16 +112,7 @@ class _MessagesState extends State<Messages> {
                 : media.map((mediaItem) {
                     return MessageMedia(url: mediaItem['url']);
                   }).toList(),
-            virtualAgent: virtualAgent == null
-                ? null
-                : VirtualAgent(
-                    id: virtualAgent['id'],
-                    name: virtualAgent['name'],
-                    themeColor: virtualAgent['theme_color'],
-                    createdAt: virtualAgent['created_at'],
-                    updatedAt: virtualAgent['updated_at'],
-                    workspaceId: virtualAgent['workspace_id'],
-                  ),
+            bot: bot == null ? null : Bot.fromJson(bot),
             sender: sender == null
                 ? null
                 : Customer(
@@ -128,7 +126,7 @@ class _MessagesState extends State<Messages> {
                     name: receiver['name'],
                     avatar: receiver['avatar']));
 
-        Provider.of<ChatProvider>(context, listen: false)
+        Provider.of<TicketProvider>(context, listen: false)
             .addMessage(newMessage);
       }
     });
@@ -150,7 +148,7 @@ class _MessagesState extends State<Messages> {
         //   _mediaFileList = pickedFileList;
         // });
         if (pickedFile != null) {
-          var result = await _chatService.uploadFile(pickedFile);
+          var result = await _service.uploadFile(pickedFile);
           setState(() {
             _uploadedFiles = [..._uploadedFiles, MessageMedia(url: result)];
           });
@@ -165,15 +163,21 @@ class _MessagesState extends State<Messages> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<ChatProvider>(context, listen: false)
-          .getMessages(widget.customerId);
+      Provider.of<TicketProvider>(context, listen: false)
+          .getMessages(widget.ticketId);
     });
     connectSocket();
   }
 
   @override
+  void dispose() {
+    socket.disconnect();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Consumer<ChatProvider>(builder: (context, value, child) {
+    return Consumer<TicketProvider>(builder: (context, value, child) {
       return Container(
           width: (MediaQuery.of(context).size.width),
           height: (MediaQuery.of(context).size.height),
@@ -188,7 +192,7 @@ class _MessagesState extends State<Messages> {
                           color: Color(0xffD6DAE1),
                         ),
                       )
-                    : _buildMessageList(value.messages, value.virtualAgent),
+                    : _buildMessageList(value.messages),
               ),
               Container(
                   width: (MediaQuery.of(context).size.width),
@@ -256,109 +260,128 @@ class _MessagesState extends State<Messages> {
                       : null),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                color: Colors.white,
-                child: Column(children: [
-                  Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        child: SvgPicture.string(
-                          imageIcon,
-                          width: 24,
-                          height: 24,
-                        ),
-                        onTap: () {
-                          showCupertinoModalPopup(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return CupertinoActionSheet(
-                                    title: Text(
-                                        widget.language == LanguageOptions.en
+                color: const Color.fromRGBO(255, 255, 255, 1),
+                child: widget.composerDisabled
+                    ? Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            child: Text(
+                              widget.language == LanguageOptions.en
+                                  ? "You can no longer send message to this ticket"
+                                  : "Bạn không thể gửi tin nhắn cho thẻ hỗ trợ này nữa",
+                              style: TextStyle(color: Color(0xffA3A9B3)),
+                            ),
+                          )
+                        ],
+                      )
+                    : Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            child: SvgPicture.string(
+                              imageIcon,
+                              width: 24,
+                              height: 24,
+                            ),
+                            onTap: () {
+                              showCupertinoModalPopup(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CupertinoActionSheet(
+                                        title: Text(widget.language ==
+                                                LanguageOptions.en
                                             ? 'Choose media'
                                             : 'Chọn hình ảnh'),
-                                    actions: <Widget>[
-                                      CupertinoActionSheetAction(
-                                        child: Text(
-                                          widget.language == LanguageOptions.en
-                                              ? 'Choose from gallery'
-                                              : 'Chọn ảnh từ thư viện',
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          FocusScope.of(context).unfocus();
-                                          _onImageButtonPressed(
-                                              ImageSource.gallery,
-                                              context: context);
-                                        },
-                                      ),
-                                      // CupertinoActionSheetAction(
-                                      //   child: const Text(
-                                      //     'Take picture from camera',
-                                      //     style: TextStyle(fontSize: 16),
-                                      //   ),
-                                      //   onPressed: () {},
-                                      // )
-                                    ],
-                                    cancelButton: CupertinoActionSheetAction(
-                                        isDestructiveAction: true,
-                                        onPressed: () {
-                                          Navigator.pop(context, 'Cancel');
-                                        },
-                                        child: Text(
-                                          widget.language == LanguageOptions.en
-                                              ? 'Cancel'
-                                              : 'Huỷ bỏ',
-                                          style: const TextStyle(fontSize: 16),
-                                        )));
-                              });
-                        },
-                      ),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      Expanded(
-                          flex: 1,
-                          child: TextField(
-                            autofocus: true,
-                            controller: textController,
-                            cursorColor: Color(int.parse(
-                                widget.themeColor.replaceAll("#", "0xff"))),
-                            decoration: InputDecoration(
-                              hintText: widget.language == LanguageOptions.en
-                                  ? "Type message"
-                                  : "Nhập tin nhắn",
-                              border: InputBorder.none,
-                            ),
-                            style: const TextStyle(fontSize: 14),
-                            textInputAction: TextInputAction.send,
-                            onSubmitted: (value) => sendMessage(value),
-                            onEditingComplete: () {},
-                          )),
-                      const SizedBox(
-                        width: 16,
-                      ),
-                      GestureDetector(
-                        child: _isSendingMessage
-                            ? SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Color(int.parse(widget.themeColor
-                                      .replaceAll("#", "0xff"))),
+                                        actions: <Widget>[
+                                          CupertinoActionSheetAction(
+                                            child: Text(
+                                              widget.language ==
+                                                      LanguageOptions.en
+                                                  ? 'Choose from gallery'
+                                                  : 'Chọn ảnh từ thư viện',
+                                              style:
+                                                  const TextStyle(fontSize: 16),
+                                            ),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                              FocusScope.of(context).unfocus();
+                                              _onImageButtonPressed(
+                                                  ImageSource.gallery,
+                                                  context: context);
+                                            },
+                                          ),
+                                          // CupertinoActionSheetAction(
+                                          //   child: const Text(
+                                          //     'Take picture from camera',
+                                          //     style: TextStyle(fontSize: 16),
+                                          //   ),
+                                          //   onPressed: () {},
+                                          // )
+                                        ],
+                                        cancelButton:
+                                            CupertinoActionSheetAction(
+                                                isDestructiveAction: true,
+                                                onPressed: () {
+                                                  Navigator.pop(
+                                                      context, 'Cancel');
+                                                },
+                                                child: Text(
+                                                  widget.language ==
+                                                          LanguageOptions.en
+                                                      ? 'Cancel'
+                                                      : 'Huỷ bỏ',
+                                                  style: const TextStyle(
+                                                      fontSize: 16),
+                                                )));
+                                  });
+                            },
+                          ),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          Expanded(
+                              flex: 1,
+                              child: TextField(
+                                autofocus: true,
+                                controller: textController,
+                                cursorColor: Color(int.parse(
+                                    widget.themeColor.replaceAll("#", "0xff"))),
+                                decoration: InputDecoration(
+                                  hintText:
+                                      widget.language == LanguageOptions.en
+                                          ? "Type message"
+                                          : "Nhập tin nhắn",
+                                  border: InputBorder.none,
                                 ),
-                              )
-                            : SvgPicture.string(
-                                sendIcon,
-                                width: 24,
-                                height: 24,
-                              ),
-                        onTap: () {
-                          sendMessage(textController.text);
-                        },
-                      )
-                    ],
-                  )
-                ]),
+                                style: const TextStyle(fontSize: 14),
+                                textInputAction: TextInputAction.send,
+                                onSubmitted: (value) => sendMessage(value),
+                                onEditingComplete: () {},
+                              )),
+                          const SizedBox(
+                            width: 16,
+                          ),
+                          GestureDetector(
+                            child: _isSendingMessage
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Color(int.parse(widget.themeColor
+                                          .replaceAll("#", "0xff"))),
+                                    ),
+                                  )
+                                : SvgPicture.string(
+                                    sendIcon,
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                            onTap: () {
+                              sendMessage(textController.text);
+                            },
+                          )
+                        ],
+                      ),
               )
             ],
           ));
@@ -366,25 +389,22 @@ class _MessagesState extends State<Messages> {
   }
 
   /// Build message list
-  Widget _buildMessageList(List<Message> messages, VirtualAgent virtualAgent) {
+  Widget _buildMessageList(List<Message> messages) {
     return ListView.builder(
         controller: _controller,
-        physics: const AlwaysScrollableScrollPhysics(),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         itemCount: messages.length,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         reverse: true,
         itemBuilder: (context, int index) {
-          return _buildMessageItem(
-              messages[index], virtualAgent, index, messages);
+          return _buildMessageItem(messages[index], index, messages);
         });
   }
 
   /// Build message item
-  Widget _buildMessageItem(Message message, VirtualAgent virtualAgent,
-      int index, List<Message> messages) {
-    String color = virtualAgent.themeColor.replaceAll("#", "0xff");
-    String foregroundColor = virtualAgent.themeColor.replaceAll("#", "0x22");
+  Widget _buildMessageItem(Message message, int index, List<Message> messages) {
+    String color = widget.themeColor.replaceAll("#", "0xff");
+    String foregroundColor = widget.themeColor.replaceAll("#", "0x22");
     bool isMine = message.senderId == widget.customerId;
     DateTime createdAt = DateTime.parse("${message.createdAt}").toLocal();
     var formatter = DateFormat("dd/MM/yy, hh:mm");
@@ -398,7 +418,7 @@ class _MessagesState extends State<Messages> {
         children: [
           SizedBox(
             child: !isMine
-                ? virtualAgent.avatar == null || virtualAgent.avatar == ""
+                ? message.sender?.avatar == null && message.bot?.avatar == null
                     ? Container(
                         width: 32,
                         height: 32,
@@ -407,7 +427,7 @@ class _MessagesState extends State<Messages> {
                             color: Color(int.parse(foregroundColor))),
                         child: Center(
                           child: Text(
-                            virtualAgent.name[0].toUpperCase(),
+                            "${message.sender?.name[0].toUpperCase() ?? message.bot?.name[0].toUpperCase()}",
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Color(int.parse(color))),
@@ -416,7 +436,7 @@ class _MessagesState extends State<Messages> {
                       )
                     : ClipOval(
                         child: Image.network(
-                          "${virtualAgent.avatar}",
+                          "${message.sender?.avatar ?? message.bot?.avatar}",
                           width: 32,
                           height: 32,
                           fit: BoxFit.cover,
@@ -569,6 +589,3 @@ class _MessagesState extends State<Messages> {
     );
   }
 }
-
-typedef OnPickImageCallback = void Function(
-    double? maxWidth, double? maxHeight, int? quality);

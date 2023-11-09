@@ -1,11 +1,11 @@
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
-import 'package:cxgenie/services/chat_service.dart';
+import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/material.dart';
 
 class TicketProvider extends ChangeNotifier {
-  final ChatService _service = ChatService();
+  final AppService _service = AppService();
   bool isTicketListLoading = true;
   String? chatUserId;
   String? currentWorkspaceId;
@@ -21,13 +21,15 @@ class TicketProvider extends ChangeNotifier {
   Customer? _customer;
   Customer? get customer => _customer;
 
-  Future<void> getTickets(String customerId, String workspaceId) async {
+  Future<void> getTickets(
+      String customerId, String workspaceId, List<String> statuses) async {
     chatUserId = customerId;
     currentWorkspaceId = workspaceId;
     isTicketListLoading = true;
     notifyListeners();
 
-    final response = await _service.getTickets(customerId, workspaceId);
+    final response =
+        await _service.getTickets(customerId, workspaceId, statuses);
     _tickets = response;
 
     final customerResponse = await _service.getCustomerDetail(customerId);
@@ -43,7 +45,8 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
 
     await _service.createTicket(workspaceId, name, email, content, customerId);
-    final ticketsResponse = await _service.getTickets(customerId, workspaceId);
+    final ticketsResponse =
+        await _service.getTickets(customerId, workspaceId, ['OPEN']);
     _tickets = ticketsResponse;
     isCreatingTicket = false;
     notifyListeners();

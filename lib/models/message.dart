@@ -1,5 +1,5 @@
+import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
-import 'package:cxgenie/models/virtual_agent.dart';
 
 class MessageMedia {
   String url;
@@ -19,10 +19,10 @@ class Message {
   String id;
   String? content;
   String? receiverId;
-  String? virtualAgentId;
+  String? botId;
   String? senderId;
   String type;
-  VirtualAgent? virtualAgent;
+  Bot? bot;
   Customer? sender;
   Customer? receiver;
   String? createdAt;
@@ -32,10 +32,10 @@ class Message {
       {required this.id,
       this.content,
       this.receiverId,
-      this.virtualAgentId,
+      this.bot,
       this.senderId,
       required this.type,
-      this.virtualAgent,
+      this.botId,
       this.sender,
       this.receiver,
       this.createdAt,

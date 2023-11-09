@@ -1,34 +1,34 @@
+import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
-import 'package:cxgenie/models/virtual_agent.dart';
-import 'package:cxgenie/services/chat_service.dart';
+import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/material.dart';
 
-class ChatProvider extends ChangeNotifier {
-  final ChatService _service = ChatService();
+class AppProvider extends ChangeNotifier {
+  final AppService _service = AppService();
   bool isLoading = true;
   bool isStartingSession = false;
   bool isLoadingMessages = true;
-  VirtualAgent _virtualAgent = VirtualAgent(
+  Bot _bot = Bot(
       id: "",
       name: "",
       themeColor: "#364DE7",
       createdAt: "",
       updatedAt: "",
       workspaceId: "");
-  VirtualAgent get virtualAgent => _virtualAgent;
+  Bot get bot => _bot;
   Customer? _customer;
   Customer? get customer => _customer;
 
   List<Message> _messages = [];
   List<Message> get messages => _messages;
 
-  Future<void> getVirtualAgentDetail(String id, String? token) async {
+  Future<void> getBotDetail(String id, String? token) async {
     isLoading = true;
     notifyListeners();
 
-    final response = await _service.getDetail(id);
-    _virtualAgent = response;
+    final response = await _service.getBotDetail(id);
+    _bot = response;
     if (response.workspaceRequiredLogin != null &&
         response.workspaceRequiredLogin != false &&
         token != null) {

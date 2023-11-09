@@ -1,15 +1,15 @@
 import 'dart:convert';
+import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
-import 'package:cxgenie/models/virtual_agent.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-class ChatService {
+class AppService {
   final baseUrl = 'https://api-staging.cxgenie.ai/api/v1';
 
-  Future<VirtualAgent> getDetail(String id) async {
+  Future<Bot> getBotDetail(String id) async {
     try {
       final url = '$baseUrl/bots/public/$id';
       final uri = Uri.parse(url);
@@ -17,17 +17,7 @@ class ChatService {
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         final data = json['data'];
-        return VirtualAgent(
-          id: data['id'],
-          name: data['name'],
-          avatar: data['avatar'],
-          themeColor: data['theme_color'] ?? '#364DE7',
-          createdAt: data['created_at'],
-          updatedAt: data['updated_at'],
-          workspaceId: data['workspace']['id'],
-          workspaceRequiredLogin: data['workspace_required_login'],
-          isTicketEnable: data['is_ticket_enable'],
-        );
+        return Bot.fromJson(data);
       }
 
       final json = jsonDecode(response.body);
@@ -37,8 +27,7 @@ class ChatService {
     }
   }
 
-  Future<Customer> startSession(
-      String virtualAgentId, String name, String email) async {
+  Future<Customer> startSession(String botId, String name, String email) async {
     try {
       final url = '$baseUrl/bot-sessions/start-bot-session';
       final uri = Uri.parse(url);
@@ -46,19 +35,12 @@ class ChatService {
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8'
           },
-          body: jsonEncode(<String, String>{
-            'bot_id': virtualAgentId,
-            'name': name,
-            'email': email
-          }));
+          body: jsonEncode(
+              <String, String>{'bot_id': botId, 'name': name, 'email': email}));
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         final data = json['data'];
-        return Customer(
-          id: data['id'],
-          name: data['name'],
-          avatar: data['avatar'],
-        );
+        return Customer.fromJson(data);
       }
 
       final json = jsonDecode(response.body);
@@ -68,8 +50,7 @@ class ChatService {
     }
   }
 
-  Future<Customer> startAuthorizedSession(
-      String virtualAgentId, String token) async {
+  Future<Customer> startAuthorizedSession(String botId, String token) async {
     try {
       final url = '$baseUrl/bot-sessions/start-bot-session';
       final uri = Uri.parse(url);
@@ -77,18 +58,12 @@ class ChatService {
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8'
           },
-          body: jsonEncode(<String, String>{
-            'bot_id': virtualAgentId,
-            'customer_auth_token': token
-          }));
+          body: jsonEncode(
+              <String, String>{'bot_id': botId, 'customer_auth_token': token}));
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         final data = json['data'];
-        return Customer(
-          id: data['id'],
-          name: data['name'],
-          avatar: data['avatar'],
-        );
+        return Customer.fromJson(data);
       } else {
         final json = jsonDecode(response.body);
         throw Exception(json['error']['message']);
@@ -139,7 +114,7 @@ class ChatService {
         final json = jsonDecode(response.body);
         final data = json['data']['messages'] as List;
         final messages = data.map((message) {
-          final virtualAgent = message['bot'];
+          final bot = message['bot'];
           final sender = message['sender'];
           final receiver = message['receiver'];
           final media =
@@ -150,7 +125,7 @@ class ChatService {
               content: message['content'],
               receiverId: message['receiver_id'],
               type: message['type'],
-              virtualAgentId: message['bot_id'],
+              botId: message['bot_id'],
               senderId: message['sender_id'],
               createdAt: message['created_at'],
               media: media == null
@@ -158,28 +133,9 @@ class ChatService {
                   : media.map((mediaItem) {
                       return MessageMedia(url: mediaItem['url']);
                     }).toList(),
-              virtualAgent: virtualAgent == null
-                  ? null
-                  : VirtualAgent(
-                      id: virtualAgent['id'],
-                      name: virtualAgent['name'],
-                      themeColor: virtualAgent['theme_color'] ?? '#364DE7',
-                      createdAt: virtualAgent['created_at'],
-                      updatedAt: virtualAgent['updated_at'],
-                      workspaceId: virtualAgent['workspace_id'],
-                    ),
-              sender: sender == null
-                  ? null
-                  : Customer(
-                      id: sender['id'],
-                      name: sender['name'],
-                      avatar: sender['avatar']),
-              receiver: receiver == null
-                  ? null
-                  : Customer(
-                      id: receiver['id'],
-                      name: receiver['name'],
-                      avatar: receiver['avatar']));
+              bot: bot == null ? null : Bot.fromJson(bot),
+              sender: sender == null ? null : Customer.fromJson(sender),
+              receiver: receiver == null ? null : Customer.fromJson(receiver));
         }).toList();
 
         return messages;
@@ -192,11 +148,22 @@ class ChatService {
     }
   }
 
-  Future<List<Ticket>> getTickets(String customerId, String workspaceId) async {
+  Future<List<Ticket>> getTickets(
+      String customerId, String workspaceId, List<String> statuses) async {
     try {
-      final url =
-          '$baseUrl/tickets/public?creator_id=$customerId&workspace_id=$workspaceId';
-      final uri = Uri.parse(url);
+      // final url =
+      //     '$baseUrl/tickets/public?creator_id=$customerId&workspace_id=$workspaceId';
+      // final uri = Uri.parse(url);
+      final uri = Uri(
+          scheme: 'https',
+          host: 'api-staging.cxgenie.ai',
+          path: '/api/v1/tickets/public',
+          queryParameters: {
+            'creator_id': customerId,
+            'workspace_id': workspaceId,
+            'status[]': statuses
+          });
+
       final response = await http.get(
         uri,
         headers: <String, String>{
@@ -207,19 +174,7 @@ class ChatService {
         final json = jsonDecode(response.body);
         final data = json['data']['tickets'] as List;
         final tickets = data.map((ticket) {
-          final assignee = ticket['assignee'];
-
-          return Ticket(
-              id: ticket['id'],
-              name: ticket['name'],
-              status: ticket['status'],
-              code: ticket['code'],
-              createdAt: ticket['created_at'],
-              updatedAt: ticket['updated_at'],
-              creatorId: ticket['creator_id'],
-              assignee: assignee == null
-                  ? null
-                  : Customer(id: assignee['id'], name: assignee['name']));
+          return Ticket.fromJson(ticket);
         }).toList();
 
         return tickets;
@@ -247,7 +202,7 @@ class ChatService {
         final json = jsonDecode(response.body);
         final data = json['data']['messages'] as List;
         final messages = data.map((message) {
-          final virtualAgent = message['bot'];
+          final bot = message['bot'];
           final sender = message['sender'];
           final receiver = message['receiver'];
           final media =
@@ -258,7 +213,7 @@ class ChatService {
               content: message['content'],
               receiverId: message['receiver_id'],
               type: message['type'],
-              virtualAgentId: message['bot_id'],
+              botId: message['bot_id'],
               senderId: message['sender_id'],
               createdAt: message['created_at'],
               media: media == null
@@ -266,28 +221,9 @@ class ChatService {
                   : media.map((mediaItem) {
                       return MessageMedia(url: mediaItem['url']);
                     }).toList(),
-              virtualAgent: virtualAgent == null
-                  ? null
-                  : VirtualAgent(
-                      id: virtualAgent['id'],
-                      name: virtualAgent['name'],
-                      themeColor: virtualAgent['theme_color'] ?? '#364DE7',
-                      createdAt: virtualAgent['created_at'],
-                      updatedAt: virtualAgent['updated_at'],
-                      workspaceId: virtualAgent['workspace_id'],
-                    ),
-              sender: sender == null
-                  ? null
-                  : Customer(
-                      id: sender['id'],
-                      name: sender['name'],
-                      avatar: sender['avatar']),
-              receiver: receiver == null
-                  ? null
-                  : Customer(
-                      id: receiver['id'],
-                      name: receiver['name'],
-                      avatar: receiver['avatar']));
+              bot: bot == null ? null : Bot.fromJson(bot),
+              sender: sender == null ? null : Customer.fromJson(sender),
+              receiver: receiver == null ? null : Customer.fromJson(receiver));
         }).toList();
 
         return messages;
@@ -361,12 +297,7 @@ class ChatService {
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         final data = json['data'];
-        return Customer(
-          id: data['id'],
-          name: data['name'],
-          avatar: data['avatar'],
-          email: data['email'],
-        );
+        return Customer.fromJson(data);
       }
 
       final json = jsonDecode(response.body);

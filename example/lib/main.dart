@@ -1,6 +1,5 @@
 import 'package:cxgenie/cxgenie.dart';
 import 'package:cxgenie/enums/language.dart';
-import 'package:example/ticket.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,7 +17,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: const HomeScreen(),
-      routes: {TicketList.routeName: (context) => const TicketList()},
     );
   }
 }
@@ -33,17 +31,11 @@ class HomeScreen extends StatelessWidget {
           title: const Text('Chat'),
           backgroundColor: const Color(0xFF364de7),
           elevation: 0),
-      body: Center(
-          child: ChatContainer(
-        virtualAgentId: 'e7778fe2-8dd2-4ea9-ad3c-033c5670017a',
+      body: const Center(
+          child: CXGenie(
+        botId: 'e7778fe2-8dd2-4ea9-ad3c-033c5670017a',
         userToken: '0ec9f333eabacc46c3b049864272781c614dc87c',
-        showChatWithAgent: true,
         language: LanguageOptions.vi,
-        onChatWithAgentClick:
-            (String userId, String workspaceId, String themeColor) {
-          Navigator.pushNamed(context, TicketList.routeName,
-              arguments: ScreenArguments(userId, workspaceId, themeColor));
-        },
       )),
     );
   }

@@ -8,7 +8,7 @@ The cxgenie Flutter Package seamlessly integrates https://cxgenie.ai cutting-edg
 
 ```yaml
 dependencies:
-  cxgenie: ^1.0.0
+  cxgenie: ^2.0.0
 ```
 
 2. Import the package and use it in your Flutter App.
@@ -23,12 +23,12 @@ import 'package:cxgenie/cxgenie.dart';
 
 There are a number of properties that you can modify:
 
-- virtualAgentId
+- botId
 - userToken (optional)
-- showChatWithAgent (optional)
-- onChatWithAgentClick (optional)
 
 ```dart
+import 'package:cxgenie/cxgenie.dart';
+
 class Example extends StatelessWidget {
   const Example({Key? key}) : super(key: key);
 
@@ -36,38 +36,9 @@ class Example extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: const ChatContainer(
-          virtualAgentId: 'string',
+        child: const CXGenie(
+          botId: 'string',
           userToken: 'string',
-          showChatWithAgent: true,
-          onChatWithAgentClick: (String userId, String workspaceId, String themeColor) {},
-        ),
-      ),
-    );
-  }
-}
-```
-
-### Tickets
-
-There are a number of properties that you can modify:
-
-- workspaceId
-- chatUserId
-- themeColor (optional)
-
-```dart
-class Example extends StatelessWidget {
-  const Example({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: const Tickets(
-          workspaceId: 'string',
-          chatUserId: 'string',
-          themeColor: 'string',
         ),
       ),
     );

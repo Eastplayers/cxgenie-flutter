@@ -1,16 +1,17 @@
 import 'package:cxgenie/enums/language.dart';
+import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/virtual_agent.dart';
-import 'package:cxgenie/providers/ticket_provider.dart';
-import 'package:cxgenie/services/chat_service.dart';
+import 'package:cxgenie/providers/app_provider.dart';
+import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:image_picker/image_picker.dart';
 
 const String sendIcon = '''
   <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -33,30 +34,26 @@ const String supportIcon = '''
   </svg>
 ''';
 
-class TicketMessages extends StatefulWidget {
-  const TicketMessages(
+class Messages extends StatefulWidget {
+  const Messages(
       {Key? key,
-      required this.ticketId,
-      required this.workspaceId,
-      required this.chatUserId,
+      required this.customerId,
+      required this.virtualAgentId,
       this.language = LanguageOptions.en,
-      this.composerDisabled = false,
       this.themeColor = "#364DE7"})
       : super(key: key);
 
-  final String ticketId;
-  final String workspaceId;
-  final String chatUserId;
+  final String customerId;
+  final String virtualAgentId;
   final String themeColor;
   final LanguageOptions? language;
-  final bool composerDisabled;
 
   @override
-  _TicketMessagesState createState() => _TicketMessagesState();
+  _MessagesState createState() => _MessagesState();
 }
 
-class _TicketMessagesState extends State<TicketMessages> {
-  final ChatService _chatService = ChatService();
+class _MessagesState extends State<Messages> {
+  final AppService _service = AppService();
   late IO.Socket socket;
   final TextEditingController textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
@@ -75,26 +72,24 @@ class _TicketMessagesState extends State<TicketMessages> {
       });
       _controller.animateTo(_controller.position.minScrollExtent,
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
-      await _chatService.sendTicketMessage(widget.workspaceId, widget.ticketId,
-          widget.chatUserId, content, cloneFiles);
+      await _service.sendMessage(
+          widget.virtualAgentId, widget.customerId, content, cloneFiles);
+
       _isSendingMessage = false;
     }
   }
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api-staging.cxgenie.ai', <String, dynamic>{
-      'transports': ['websocket'],
-      'forceNew': true,
-    });
+    socket = IO.io('https://api-staging.cxgenie.ai',
+        IO.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
       print("Socket connected");
     });
     socket.on('new_message', (data) {
-      if ((data['sender_id'] == widget.chatUserId ||
-              data['receiver_id'] == widget.chatUserId) &&
-          data['ticket_id'] == widget.ticketId) {
-        final virtualAgent = data['bot'];
+      if (data['sender_id'] == widget.customerId ||
+          data['receiver_id'] == widget.customerId) {
+        final bot = data['bot'];
         final sender = data['sender'];
         final receiver = data['receiver'];
         final media = data['media'] == null ? null : data['media'] as List;
@@ -103,7 +98,7 @@ class _TicketMessagesState extends State<TicketMessages> {
             content: data['content'],
             receiverId: data['receiver_id'],
             type: data['type'],
-            virtualAgentId: data['bot_id'],
+            botId: data['bot_id'],
             senderId: data['sender_id'],
             createdAt: data['created_at'],
             media: media == null
@@ -111,15 +106,15 @@ class _TicketMessagesState extends State<TicketMessages> {
                 : media.map((mediaItem) {
                     return MessageMedia(url: mediaItem['url']);
                   }).toList(),
-            virtualAgent: virtualAgent == null
+            bot: bot == null
                 ? null
-                : VirtualAgent(
-                    id: virtualAgent['id'],
-                    name: virtualAgent['name'],
-                    themeColor: virtualAgent['theme_color'],
-                    createdAt: virtualAgent['created_at'],
-                    updatedAt: virtualAgent['updated_at'],
-                    workspaceId: virtualAgent['workspace_id'],
+                : Bot(
+                    id: bot['id'],
+                    name: bot['name'],
+                    themeColor: bot['theme_color'],
+                    createdAt: bot['created_at'],
+                    updatedAt: bot['updated_at'],
+                    workspaceId: bot['workspace_id'],
                   ),
             sender: sender == null
                 ? null
@@ -134,8 +129,7 @@ class _TicketMessagesState extends State<TicketMessages> {
                     name: receiver['name'],
                     avatar: receiver['avatar']));
 
-        Provider.of<TicketProvider>(context, listen: false)
-            .addMessage(newMessage);
+        Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
       }
     });
     socket.onDisconnect((_) => print('Socket disconnected'));
@@ -156,7 +150,7 @@ class _TicketMessagesState extends State<TicketMessages> {
         //   _mediaFileList = pickedFileList;
         // });
         if (pickedFile != null) {
-          var result = await _chatService.uploadFile(pickedFile);
+          var result = await _service.uploadFile(pickedFile);
           setState(() {
             _uploadedFiles = [..._uploadedFiles, MessageMedia(url: result)];
           });
@@ -171,21 +165,15 @@ class _TicketMessagesState extends State<TicketMessages> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<TicketProvider>(context, listen: false)
-          .getMessages(widget.ticketId);
+      Provider.of<AppProvider>(context, listen: false)
+          .getMessages(widget.customerId);
     });
     connectSocket();
   }
 
   @override
-  void dispose() {
-    socket.disconnect();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Consumer<TicketProvider>(builder: (context, value, child) {
+    return Consumer<AppProvider>(builder: (context, value, child) {
       return Container(
           width: (MediaQuery.of(context).size.width),
           height: (MediaQuery.of(context).size.height),
@@ -200,7 +188,7 @@ class _TicketMessagesState extends State<TicketMessages> {
                           color: Color(0xffD6DAE1),
                         ),
                       )
-                    : _buildMessageList(value.messages),
+                    : _buildMessageList(value.messages, value.bot),
               ),
               Container(
                   width: (MediaQuery.of(context).size.width),
@@ -268,128 +256,109 @@ class _TicketMessagesState extends State<TicketMessages> {
                       : null),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                color: const Color.fromRGBO(255, 255, 255, 1),
-                child: widget.composerDisabled
-                    ? Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            child: Text(
-                              widget.language == LanguageOptions.en
-                                  ? "You can no longer send message to this ticket"
-                                  : "Bạn không thể gửi tin nhắn cho thẻ hỗ trợ này nữa",
-                              style: TextStyle(color: Color(0xffA3A9B3)),
-                            ),
-                          )
-                        ],
-                      )
-                    : Row(
-                        children: <Widget>[
-                          GestureDetector(
-                            child: SvgPicture.string(
-                              imageIcon,
-                              width: 24,
-                              height: 24,
-                            ),
-                            onTap: () {
-                              showCupertinoModalPopup(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return CupertinoActionSheet(
-                                        title: Text(widget.language ==
-                                                LanguageOptions.en
+                color: Colors.white,
+                child: Column(children: [
+                  Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        child: SvgPicture.string(
+                          imageIcon,
+                          width: 24,
+                          height: 24,
+                        ),
+                        onTap: () {
+                          showCupertinoModalPopup(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CupertinoActionSheet(
+                                    title: Text(
+                                        widget.language == LanguageOptions.en
                                             ? 'Choose media'
                                             : 'Chọn hình ảnh'),
-                                        actions: <Widget>[
-                                          CupertinoActionSheetAction(
-                                            child: Text(
-                                              widget.language ==
-                                                      LanguageOptions.en
-                                                  ? 'Choose from gallery'
-                                                  : 'Chọn ảnh từ thư viện',
-                                              style:
-                                                  const TextStyle(fontSize: 16),
-                                            ),
-                                            onPressed: () {
-                                              Navigator.of(context).pop();
-                                              FocusScope.of(context).unfocus();
-                                              _onImageButtonPressed(
-                                                  ImageSource.gallery,
-                                                  context: context);
-                                            },
-                                          ),
-                                          // CupertinoActionSheetAction(
-                                          //   child: const Text(
-                                          //     'Take picture from camera',
-                                          //     style: TextStyle(fontSize: 16),
-                                          //   ),
-                                          //   onPressed: () {},
-                                          // )
-                                        ],
-                                        cancelButton:
-                                            CupertinoActionSheetAction(
-                                                isDestructiveAction: true,
-                                                onPressed: () {
-                                                  Navigator.pop(
-                                                      context, 'Cancel');
-                                                },
-                                                child: Text(
-                                                  widget.language ==
-                                                          LanguageOptions.en
-                                                      ? 'Cancel'
-                                                      : 'Huỷ bỏ',
-                                                  style: const TextStyle(
-                                                      fontSize: 16),
-                                                )));
-                                  });
-                            },
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          Expanded(
-                              flex: 1,
-                              child: TextField(
-                                autofocus: true,
-                                controller: textController,
-                                cursorColor: Color(int.parse(
-                                    widget.themeColor.replaceAll("#", "0xff"))),
-                                decoration: InputDecoration(
-                                  hintText:
-                                      widget.language == LanguageOptions.en
-                                          ? "Type message"
-                                          : "Nhập tin nhắn",
-                                  border: InputBorder.none,
-                                ),
-                                style: const TextStyle(fontSize: 14),
-                                textInputAction: TextInputAction.send,
-                                onSubmitted: (value) => sendMessage(value),
-                                onEditingComplete: () {},
-                              )),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          GestureDetector(
-                            child: _isSendingMessage
-                                ? SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      color: Color(int.parse(widget.themeColor
-                                          .replaceAll("#", "0xff"))),
-                                    ),
-                                  )
-                                : SvgPicture.string(
-                                    sendIcon,
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                            onTap: () {
-                              sendMessage(textController.text);
-                            },
-                          )
-                        ],
+                                    actions: <Widget>[
+                                      CupertinoActionSheetAction(
+                                        child: Text(
+                                          widget.language == LanguageOptions.en
+                                              ? 'Choose from gallery'
+                                              : 'Chọn ảnh từ thư viện',
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          FocusScope.of(context).unfocus();
+                                          _onImageButtonPressed(
+                                              ImageSource.gallery,
+                                              context: context);
+                                        },
+                                      ),
+                                      // CupertinoActionSheetAction(
+                                      //   child: const Text(
+                                      //     'Take picture from camera',
+                                      //     style: TextStyle(fontSize: 16),
+                                      //   ),
+                                      //   onPressed: () {},
+                                      // )
+                                    ],
+                                    cancelButton: CupertinoActionSheetAction(
+                                        isDestructiveAction: true,
+                                        onPressed: () {
+                                          Navigator.pop(context, 'Cancel');
+                                        },
+                                        child: Text(
+                                          widget.language == LanguageOptions.en
+                                              ? 'Cancel'
+                                              : 'Huỷ bỏ',
+                                          style: const TextStyle(fontSize: 16),
+                                        )));
+                              });
+                        },
                       ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                          flex: 1,
+                          child: TextField(
+                            autofocus: true,
+                            controller: textController,
+                            cursorColor: Color(int.parse(
+                                widget.themeColor.replaceAll("#", "0xff"))),
+                            decoration: InputDecoration(
+                              hintText: widget.language == LanguageOptions.en
+                                  ? "Type message"
+                                  : "Nhập tin nhắn",
+                              border: InputBorder.none,
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (value) => sendMessage(value),
+                            onEditingComplete: () {},
+                          )),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      GestureDetector(
+                        child: _isSendingMessage
+                            ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Color(int.parse(widget.themeColor
+                                      .replaceAll("#", "0xff"))),
+                                ),
+                              )
+                            : SvgPicture.string(
+                                sendIcon,
+                                width: 24,
+                                height: 24,
+                              ),
+                        onTap: () {
+                          sendMessage(textController.text);
+                        },
+                      )
+                    ],
+                  )
+                ]),
               )
             ],
           ));
@@ -397,23 +366,25 @@ class _TicketMessagesState extends State<TicketMessages> {
   }
 
   /// Build message list
-  Widget _buildMessageList(List<Message> messages) {
+  Widget _buildMessageList(List<Message> messages, Bot bot) {
     return ListView.builder(
         controller: _controller,
+        physics: const AlwaysScrollableScrollPhysics(),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         itemCount: messages.length,
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         reverse: true,
         itemBuilder: (context, int index) {
-          return _buildMessageItem(messages[index], index, messages);
+          return _buildMessageItem(messages[index], bot, index, messages);
         });
   }
 
   /// Build message item
-  Widget _buildMessageItem(Message message, int index, List<Message> messages) {
-    String color = widget.themeColor.replaceAll("#", "0xff");
-    String foregroundColor = widget.themeColor.replaceAll("#", "0x22");
-    bool isMine = message.senderId == widget.chatUserId;
+  Widget _buildMessageItem(
+      Message message, Bot bot, int index, List<Message> messages) {
+    String color = bot.themeColor.replaceAll("#", "0xff");
+    String foregroundColor = bot.themeColor.replaceAll("#", "0x22");
+    bool isMine = message.senderId == widget.customerId;
     DateTime createdAt = DateTime.parse("${message.createdAt}").toLocal();
     var formatter = DateFormat("dd/MM/yy, hh:mm");
     // bool isSameSender = _checkIsSameSender(index, message, messages);
@@ -426,8 +397,7 @@ class _TicketMessagesState extends State<TicketMessages> {
         children: [
           SizedBox(
             child: !isMine
-                ? message.sender?.avatar == null &&
-                        message.virtualAgent?.avatar == null
+                ? bot.avatar == null || bot.avatar == ""
                     ? Container(
                         width: 32,
                         height: 32,
@@ -436,7 +406,7 @@ class _TicketMessagesState extends State<TicketMessages> {
                             color: Color(int.parse(foregroundColor))),
                         child: Center(
                           child: Text(
-                            "${message.sender?.name[0].toUpperCase() ?? message.virtualAgent?.name[0].toUpperCase()}",
+                            bot.name[0].toUpperCase(),
                             style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: Color(int.parse(color))),
@@ -445,7 +415,7 @@ class _TicketMessagesState extends State<TicketMessages> {
                       )
                     : ClipOval(
                         child: Image.network(
-                          "${message.sender?.avatar ?? message.virtualAgent?.avatar}",
+                          "${bot.avatar}",
                           width: 32,
                           height: 32,
                           fit: BoxFit.cover,
@@ -598,3 +568,6 @@ class _TicketMessagesState extends State<TicketMessages> {
     );
   }
 }
+
+typedef OnPickImageCallback = void Function(
+    double? maxWidth, double? maxHeight, int? quality);

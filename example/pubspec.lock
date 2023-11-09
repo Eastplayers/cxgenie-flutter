@@ -71,7 +71,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.16"
+    version: "1.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -117,6 +117,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_custom_tab_bar:
+    dependency: transitive
+    description:
+      name: flutter_custom_tab_bar
+      sha256: "5f550d5343ebf778ae73d1de775c8d38e4a2312146cd77845472dd7ed04aafca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.1"
   flutter_form_builder:
     dependency: transitive
     description:
@@ -268,6 +276,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.8.1"
   lints:
     dependency: transitive
     description:

@@ -14,3 +14,10 @@ Send image, render image
 ## 0.0.14
 
 - Add Vietnamese translation
+
+## 2.0.0
+
+- Update chat & ticket flow based on the activated add-on
+- Update ticket list UI
+- Add ticket detail UI
+- Add category & sub-category in create ticket modal

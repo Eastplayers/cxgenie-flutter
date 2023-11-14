@@ -53,7 +53,7 @@ class _AppContainerState extends State<AppContainer> {
                   )
                 : customer == null
                     ? ContactInformation(
-                        virtualAgentId: widget.botId,
+                        botId: widget.botId,
                         themeColor: Color(int.parse(color)),
                         language: widget.language,
                       )
@@ -66,7 +66,7 @@ class _AppContainerState extends State<AppContainer> {
                           )
                         : Messages(
                             customerId: customer.id,
-                            virtualAgentId: widget.botId,
+                            botId: widget.botId,
                             themeColor: bot.themeColor,
                             language: widget.language,
                           ),

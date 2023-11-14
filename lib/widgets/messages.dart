@@ -37,13 +37,15 @@ class Messages extends StatefulWidget {
   const Messages(
       {Key? key,
       required this.customerId,
-      required this.virtualAgentId,
+      required this.botId,
+      this.workspaceId,
       this.language = LanguageOptions.en,
       this.themeColor = "#364DE7"})
       : super(key: key);
 
   final String customerId;
-  final String virtualAgentId;
+  final String botId;
+  final String? workspaceId;
   final String themeColor;
   final LanguageOptions? language;
 
@@ -71,10 +73,26 @@ class _MessagesState extends State<Messages> {
       });
       _controller.animateTo(_controller.position.minScrollExtent,
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
-      await _service.sendMessage(
-          widget.virtualAgentId, widget.customerId, content, cloneFiles);
-
-      _isSendingMessage = false;
+      DateTime now = DateTime.now();
+      String isoDate = now.toIso8601String();
+      var _newMessage = <String, dynamic>{
+        'workspace_id': widget.workspaceId,
+        'bot_id': widget.botId,
+        'content': content,
+        'media': cloneFiles,
+        'customer_id': widget.customerId,
+        'sender_id': widget.customerId,
+        'type': 'TEXT',
+        'created_at': isoDate
+      };
+      socket.emit('message.bot.create', _newMessage);
+      Message newMessage = Message(
+          type: "TEXT",
+          content: content,
+          media: cloneFiles,
+          senderId: widget.customerId,
+          createdAt: isoDate);
+      Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
     }
   }
 
@@ -84,10 +102,12 @@ class _MessagesState extends State<Messages> {
         IO.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
       print("Socket connected");
+      socket.emit('room.conversation.join', widget.customerId);
     });
-    socket.on('new_message', (data) {
+    socket.on('message.created', (data) {
       if (data['sender_id'] == widget.customerId ||
           data['receiver_id'] == widget.customerId) {
+        _isSendingMessage = false;
         final bot = data['bot'];
         final sender = data['sender'];
         final receiver = data['receiver'];

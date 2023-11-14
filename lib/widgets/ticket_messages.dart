@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
@@ -86,22 +88,27 @@ class _TicketMessagesState extends State<TicketMessages> {
       });
       _controller.animateTo(_controller.position.minScrollExtent,
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
-      if (_ticket.botId != "" && _ticket.autoReply == true) {
-        DateTime now = DateTime.now();
-        String isoDate = now.toIso8601String();
-        Message newMessage = Message(
-            id: "",
-            type: "TEXT",
-            content: content,
-            senderId: widget.customerId,
-            media: cloneFiles,
-            createdAt: isoDate);
-        Provider.of<TicketProvider>(context, listen: false)
-            .addMessage(newMessage);
-      }
-      await _service.sendTicketMessage(widget.workspaceId, widget.ticketId,
-          widget.customerId, content, cloneFiles);
-      _isSendingMessage = false;
+      DateTime now = DateTime.now();
+      String isoDate = now.toIso8601String();
+      var _newMessage = <String, dynamic>{
+        'workspace_id': widget.workspaceId,
+        'content': content,
+        'media': cloneFiles,
+        'customer_id': widget.customerId,
+        'sender_id': widget.customerId,
+        'type': 'TEXT',
+        'ticket_id': widget.ticketId,
+        'created_at': isoDate
+      };
+      socket.emit('message.ticket.create', _newMessage);
+      Message newMessage = Message(
+          type: "TEXT",
+          content: content,
+          media: cloneFiles,
+          senderId: widget.customerId,
+          createdAt: isoDate);
+      Provider.of<TicketProvider>(context, listen: false)
+          .addMessage(newMessage);
     }
   }
 
@@ -113,11 +120,16 @@ class _TicketMessagesState extends State<TicketMessages> {
     });
     socket.onConnect((_) {
       print("Socket connected");
+      socket.emit('room.conversation.join', widget.customerId);
     });
-    socket.on('new_message', (data) {
+    socket.on('is_typing', (isTyping) {
+      _isSendingMessage = isTyping;
+    });
+    socket.on('message.created', (data) {
       if ((data['sender_id'] == widget.customerId ||
               data['receiver_id'] == widget.customerId) &&
           data['ticket_id'] == widget.ticketId) {
+        _isSendingMessage = false;
         final bot = data['bot'];
         final sender = data['sender'];
         final receiver = data['receiver'];

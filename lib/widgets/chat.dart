@@ -8,12 +8,12 @@ import 'package:provider/provider.dart';
 class Chat extends StatefulWidget {
   const Chat({
     Key? key,
-    required this.virtualAgentId,
+    required this.botId,
     this.userToken,
     this.language = LanguageOptions.en,
   }) : super(key: key);
 
-  final String virtualAgentId;
+  final String botId;
   final String? userToken;
   final LanguageOptions? language;
 
@@ -27,7 +27,7 @@ class _ChatState extends State<Chat> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<AppProvider>(context, listen: false)
-          .getBotDetail(widget.virtualAgentId, widget.userToken);
+          .getBotDetail(widget.botId, widget.userToken);
     });
   }
 
@@ -52,15 +52,16 @@ class _ChatState extends State<Chat> {
                   )
                 : customer == null
                     ? ContactInformation(
-                        virtualAgentId: widget.virtualAgentId,
+                        botId: widget.botId,
                         themeColor: Color(int.parse(color)),
                         language: widget.language,
                       )
                     : Stack(
                         children: [
                           Messages(
+                            workspaceId: virtualAgent.workspaceId,
                             customerId: customer.id,
-                            virtualAgentId: widget.virtualAgentId,
+                            botId: widget.botId,
                             themeColor: virtualAgent.themeColor,
                             language: widget.language,
                           ),

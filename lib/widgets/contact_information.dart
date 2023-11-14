@@ -8,12 +8,12 @@ import 'package:provider/provider.dart';
 class ContactInformation extends StatefulWidget {
   const ContactInformation({
     Key? key,
-    required this.virtualAgentId,
+    required this.botId,
     this.themeColor = const Color(0xff364DE7),
     this.language = LanguageOptions.en,
   }) : super(key: key);
 
-  final String virtualAgentId;
+  final String botId;
   final Color themeColor;
   final LanguageOptions? language;
 
@@ -220,7 +220,7 @@ class _ContactInformationState extends State<ContactInformation> {
                                           Provider.of<AppProvider>(context,
                                                   listen: false)
                                               .startNormalSession(
-                                                  widget.virtualAgentId,
+                                                  widget.botId,
                                                   formData?['name'],
                                                   formData?['email']);
                                         }

@@ -16,7 +16,7 @@ class MessageMedia {
 }
 
 class Message {
-  String id;
+  String? id;
   String? content;
   String? receiverId;
   String? botId;
@@ -27,9 +27,10 @@ class Message {
   Customer? receiver;
   String? createdAt;
   List<MessageMedia>? media;
+  String? workspaceId;
 
   Message(
-      {required this.id,
+      {this.id,
       this.content,
       this.receiverId,
       this.bot,
@@ -39,5 +40,6 @@ class Message {
       this.sender,
       this.receiver,
       this.createdAt,
-      this.media});
+      this.media,
+      this.workspaceId});
 }

@@ -29,6 +29,12 @@ class Ticket {
   @JsonKey(name: "target_ticket")
   Ticket? targetTicket;
 
+  @JsonKey(name: "auto_reply")
+  bool autoReply;
+
+  @JsonKey(name: "bot_id")
+  String? botId;
+
   Ticket(
       {required this.id,
       required this.name,
@@ -40,6 +46,8 @@ class Ticket {
       required this.updatedAt,
       this.targetTicket,
       required this.creatorId,
+      required this.autoReply,
+      this.botId,
       this.assignee});
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);

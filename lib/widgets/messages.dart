@@ -2,7 +2,6 @@ import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
-import 'package:cxgenie/models/virtual_agent.dart';
 import 'package:cxgenie/providers/app_provider.dart';
 import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/cupertino.dart';

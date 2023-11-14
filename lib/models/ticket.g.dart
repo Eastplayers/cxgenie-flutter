@@ -19,6 +19,8 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
           ? null
           : Ticket.fromJson(json['target_ticket'] as Map<String, dynamic>),
       creatorId: json['creator_id'] as String,
+      autoReply: json['auto_reply'] as bool,
+      botId: json['bot_id'] as String?,
       assignee: json['assignee'] == null
           ? null
           : Customer.fromJson(json['assignee'] as Map<String, dynamic>),
@@ -36,4 +38,6 @@ Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
       'created_at': instance.createdAt,
       'updated_at': instance.updatedAt,
       'target_ticket': instance.targetTicket,
+      'auto_reply': instance.autoReply,
+      'bot_id': instance.botId,
     };

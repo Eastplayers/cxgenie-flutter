@@ -2,7 +2,7 @@ import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
-import 'package:cxgenie/models/virtual_agent.dart';
+import 'package:cxgenie/models/ticket.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/cupertino.dart';
@@ -64,6 +64,16 @@ class _TicketMessagesState extends State<TicketMessages> {
   List<MessageMedia> _uploadedFiles = [];
   bool _isSendingMessage = false;
   final ScrollController _controller = ScrollController();
+  Ticket _ticket = Ticket(
+      id: "",
+      name: "",
+      status: "",
+      code: 0,
+      createdAt: "",
+      updatedAt: "",
+      creatorId: "",
+      autoReply: false,
+      botId: "");
 
   /// Send message
   void sendMessage(String content) async {
@@ -76,6 +86,19 @@ class _TicketMessagesState extends State<TicketMessages> {
       });
       _controller.animateTo(_controller.position.minScrollExtent,
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
+      if (_ticket.botId != "" && _ticket.autoReply == true) {
+        DateTime now = DateTime.now();
+        String isoDate = now.toIso8601String();
+        Message newMessage = Message(
+            id: "",
+            type: "TEXT",
+            content: content,
+            senderId: widget.customerId,
+            media: cloneFiles,
+            createdAt: isoDate);
+        Provider.of<TicketProvider>(context, listen: false)
+            .addMessage(newMessage);
+      }
       await _service.sendTicketMessage(widget.workspaceId, widget.ticketId,
           widget.customerId, content, cloneFiles);
       _isSendingMessage = false;
@@ -159,6 +182,12 @@ class _TicketMessagesState extends State<TicketMessages> {
     }
   }
 
+  void _getTicketDetail() async {
+    var res = await _service.getTicketDetail(widget.ticketId);
+    _ticket = res;
+    print(_ticket);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -167,6 +196,7 @@ class _TicketMessagesState extends State<TicketMessages> {
           .getMessages(widget.ticketId);
     });
     connectSocket();
+    _getTicketDetail();
   }
 
   @override

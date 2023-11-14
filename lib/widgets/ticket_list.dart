@@ -1,4 +1,5 @@
 import 'package:cxgenie/enums/language.dart';
+import 'package:cxgenie/models/ticket_category.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/widgets/ticket_messages.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,6 +43,7 @@ Map<String, Map<LanguageOptions, String>> nameMap = {
 class TicketList extends StatefulWidget {
   const TicketList(
       {Key? key,
+      required this.index,
       required this.workspaceId,
       this.customerId,
       this.userToken,
@@ -51,6 +53,7 @@ class TicketList extends StatefulWidget {
       this.statuses = const ['OPEN', 'IN_PROGRESS']})
       : super(key: key);
 
+  final int index;
   final String workspaceId;
   final String? customerId;
   final String? userToken;
@@ -72,6 +75,8 @@ class _TicketListState extends State<TicketList> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<TicketProvider>(context, listen: false).getTickets(
           "${widget.customerId}", widget.workspaceId, widget.statuses);
+      Provider.of<TicketProvider>(context, listen: false)
+          .getTicketCategories(widget.workspaceId);
     });
   }
 
@@ -79,6 +84,8 @@ class _TicketListState extends State<TicketList> {
   Widget build(BuildContext context) {
     return Consumer<TicketProvider>(builder: (context, value, child) {
       String color = widget.themeColor.replaceAll("#", "0xff");
+      List<TicketCategory> categories = value.ticketCategories;
+      String selectedCategory = '';
 
       return Scaffold(
         floatingActionButton: widget.showCreateButton == false
@@ -98,7 +105,7 @@ class _TicketListState extends State<TicketList> {
                               borderRadius: BorderRadius.circular(8)),
                           content: SizedBox(
                             width: (MediaQuery.of(context).size.width),
-                            height: 270,
+                            height: 384,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
@@ -148,19 +155,97 @@ class _TicketListState extends State<TicketList> {
                                     children: [
                                       Text(
                                         widget.language == LanguageOptions.en
+                                            ? 'Select category *'
+                                            : 'Chọn loại *',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 4,
+                                      ),
+                                      DropdownButtonFormField<String>(
+                                        isExpanded: true,
+                                        items: categories
+                                            .map<DropdownMenuItem<String>>(
+                                                (TicketCategory category) {
+                                          return DropdownMenuItem<String>(
+                                            value: category.id,
+                                            child: Text(category.name),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? value) {
+                                          // This is called when the user selects an item.
+                                          setState(() {
+                                            selectedCategory = value!;
+                                          });
+                                        },
+                                        borderRadius: BorderRadius.circular(8),
+                                        elevation: 1,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xff2C2E33)),
+                                        decoration: InputDecoration(
+                                            hintText: widget.language ==
+                                                    LanguageOptions.en
+                                                ? 'Select category'
+                                                : 'Chọn loại',
+                                            hintStyle: const TextStyle(
+                                              color: Color(0xffA3A9B3),
+                                              fontSize: 14,
+                                            ),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    horizontal: 8, vertical: 0),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: BorderSide(
+                                                  color:
+                                                      Color(int.parse(color)),
+                                                  width: 1.0),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                  color: Color(0xffD6DAE1),
+                                                  width: 1.0),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                  color: Color(0xffED4245),
+                                                  width: 1.0),
+                                            ),
+                                            focusedErrorBorder:
+                                                OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              borderSide: const BorderSide(
+                                                  color: Color(0xffED4245),
+                                                  width: 1.0),
+                                            )),
+                                      ),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      Text(
+                                        widget.language == LanguageOptions.en
                                             ? 'What issue do you want us to support? *'
                                             : 'Bạn muốn chúng tôi hỗ trợ vấn đề gì? *',
                                         style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600),
+                                          fontSize: 14,
+                                        ),
                                       ),
                                       const SizedBox(
-                                        height: 8,
+                                        height: 4,
                                       ),
                                       TextField(
                                         controller: textController,
                                         autofocus: true,
-                                        maxLines: 4,
+                                        maxLines: 6,
                                         cursorColor: Color(int.parse(color)),
                                         decoration: InputDecoration(
                                           hintText: widget.language ==
@@ -218,7 +303,10 @@ class _TicketListState extends State<TicketList> {
                                           style: ElevatedButton.styleFrom(
                                               elevation: 0,
                                               backgroundColor: Colors.white,
-                                              padding: const EdgeInsets.all(8),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 16),
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
@@ -252,7 +340,10 @@ class _TicketListState extends State<TicketList> {
                                               elevation: 0,
                                               backgroundColor:
                                                   Color(int.parse(color)),
-                                              padding: const EdgeInsets.all(8),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 16),
                                               shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(
@@ -262,10 +353,9 @@ class _TicketListState extends State<TicketList> {
                                               : () {
                                                   value.createTicket(
                                                       widget.workspaceId,
-                                                      "${value.customer?.name}",
-                                                      "${value.customer?.email}",
                                                       textController.text,
-                                                      "${widget.customerId}");
+                                                      "${widget.customerId}",
+                                                      selectedCategory);
                                                   textController.clear();
                                                   Navigator.pop(
                                                       context, 'Cancel');
@@ -273,8 +363,8 @@ class _TicketListState extends State<TicketList> {
                                           child: Text(
                                             widget.language ==
                                                     LanguageOptions.en
-                                                ? 'Create'
-                                                : 'Tạo',
+                                                ? 'Create ticket'
+                                                : 'Tạo thẻ hỗ trợ',
                                             style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w600,
@@ -296,8 +386,7 @@ class _TicketListState extends State<TicketList> {
                 child: const Icon(Icons.add),
               ),
         backgroundColor: Colors.white,
-        body: Container(
-            child: RefreshIndicator(
+        body: RefreshIndicator(
           color: Color(int.parse(color)),
           onRefresh: _pullRefresh,
           child: value.isTicketListLoading == true
@@ -307,8 +396,11 @@ class _TicketListState extends State<TicketList> {
                   ),
                 )
               : ListView.separated(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.only(
+                      left: 12,
+                      right: 12,
+                      top: 6,
+                      bottom: widget.index == 1 ? 6 : 120),
                   itemCount: value.tickets.length,
                   separatorBuilder: (context, index) {
                     return const Divider(
@@ -443,7 +535,7 @@ class _TicketListState extends State<TicketList> {
                       ),
                     );
                   }),
-        )),
+        ),
       );
     });
   }

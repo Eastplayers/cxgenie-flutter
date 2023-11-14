@@ -1,12 +1,14 @@
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
+import 'package:cxgenie/models/ticket_category.dart';
 import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/material.dart';
 
 class TicketProvider extends ChangeNotifier {
   final AppService _service = AppService();
   bool isTicketListLoading = true;
+  bool isTicketCategoryLoading = true;
   String? chatUserId;
   String? currentWorkspaceId;
   bool isLoadingMessages = true;
@@ -14,6 +16,9 @@ class TicketProvider extends ChangeNotifier {
 
   List<Ticket> _tickets = [];
   List<Ticket> get tickets => _tickets;
+
+  List<TicketCategory> _ticketCategories = [];
+  List<TicketCategory> get ticketCategories => _ticketCategories;
 
   List<Message> _messages = [];
   List<Message> get messages => _messages;
@@ -39,14 +44,27 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createTicket(String workspaceId, String name, String email,
-      String content, String customerId) async {
+  Future<void> getTicketCategories(
+    String workspaceId,
+  ) async {
+    isTicketCategoryLoading = true;
+    notifyListeners();
+
+    final response = await _service.getTicketCategories(workspaceId);
+    _ticketCategories = response;
+
+    isTicketCategoryLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> createTicket(String workspaceId, String content,
+      String customerId, String? categoryId) async {
     isCreatingTicket = true;
     notifyListeners();
 
-    await _service.createTicket(workspaceId, name, email, content, customerId);
-    final ticketsResponse =
-        await _service.getTickets(customerId, workspaceId, ['OPEN']);
+    await _service.createTicket(workspaceId, content, customerId, categoryId);
+    final ticketsResponse = await _service
+        .getTickets(customerId, workspaceId, ['OPEN', 'IN_PROGRESS']);
     _tickets = ticketsResponse;
     isCreatingTicket = false;
     notifyListeners();

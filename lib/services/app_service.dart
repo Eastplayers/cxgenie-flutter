@@ -3,6 +3,7 @@ import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
+import 'package:cxgenie/models/ticket_category.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
@@ -187,6 +188,65 @@ class AppService {
     }
   }
 
+  Future<Ticket> getTicketDetail(String ticketId) async {
+    try {
+      final url = '$baseUrl/tickets/$ticketId/public';
+      final uri = Uri.parse(url);
+
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print(json);
+        final data = json['data']['ticket'];
+        return Ticket.fromJson(data);
+      }
+
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<TicketCategory>> getTicketCategories(String workspaceId) async {
+    try {
+      final uri = Uri(
+          scheme: 'https',
+          host: 'api-staging.cxgenie.ai',
+          path: '/api/v1/ticket-categories',
+          queryParameters: {
+            'limit': '100',
+            'offset': '0',
+            'workspace_id': workspaceId
+          });
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final data = json['data']['ticketCategories'] as List;
+        final categories = data.map((category) {
+          return TicketCategory.fromJson(category);
+        }).toList();
+
+        return categories;
+      }
+
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<Message>> getTicketMessages(String ticketId) async {
     try {
       final url =
@@ -263,9 +323,16 @@ class AppService {
     }
   }
 
-  Future<void> createTicket(String workspaceId, String name, String email,
-      String content, String customerId) async {
+  Future<void> createTicket(String workspaceId, String content,
+      String customerId, String? categoryId) async {
     try {
+      print("CATEGORY ID");
+      print(jsonEncode(<String, dynamic>{
+        'content': content,
+        'workspace_id': workspaceId,
+        'customer_id': customerId,
+        'ticket_category_id': categoryId
+      }));
       final url = '$baseUrl/tickets';
       final uri = Uri.parse(url);
       final response = await http.post(uri,
@@ -273,11 +340,10 @@ class AppService {
             'Content-Type': 'application/json; charset=UTF-8'
           },
           body: jsonEncode(<String, dynamic>{
-            'name': name,
             'content': content,
-            'email': email,
             'workspace_id': workspaceId,
-            'customer_id': customerId
+            'customer_id': customerId,
+            'ticket_category_id': categoryId
           }));
 
       if (response.statusCode != 200) {

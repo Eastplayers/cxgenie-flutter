@@ -42,15 +42,21 @@ class _TicketTabState extends State<TicketTab> {
           normalColor: const Color(0xff7D828B),
           builder: (context, color) {
             return Container(
-              padding: const EdgeInsets.all(2),
+              padding: const EdgeInsets.all(12),
               alignment: Alignment.center,
               constraints: const BoxConstraints(minWidth: 60),
               child: (Text(
                 index == 0
-                    ? 'Open'
+                    ? widget.language == LanguageOptions.vi
+                        ? 'Đang mở'
+                        : 'Open'
                     : index == 1
-                        ? 'Closed'
-                        : 'All',
+                        ? widget.language == LanguageOptions.vi
+                            ? 'Đã đóng'
+                            : 'Closed'
+                        : widget.language == LanguageOptions.vi
+                            ? 'Tất cả'
+                            : 'All',
                 style: TextStyle(fontSize: 14, color: color),
               )),
             );
@@ -61,18 +67,26 @@ class _TicketTabState extends State<TicketTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
-          CustomTabBar(
-            tabBarController: _tabBarController,
-            height: 50,
-            itemCount: pageCount,
-            builder: getTabbarChild,
-            indicator: LinearIndicator(
-                color:
-                    Color(int.parse(widget.themeColor.replaceAll("#", "0xff"))),
-                bottom: 5),
-            pageController: _controller,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: CustomTabBar(
+              tabBarController: _tabBarController,
+              height: 45,
+              itemCount: pageCount,
+              builder: getTabbarChild,
+              indicator: LinearIndicator(
+                  color: Color(
+                      int.parse(widget.themeColor.replaceAll("#", "0xff"))),
+                  bottom: 0),
+              pageController: _controller,
+            ),
+          ),
+          const Divider(
+            height: 1,
+            color: Color(0xffD6DAE1),
           ),
           Expanded(
               child: PageView.builder(
@@ -80,6 +94,7 @@ class _TicketTabState extends State<TicketTab> {
                   itemCount: pageCount,
                   itemBuilder: (context, index) {
                     return TicketList(
+                      index: index,
                       workspaceId: widget.workspaceId,
                       themeColor: widget.themeColor,
                       customerId: widget.customerId,
@@ -89,7 +104,7 @@ class _TicketTabState extends State<TicketTab> {
                           ? ['OPEN', 'IN_PROGRESS']
                           : index == 1
                               ? ['SOLVED', 'CLOSED']
-                              : [],
+                              : ['OPEN', 'IN_PROGRESS', 'SOLVED', 'CLOSED'],
                     );
                   }))
         ],

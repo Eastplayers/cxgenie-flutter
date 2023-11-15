@@ -24,6 +24,9 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
       assignee: json['assignee'] == null
           ? null
           : Customer.fromJson(json['assignee'] as Map<String, dynamic>),
+      bot: json['bot'] == null
+          ? null
+          : Bot.fromJson(json['bot'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
@@ -32,6 +35,7 @@ Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
       'status': instance.status,
       'code': instance.code,
       'assignee': instance.assignee,
+      'bot': instance.bot,
       'assignee_id': instance.assigneeId,
       'creator_id': instance.creatorId,
       'target_ticket_id': instance.targetTicketId,

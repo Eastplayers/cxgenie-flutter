@@ -65,7 +65,6 @@ class MessagesState extends State<Messages> {
   /// Send message
   void sendMessage(String content) async {
     if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
-      _isSendingMessage = true;
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
       setState(() {
@@ -83,7 +82,6 @@ class MessagesState extends State<Messages> {
         'customer_id': widget.customerId,
         'sender_id': widget.customerId,
         'type': 'TEXT',
-        'created_at': isoDate
       };
       socket.emit('message.bot.create', newMessage0);
       Message newMessage = Message(
@@ -93,6 +91,12 @@ class MessagesState extends State<Messages> {
           senderId: widget.customerId,
           createdAt: isoDate);
       Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
+      if (Provider.of<AppProvider>(context, listen: false)
+              .customer!
+              .autoReply ==
+          true) {
+        _isSendingMessage = true;
+      }
     }
   }
 
@@ -193,6 +197,7 @@ class MessagesState extends State<Messages> {
   @override
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(builder: (context, value, child) {
+      var bot = value.bot;
       return Container(
           width: (MediaQuery.of(context).size.width),
           height: (MediaQuery.of(context).size.height),
@@ -273,6 +278,37 @@ class MessagesState extends State<Messages> {
                             );
                           })
                       : null),
+              Container(
+                child: _isSendingMessage
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 6),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 10,
+                              height: 10,
+                              child: CircularProgressIndicator(
+                                color: Color(0xffA3A9B3),
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              widget.language == LanguageOptions.en
+                                  ? "${bot.name} is typing..."
+                                  : "${bot.name} đang nhập...",
+                              style: const TextStyle(
+                                  color: Color(0xff7D828B), fontSize: 12),
+                              textAlign: TextAlign.left,
+                            )
+                          ],
+                        ),
+                      )
+                    : null,
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 color: Colors.white,
@@ -357,20 +393,11 @@ class MessagesState extends State<Messages> {
                         width: 16,
                       ),
                       GestureDetector(
-                        child: _isSendingMessage
-                            ? SizedBox(
-                                width: 24,
-                                height: 24,
-                                child: CircularProgressIndicator(
-                                  color: Color(int.parse(widget.themeColor
-                                      .replaceAll("#", "0xff"))),
-                                ),
-                              )
-                            : SvgPicture.string(
-                                sendIcon,
-                                width: 24,
-                                height: 24,
-                              ),
+                        child: SvgPicture.string(
+                          sendIcon,
+                          width: 24,
+                          height: 24,
+                        ),
                         onTap: () {
                           sendMessage(textController.text);
                         },

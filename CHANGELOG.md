@@ -25,3 +25,8 @@ Send image, render image
 ## 2.0.1
 
 - Remove default value
+
+## 2.0.2
+
+- Fix wrong message create date
+- Update replying

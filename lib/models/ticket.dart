@@ -1,3 +1,4 @@
+import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -10,6 +11,7 @@ class Ticket {
   String status;
   int code;
   Customer? assignee;
+  Bot? bot;
 
   @JsonKey(name: "assignee_id")
   String? assigneeId;
@@ -48,7 +50,8 @@ class Ticket {
       required this.creatorId,
       required this.autoReply,
       this.botId,
-      this.assignee});
+      this.assignee,
+      this.bot});
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
 

@@ -78,7 +78,6 @@ class TicketMessagesState extends State<TicketMessages> {
   /// Send message
   void sendMessage(String content) async {
     if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
-      _isSendingMessage = true;
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
       setState(() {
@@ -96,7 +95,6 @@ class TicketMessagesState extends State<TicketMessages> {
         'sender_id': widget.customerId,
         'type': 'TEXT',
         'ticket_id': widget.ticketId,
-        'created_at': isoDate
       };
       socket.emit('message.ticket.create', newMessage0);
       Message newMessage = Message(
@@ -107,6 +105,9 @@ class TicketMessagesState extends State<TicketMessages> {
           createdAt: isoDate);
       Provider.of<TicketProvider>(context, listen: false)
           .addMessage(newMessage);
+      if (_ticket.botId != null && _ticket.autoReply == true) {
+        _isSendingMessage = true;
+      }
     }
   }
 
@@ -296,6 +297,37 @@ class TicketMessagesState extends State<TicketMessages> {
                             );
                           })
                       : null),
+              Container(
+                child: _isSendingMessage
+                    ? Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 6),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 10,
+                              height: 10,
+                              child: CircularProgressIndicator(
+                                color: Color(0xffA3A9B3),
+                                strokeWidth: 2,
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              widget.language == LanguageOptions.en
+                                  ? "${_ticket.bot?.name} is typing..."
+                                  : "${_ticket.bot?.name} đang nhập...",
+                              style: const TextStyle(
+                                  color: Color(0xff7D828B), fontSize: 12),
+                              textAlign: TextAlign.left,
+                            )
+                          ],
+                        ),
+                      )
+                    : null,
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 color: const Color.fromRGBO(255, 255, 255, 1),

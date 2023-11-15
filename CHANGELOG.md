@@ -30,3 +30,7 @@ Send image, render image
 
 - Fix wrong message create date
 - Update replying
+
+## 2.0.3
+
+- Update replying in ticket detail

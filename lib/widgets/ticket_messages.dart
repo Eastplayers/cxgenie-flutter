@@ -434,20 +434,11 @@ class TicketMessagesState extends State<TicketMessages> {
                             width: 16,
                           ),
                           GestureDetector(
-                            child: _isSendingMessage
-                                ? SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      color: Color(int.parse(widget.themeColor
-                                          .replaceAll("#", "0xff"))),
-                                    ),
-                                  )
-                                : SvgPicture.string(
-                                    sendIcon,
-                                    width: 24,
-                                    height: 24,
-                                  ),
+                            child: SvgPicture.string(
+                              sendIcon,
+                              width: 24,
+                              height: 24,
+                            ),
                             onTap: () {
                               sendMessage(textController.text);
                             },

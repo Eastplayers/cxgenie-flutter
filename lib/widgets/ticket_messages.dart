@@ -163,7 +163,9 @@ class TicketMessagesState extends State<TicketMessages> {
             .addMessage(newMessage);
       }
     });
-    // socket.onDisconnect((_) => print('Socket disconnected'));
+    socket.onDisconnect((_) {
+      socket.emit('room.conversation.leave', widget.customerId);
+    });
   }
 
   /// onImagePicketPressed

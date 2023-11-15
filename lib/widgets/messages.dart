@@ -105,7 +105,6 @@ class MessagesState extends State<Messages> {
     socket = IO.io('https://api.cxgenie.ai',
         IO.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
-      print("Socket connected");
       socket.emit('room.conversation.join', widget.customerId);
     });
     socket.on('message.created', (data) {
@@ -155,7 +154,9 @@ class MessagesState extends State<Messages> {
         Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
       }
     });
-    socket.onDisconnect((_) => print('Socket disconnected'));
+    socket.onDisconnect((_) {
+      socket.emit('room.conversation.leave', widget.customerId);
+    });
   }
 
   /// onImagePicketPressed

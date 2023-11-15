@@ -38,3 +38,7 @@ Send image, render image
 ## 2.0.4
 
 - Fix bot name not show in replying
+
+## 2.0.5
+
+- Fix empty message content

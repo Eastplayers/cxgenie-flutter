@@ -64,7 +64,7 @@ class MessagesState extends State<Messages> {
 
   /// Send message
   void sendMessage(String content) async {
-    if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
+    if (textController.text.trim().isNotEmpty || _uploadedFiles.isNotEmpty) {
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
       setState(() {
@@ -74,23 +74,24 @@ class MessagesState extends State<Messages> {
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
-      var newMessage0 = <String, dynamic>{
+      var newMessage = <String, dynamic>{
         'workspace_id': widget.workspaceId,
         'bot_id': widget.botId,
-        'content': content,
+        'content': content.trim(),
         'media': cloneFiles,
         'customer_id': widget.customerId,
         'sender_id': widget.customerId,
         'type': 'TEXT',
       };
-      socket.emit('message.bot.create', newMessage0);
-      Message newMessage = Message(
+      socket.emit('message.bot.create', newMessage);
+      Message internalNewMessage = Message(
           type: "TEXT",
-          content: content,
+          content: content.trim(),
           media: cloneFiles,
           senderId: widget.customerId,
           createdAt: isoDate);
-      Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
+      Provider.of<AppProvider>(context, listen: false)
+          .addMessage(internalNewMessage);
       if (Provider.of<AppProvider>(context, listen: false)
               .customer!
               .autoReply ==

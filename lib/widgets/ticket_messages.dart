@@ -77,7 +77,7 @@ class TicketMessagesState extends State<TicketMessages> {
 
   /// Send message
   void sendMessage(String content) async {
-    if (textController.text.isNotEmpty || _uploadedFiles.isNotEmpty) {
+    if (textController.text.trim().isNotEmpty || _uploadedFiles.isNotEmpty) {
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
       setState(() {
@@ -87,24 +87,24 @@ class TicketMessagesState extends State<TicketMessages> {
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
-      var newMessage0 = <String, dynamic>{
+      var newMessage = <String, dynamic>{
         'workspace_id': widget.workspaceId,
-        'content': content,
+        'content': content.trim(),
         'media': cloneFiles,
         'customer_id': widget.customerId,
         'sender_id': widget.customerId,
         'type': 'TEXT',
         'ticket_id': widget.ticketId,
       };
-      socket.emit('message.ticket.create', newMessage0);
-      Message newMessage = Message(
+      socket.emit('message.ticket.create', newMessage);
+      Message internalNewMessage = Message(
           type: "TEXT",
-          content: content,
+          content: content.trim(),
           media: cloneFiles,
           senderId: widget.customerId,
           createdAt: isoDate);
       Provider.of<TicketProvider>(context, listen: false)
-          .addMessage(newMessage);
+          .addMessage(internalNewMessage);
       if (_ticket.botId != null && _ticket.autoReply == true) {
         _isSendingMessage = true;
       }

@@ -355,7 +355,8 @@ class TicketListState extends State<TicketList> {
                                                       widget.workspaceId,
                                                       textController.text,
                                                       "${widget.customerId}",
-                                                      selectedCategory);
+                                                      selectedCategory,
+                                                      widget.statuses);
                                                   textController.clear();
                                                   Navigator.pop(
                                                       context, 'Cancel');

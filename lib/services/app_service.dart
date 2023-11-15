@@ -201,7 +201,6 @@ class AppService {
       );
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        print(json);
         final data = json['data']['ticket'];
         return Ticket.fromJson(data);
       }
@@ -326,13 +325,6 @@ class AppService {
   Future<void> createTicket(String workspaceId, String content,
       String customerId, String? categoryId) async {
     try {
-      print("CATEGORY ID");
-      print(jsonEncode(<String, dynamic>{
-        'content': content,
-        'workspace_id': workspaceId,
-        'customer_id': customerId,
-        'ticket_category_id': categoryId
-      }));
       final url = '$baseUrl/tickets';
       final uri = Uri.parse(url);
       final response = await http.post(uri,

@@ -34,3 +34,7 @@ Send image, render image
 ## 2.0.3
 
 - Update replying in ticket detail
+
+## 2.0.4
+
+- Fix bot name not show in replying

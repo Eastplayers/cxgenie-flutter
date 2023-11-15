@@ -35,7 +35,7 @@ class ChatState extends State<Chat> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(builder: (context, value, child) {
       final virtualAgent = value.bot;
-      String color = virtualAgent.themeColor.replaceAll("#", "0xff");
+      String color = virtualAgent.themeColor!.replaceAll("#", "0xff");
       final customer = value.customer;
 
       return SizedBox(
@@ -62,7 +62,7 @@ class ChatState extends State<Chat> {
                             workspaceId: virtualAgent.workspaceId,
                             customerId: customer.id,
                             botId: widget.botId,
-                            themeColor: virtualAgent.themeColor,
+                            themeColor: "${virtualAgent.themeColor}",
                             language: widget.language,
                           ),
                         ],

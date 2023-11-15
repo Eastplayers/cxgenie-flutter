@@ -36,7 +36,7 @@ class AppContainerState extends State<AppContainer> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(builder: (context, value, child) {
       final bot = value.bot;
-      String color = bot.themeColor.replaceAll("#", "0xff");
+      String color = bot.themeColor!.replaceAll("#", "0xff");
       final customer = value.customer;
 
       return SizedBox(
@@ -59,7 +59,7 @@ class AppContainerState extends State<AppContainer> {
                       )
                     : bot.isTicketEnable == true
                         ? TicketContainer(
-                            workspaceId: bot.workspaceId,
+                            workspaceId: "${bot.workspaceId}",
                             customerId: customer.id,
                             themeColor: bot.themeColor,
                             language: widget.language,
@@ -67,7 +67,7 @@ class AppContainerState extends State<AppContainer> {
                         : Messages(
                             customerId: customer.id,
                             botId: widget.botId,
-                            themeColor: bot.themeColor,
+                            themeColor: "${bot.themeColor}",
                             language: widget.language,
                           ),
           ));

@@ -9,16 +9,16 @@ class Bot {
   final String name;
 
   @JsonKey(name: "theme_color")
-  final String themeColor;
+  final String? themeColor;
 
   @JsonKey(name: "reply_language")
   final String? replyLanguage;
 
   @JsonKey(name: "created_at")
-  final String createdAt;
+  final String? createdAt;
 
   @JsonKey(name: "updated_at")
-  final String updatedAt;
+  final String? updatedAt;
 
   @JsonKey(name: "deleted_at")
   final String? deletedAt;
@@ -30,20 +30,20 @@ class Bot {
   final bool? isTicketEnable;
 
   @JsonKey(name: "workspace_id")
-  final String workspaceId;
+  final String? workspaceId;
 
   Bot(
       {required this.id,
       this.avatar,
       required this.name,
-      required this.themeColor,
+      this.themeColor,
       this.replyLanguage,
-      required this.createdAt,
-      required this.updatedAt,
+      this.createdAt,
+      this.updatedAt,
       this.deletedAt,
       this.workspaceRequiredLogin,
       this.isTicketEnable,
-      required this.workspaceId});
+      this.workspaceId});
 
   factory Bot.fromJson(Map<String, dynamic> json) => _$BotFromJson(json);
 

@@ -429,8 +429,8 @@ class MessagesState extends State<Messages> {
   /// Build message item
   Widget _buildMessageItem(
       Message message, Bot bot, int index, List<Message> messages) {
-    String color = bot.themeColor.replaceAll("#", "0xff");
-    String foregroundColor = bot.themeColor.replaceAll("#", "0x22");
+    String color = bot.themeColor!.replaceAll("#", "0xff");
+    String foregroundColor = bot.themeColor!.replaceAll("#", "0x22");
     bool isMine = message.senderId == widget.customerId;
     DateTime createdAt = DateTime.parse("${message.createdAt}").toLocal();
     var formatter = DateFormat("dd/MM/yy, hh:mm");

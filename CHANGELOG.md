@@ -21,3 +21,7 @@ Send image, render image
 - Update ticket list UI
 - Add ticket detail UI
 - Add category & sub-category in create ticket modal
+
+## 2.0.1
+
+- Remove default value

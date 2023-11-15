@@ -21,10 +21,10 @@ class TicketContainer extends StatefulWidget {
   final LanguageOptions? language;
 
   @override
-  _TicketContainerState createState() => _TicketContainerState();
+  TicketContainerState createState() => TicketContainerState();
 }
 
-class _TicketContainerState extends State<TicketContainer> {
+class TicketContainerState extends State<TicketContainer> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

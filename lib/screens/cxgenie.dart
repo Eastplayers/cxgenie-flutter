@@ -17,10 +17,10 @@ class CXGenie extends StatefulWidget {
   final LanguageOptions? language;
 
   @override
-  _CXGenie createState() => _CXGenie();
+  CXGenieState createState() => CXGenieState();
 }
 
-class _CXGenie extends State<CXGenie> {
+class CXGenieState extends State<CXGenie> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

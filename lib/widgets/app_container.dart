@@ -19,10 +19,10 @@ class AppContainer extends StatefulWidget {
   final LanguageOptions? language;
 
   @override
-  _AppContainerState createState() => _AppContainerState();
+  AppContainerState createState() => AppContainerState();
 }
 
-class _AppContainerState extends State<AppContainer> {
+class AppContainerState extends State<AppContainer> {
   @override
   void initState() {
     super.initState();

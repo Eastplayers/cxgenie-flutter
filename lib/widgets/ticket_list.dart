@@ -63,10 +63,10 @@ class TicketList extends StatefulWidget {
   final List<String> statuses;
 
   @override
-  _TicketListState createState() => _TicketListState();
+  TicketListState createState() => TicketListState();
 }
 
-class _TicketListState extends State<TicketList> {
+class TicketListState extends State<TicketList> {
   final TextEditingController textController = TextEditingController();
 
   @override

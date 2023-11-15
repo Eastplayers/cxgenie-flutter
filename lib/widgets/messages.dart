@@ -50,10 +50,10 @@ class Messages extends StatefulWidget {
   final LanguageOptions? language;
 
   @override
-  _MessagesState createState() => _MessagesState();
+  MessagesState createState() => MessagesState();
 }
 
-class _MessagesState extends State<Messages> {
+class MessagesState extends State<Messages> {
   final AppService _service = AppService();
   late IO.Socket socket;
   final TextEditingController textController = TextEditingController();
@@ -75,7 +75,7 @@ class _MessagesState extends State<Messages> {
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
-      var _newMessage = <String, dynamic>{
+      var newMessage0 = <String, dynamic>{
         'workspace_id': widget.workspaceId,
         'bot_id': widget.botId,
         'content': content,
@@ -85,7 +85,7 @@ class _MessagesState extends State<Messages> {
         'type': 'TEXT',
         'created_at': isoDate
       };
-      socket.emit('message.bot.create', _newMessage);
+      socket.emit('message.bot.create', newMessage0);
       Message newMessage = Message(
           type: "TEXT",
           content: content,

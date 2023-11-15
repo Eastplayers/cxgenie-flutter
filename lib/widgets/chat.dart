@@ -18,10 +18,10 @@ class Chat extends StatefulWidget {
   final LanguageOptions? language;
 
   @override
-  _ChatState createState() => _ChatState();
+  ChatState createState() => ChatState();
 }
 
-class _ChatState extends State<Chat> {
+class ChatState extends State<Chat> {
   @override
   void initState() {
     super.initState();

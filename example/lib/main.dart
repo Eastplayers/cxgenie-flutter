@@ -33,7 +33,8 @@ class HomeScreen extends StatelessWidget {
           elevation: 0),
       body: const Center(
           child: CXGenie(
-        botId: 'e7778fe2-8dd2-4ea9-ad3c-033c5670017a', // Have ticket add-on
+        botId: '21df8f52-2900-4f4c-a0e5-8843be12a171',
+        // botId: 'e7778fe2-8dd2-4ea9-ad3c-033c5670017a', // Have ticket add-on
         // botId: '5b342fb6-0fff-4baf-a74d-d65433dd6946', // Don't have ticket add-on
         userToken: '0ec9f333eabacc46c3b049864272781c614dc87c',
         language: LanguageOptions.vi,

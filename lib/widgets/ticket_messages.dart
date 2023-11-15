@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
@@ -55,10 +53,10 @@ class TicketMessages extends StatefulWidget {
   final bool composerDisabled;
 
   @override
-  _TicketMessagesState createState() => _TicketMessagesState();
+  TicketMessagesState createState() => TicketMessagesState();
 }
 
-class _TicketMessagesState extends State<TicketMessages> {
+class TicketMessagesState extends State<TicketMessages> {
   final AppService _service = AppService();
   late IO.Socket socket;
   final TextEditingController textController = TextEditingController();
@@ -90,7 +88,7 @@ class _TicketMessagesState extends State<TicketMessages> {
           duration: const Duration(seconds: 1), curve: Curves.easeInOut);
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
-      var _newMessage = <String, dynamic>{
+      var newMessage0 = <String, dynamic>{
         'workspace_id': widget.workspaceId,
         'content': content,
         'media': cloneFiles,
@@ -100,7 +98,7 @@ class _TicketMessagesState extends State<TicketMessages> {
         'ticket_id': widget.ticketId,
         'created_at': isoDate
       };
-      socket.emit('message.ticket.create', _newMessage);
+      socket.emit('message.ticket.create', newMessage0);
       Message newMessage = Message(
           type: "TEXT",
           content: content,
@@ -119,7 +117,6 @@ class _TicketMessagesState extends State<TicketMessages> {
       'forceNew': true,
     });
     socket.onConnect((_) {
-      print("Socket connected");
       socket.emit('room.conversation.join', widget.customerId);
     });
     socket.on('is_typing', (isTyping) {
@@ -165,7 +162,7 @@ class _TicketMessagesState extends State<TicketMessages> {
             .addMessage(newMessage);
       }
     });
-    socket.onDisconnect((_) => print('Socket disconnected'));
+    // socket.onDisconnect((_) => print('Socket disconnected'));
   }
 
   /// onImagePicketPressed
@@ -197,7 +194,6 @@ class _TicketMessagesState extends State<TicketMessages> {
   void _getTicketDetail() async {
     var res = await _service.getTicketDetail(widget.ticketId);
     _ticket = res;
-    print(_ticket);
   }
 
   @override
@@ -312,7 +308,7 @@ class _TicketMessagesState extends State<TicketMessages> {
                               widget.language == LanguageOptions.en
                                   ? "You can no longer send message to this ticket"
                                   : "Bạn không thể gửi tin nhắn cho thẻ hỗ trợ này nữa",
-                              style: TextStyle(color: Color(0xffA3A9B3)),
+                              style: const TextStyle(color: Color(0xffA3A9B3)),
                             ),
                           )
                         ],

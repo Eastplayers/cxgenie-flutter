@@ -20,10 +20,10 @@ class TicketTab extends StatefulWidget {
   final LanguageOptions? language;
 
   @override
-  _TicketTabState createState() => _TicketTabState();
+  TicketTabState createState() => TicketTabState();
 }
 
-class _TicketTabState extends State<TicketTab> {
+class TicketTabState extends State<TicketTab> {
   final int pageCount = 3;
   final PageController _controller = PageController(initialPage: 0);
   final CustomTabBarController _tabBarController = CustomTabBarController();

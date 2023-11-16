@@ -108,9 +108,8 @@ class MessagesState extends State<Messages> {
     socket.onConnect((_) {
       socket.emit('room.conversation.join', widget.customerId);
     });
-    socket.on('message.created', (data) {
-      if (data['sender_id'] == widget.customerId ||
-          data['receiver_id'] == widget.customerId) {
+    socket.on('new_message', (data) {
+      if (data['receiver_id'] == widget.customerId) {
         _isSendingMessage = false;
         final bot = data['bot'];
         final sender = data['sender'];

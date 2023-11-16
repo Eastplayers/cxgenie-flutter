@@ -474,7 +474,8 @@ class TicketListState extends State<TicketList> {
                                             language: widget.language,
                                             composerDisabled:
                                                 ticket.status == 'CLOSED' ||
-                                                    ticket.status == 'MERGED',
+                                                    ticket.status == 'MERGED' ||
+                                                    ticket.status == 'SOLVED',
                                           ))
                                         ],
                                       )),

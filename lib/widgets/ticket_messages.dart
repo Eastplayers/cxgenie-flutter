@@ -123,9 +123,8 @@ class TicketMessagesState extends State<TicketMessages> {
     socket.on('is_typing', (isTyping) {
       _isSendingMessage = isTyping;
     });
-    socket.on('message.created', (data) {
-      if ((data['sender_id'] == widget.customerId ||
-              data['receiver_id'] == widget.customerId) &&
+    socket.on('new_message', (data) {
+      if (data['receiver_id'] == widget.customerId &&
           data['ticket_id'] == widget.ticketId) {
         _isSendingMessage = false;
         final bot = data['bot'];

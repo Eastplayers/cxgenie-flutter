@@ -246,6 +246,42 @@ class AppService {
     }
   }
 
+  Future<List<TicketCategory>> getTicketSubCategories(
+      String workspaceId, String parentId) async {
+    try {
+      final uri = Uri(
+          scheme: 'https',
+          host: 'api.cxgenie.ai',
+          path: '/api/v1/ticket-categories',
+          queryParameters: {
+            'limit': '100',
+            'offset': '0',
+            'workspace_id': workspaceId,
+            'parent_id': parentId
+          });
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final data = json['data']['ticketCategories'] as List;
+        final categories = data.map((category) {
+          return TicketCategory.fromJson(category);
+        }).toList();
+
+        return categories;
+      }
+
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<Message>> getTicketMessages(String ticketId) async {
     try {
       final url =
@@ -335,7 +371,7 @@ class AppService {
             'content': content,
             'workspace_id': workspaceId,
             'customer_id': customerId,
-            'ticket_category_id': categoryId
+            'ticket_category_id': categoryId!.isNotEmpty ? categoryId : null
           }));
 
       if (response.statusCode != 200) {

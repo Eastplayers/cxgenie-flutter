@@ -13,12 +13,16 @@ class TicketProvider extends ChangeNotifier {
   String? currentWorkspaceId;
   bool isLoadingMessages = true;
   bool isCreatingTicket = false;
+  bool isCreated = false;
 
   List<Ticket> _tickets = [];
   List<Ticket> get tickets => _tickets;
 
   List<TicketCategory> _ticketCategories = [];
   List<TicketCategory> get ticketCategories => _ticketCategories;
+
+  List<TicketCategory> _ticketSubCategories = [];
+  List<TicketCategory> get ticketSubCategories => _ticketSubCategories;
 
   List<Message> _messages = [];
   List<Message> get messages => _messages;
@@ -57,16 +61,36 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> getTicketSubCategories(
+      String workspaceId, String parentId) async {
+    notifyListeners();
+    _ticketSubCategories = [];
+
+    final response =
+        await _service.getTicketSubCategories(workspaceId, parentId);
+    print(response);
+    _ticketSubCategories = response;
+
+    notifyListeners();
+  }
+
   Future<void> createTicket(String workspaceId, String content,
       String customerId, String? categoryId, List<String> statuses) async {
     isCreatingTicket = true;
+    isCreated = false;
     notifyListeners();
 
     await _service.createTicket(workspaceId, content, customerId, categoryId);
+
     final ticketsResponse =
         await _service.getTickets(customerId, workspaceId, statuses);
+
+    print("IN PROVIDER");
+    print(ticketsResponse.length);
+
     _tickets = ticketsResponse;
     isCreatingTicket = false;
+    isCreated = true;
     notifyListeners();
   }
 

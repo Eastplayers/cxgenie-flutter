@@ -8,6 +8,7 @@ import 'package:cxgenie/services/app_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart' as HTML;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -526,13 +527,14 @@ class TicketMessagesState extends State<TicketMessages> {
                             color:
                                 isMine ? Color(int.parse(color)) : Colors.white,
                             borderRadius: BorderRadius.circular(8)),
-                        child: Text(
+                        child: HTML.HtmlWidget(
                           "${message.content}",
-                          style: TextStyle(
-                              color: isMine
-                                  ? Colors.white
-                                  : const Color(0xff2C2E33),
-                              fontSize: 14),
+                          renderMode: HTML.RenderMode.column,
+                          textStyle: TextStyle(
+                            fontSize: 14,
+                            color:
+                                isMine ? Colors.white : const Color(0xff2C2E33),
+                          ),
                         ),
                       ),
               ),

@@ -190,7 +190,9 @@ class AppService {
 
   Future<Ticket> getTicketDetail(String ticketId) async {
     try {
+      print(ticketId);
       final url = '$baseUrl/tickets/$ticketId/public';
+      print(url);
       final uri = Uri.parse(url);
 
       final response = await http.get(
@@ -201,7 +203,7 @@ class AppService {
       );
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
-        final data = json['data']['ticket'];
+        final data = json['data'];
         return Ticket.fromJson(data);
       }
 

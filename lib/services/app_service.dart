@@ -51,7 +51,7 @@ class AppService {
     }
   }
 
-  Future<Customer> startAuthorizedSession(String botId, String token) async {
+  Future<Customer?> startAuthorizedSession(String botId, String token) async {
     try {
       final url = '$baseUrl/bot-sessions/start-bot-session';
       final uri = Uri.parse(url);
@@ -64,10 +64,13 @@ class AppService {
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         final data = json['data'];
-        return Customer.fromJson(data);
+        if (data != null) {
+          return Customer.fromJson(data);
+        }
+
+        return null;
       } else {
-        final json = jsonDecode(response.body);
-        throw Exception(json['error']['message']);
+        return null;
       }
     } catch (e) {
       rethrow;

@@ -42,3 +42,7 @@ Send image, render image
 ## 2.0.5
 
 - Fix empty message content
+
+## 2.0.12
+
+- Change tab widget

@@ -66,49 +66,117 @@ class TicketTabState extends State<TicketTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: CustomTabBar(
-              tabBarController: _tabBarController,
-              height: 45,
-              itemCount: pageCount,
-              builder: getTabbarChild,
-              indicator: LinearIndicator(
-                  color: Color(
-                      int.parse(widget.themeColor.replaceAll("#", "0xff"))),
-                  bottom: 0),
-              pageController: _controller,
-            ),
-          ),
-          const Divider(
-            height: 1,
-            color: Color(0xffD6DAE1),
-          ),
-          Expanded(
-              child: PageView.builder(
-                  controller: _controller,
-                  itemCount: pageCount,
-                  itemBuilder: (context, index) {
-                    return TicketList(
-                      index: index,
+    return DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Column(
+            children: [
+              TabBar(
+                tabs: [
+                  Tab(
+                    text: widget.language == LanguageOptions.vi
+                        ? 'Đang mở'
+                        : 'Open',
+                  ),
+                  Tab(
+                    text: widget.language == LanguageOptions.vi
+                        ? 'Đã đóng'
+                        : 'Closed',
+                  ),
+                  Tab(
+                    text: widget.language == LanguageOptions.vi
+                        ? 'Tất cả'
+                        : 'All',
+                  ),
+                ],
+                unselectedLabelColor: Color(0xff7D828B),
+                labelColor:
+                    Color(int.parse(widget.themeColor.replaceAll("#", "0xff"))),
+                indicatorColor:
+                    Color(int.parse(widget.themeColor.replaceAll("#", "0xff"))),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    TicketList(
+                      index: 0,
                       workspaceId: widget.workspaceId,
                       themeColor: widget.themeColor,
                       customerId: widget.customerId,
                       language: widget.language,
-                      showCreateButton: index != 1,
-                      statuses: index == 0
-                          ? ['OPEN', 'IN_PROGRESS']
-                          : index == 1
-                              ? ['SOLVED', 'CLOSED']
-                              : ['OPEN', 'IN_PROGRESS', 'SOLVED', 'CLOSED'],
-                    );
-                  }))
-        ],
-      ),
-    );
+                      showCreateButton: true,
+                      statuses: const ['OPEN', 'IN_PROGRESS'],
+                    ),
+                    TicketList(
+                      index: 1,
+                      workspaceId: widget.workspaceId,
+                      themeColor: widget.themeColor,
+                      customerId: widget.customerId,
+                      language: widget.language,
+                      showCreateButton: false,
+                      statuses: const ['SOLVED', 'CLOSED'],
+                    ),
+                    TicketList(
+                      index: 2,
+                      workspaceId: widget.workspaceId,
+                      themeColor: widget.themeColor,
+                      customerId: widget.customerId,
+                      language: widget.language,
+                      showCreateButton: true,
+                      statuses: const [
+                        'OPEN',
+                        'IN_PROGRESS',
+                        'SOLVED',
+                        'CLOSED'
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+          // body: Column(
+          //   children: [
+          //     Container(
+          //       padding: const EdgeInsets.symmetric(horizontal: 16),
+          //       child: CustomTabBar(
+          //         tabBarController: _tabBarController,
+          //         height: 45,
+          //         itemCount: pageCount,
+          //         builder: getTabbarChild,
+          //         indicator: LinearIndicator(
+          //             color: Color(
+          //                 int.parse(widget.themeColor.replaceAll("#", "0xff"))),
+          //             bottom: 0),
+          //         pageController: _controller,
+          //       ),
+          //     ),
+          //     const Divider(
+          //       height: 1,
+          //       color: Color(0xffD6DAE1),
+          //     ),
+          //     Expanded(
+          //         child: PageView.builder(
+          //             controller: _controller,
+          //             itemCount: pageCount,
+          //             itemBuilder: (context, index) {
+          //               return TicketList(
+          //                 index: index,
+          //                 workspaceId: widget.workspaceId,
+          //                 themeColor: widget.themeColor,
+          //                 customerId: widget.customerId,
+          //                 language: widget.language,
+          //                 showCreateButton: index != 1,
+          //                 statuses: index == 0
+          //                     ? ['OPEN', 'IN_PROGRESS']
+          //                     : index == 1
+          //                         ? ['SOLVED', 'CLOSED']
+          //                         : ['OPEN', 'IN_PROGRESS', 'SOLVED', 'CLOSED'],
+          //               );
+          //             }))
+          //   ],
+          // ),
+        ));
   }
 }

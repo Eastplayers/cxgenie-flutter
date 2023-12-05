@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/ticket_category.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
@@ -372,6 +374,7 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
   String selectedSubCategory = '';
   List<TicketCategory> categories = [];
   List<TicketCategory> subCategories = [];
+  bool isCreating = false;
 
   @override
   void initState() {
@@ -703,27 +706,46 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        onPressed: () {
-                          widget.createTicket(
-                              widget.workspaceId,
-                              textController.text,
-                              widget.customerId,
-                              selectedSubCategory.isNotEmpty
-                                  ? selectedSubCategory
-                                  : selectedCategory,
-                              widget.statuses);
-                          textController.clear();
-                          Navigator.pop(context, 'Cancel');
-                        },
-                        child: Text(
-                          widget.language == LanguageOptions.en
-                              ? 'Create ticket'
-                              : 'Tạo thẻ hỗ trợ',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        onPressed: isCreating
+                            ? null
+                            : () async {
+                                if (!isCreating) {
+                                  setState(() {
+                                    isCreating = true;
+                                  });
+                                  await widget.createTicket(
+                                      widget.workspaceId,
+                                      textController.text,
+                                      widget.customerId,
+                                      selectedSubCategory.isNotEmpty
+                                          ? selectedSubCategory
+                                          : selectedCategory,
+                                      widget.statuses);
+                                  textController.clear();
+                                  setState(() {
+                                    isCreating = false;
+                                  });
+                                  Navigator.pop(context, 'Cancel');
+                                }
+                              },
+                        child: isCreating
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : Text(
+                                widget.language == LanguageOptions.en
+                                    ? 'Create ticket'
+                                    : 'Tạo thẻ hỗ trợ',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                       ),
                     )
                   ],

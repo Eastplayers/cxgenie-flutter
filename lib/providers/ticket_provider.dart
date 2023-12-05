@@ -85,9 +85,6 @@ class TicketProvider extends ChangeNotifier {
     final ticketsResponse =
         await _service.getTickets(customerId, workspaceId, statuses);
 
-    print("IN PROVIDER");
-    print(ticketsResponse.length);
-
     _tickets = ticketsResponse;
     isCreatingTicket = false;
     isCreated = true;

@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class AppService {
-  final baseUrl = 'https://api.cxgenie.ai/api/v1';
+  final baseUrl = 'https://api-staging.cxgenie.ai/api/v1';
 
   Future<Bot> getBotDetail(String id) async {
     try {
@@ -118,28 +118,7 @@ class AppService {
         final json = jsonDecode(response.body);
         final data = json['data']['messages'] as List;
         final messages = data.map((message) {
-          final bot = message['bot'];
-          final sender = message['sender'];
-          final receiver = message['receiver'];
-          final media =
-              message['media'] == null ? null : message['media'] as List;
-
-          return Message(
-              id: message['id'],
-              content: message['content'],
-              receiverId: message['receiver_id'],
-              type: message['type'],
-              botId: message['bot_id'],
-              senderId: message['sender_id'],
-              createdAt: message['created_at'],
-              media: media == null
-                  ? []
-                  : media.map((mediaItem) {
-                      return MessageMedia(url: mediaItem['url']);
-                    }).toList(),
-              bot: bot == null ? null : Bot.fromJson(bot),
-              sender: sender == null ? null : Customer.fromJson(sender),
-              receiver: receiver == null ? null : Customer.fromJson(receiver));
+          return Message.fromJson(message);
         }).toList();
 
         return messages;
@@ -160,7 +139,7 @@ class AppService {
       // final uri = Uri.parse(url);
       final uri = Uri(
           scheme: 'https',
-          host: 'api.cxgenie.ai',
+          host: 'api-staging.cxgenie.ai',
           path: '/api/v1/tickets/public',
           queryParameters: {
             'creator_id': customerId,
@@ -221,7 +200,7 @@ class AppService {
     try {
       final uri = Uri(
           scheme: 'https',
-          host: 'api.cxgenie.ai',
+          host: 'api-staging.cxgenie.ai',
           path: '/api/v1/ticket-categories',
           queryParameters: {
             'limit': '100',
@@ -256,7 +235,7 @@ class AppService {
     try {
       final uri = Uri(
           scheme: 'https',
-          host: 'api.cxgenie.ai',
+          host: 'api-staging.cxgenie.ai',
           path: '/api/v1/ticket-categories',
           queryParameters: {
             'limit': '100',
@@ -302,28 +281,7 @@ class AppService {
         final json = jsonDecode(response.body);
         final data = json['data']['messages'] as List;
         final messages = data.map((message) {
-          final bot = message['bot'];
-          final sender = message['sender'];
-          final receiver = message['receiver'];
-          final media =
-              message['media'] == null ? null : message['media'] as List;
-
-          return Message(
-              id: message['id'],
-              content: message['content'],
-              receiverId: message['receiver_id'],
-              type: message['type'],
-              botId: message['bot_id'],
-              senderId: message['sender_id'],
-              createdAt: message['created_at'],
-              media: media == null
-                  ? []
-                  : media.map((mediaItem) {
-                      return MessageMedia(url: mediaItem['url']);
-                    }).toList(),
-              bot: bot == null ? null : Bot.fromJson(bot),
-              sender: sender == null ? null : Customer.fromJson(sender),
-              receiver: receiver == null ? null : Customer.fromJson(receiver));
+          return Message.fromJson(message);
         }).toList();
 
         return messages;
@@ -363,7 +321,7 @@ class AppService {
     }
   }
 
-  Future<void> createTicket(String workspaceId, String content,
+  Future<Ticket> createTicket(String workspaceId, String content,
       String customerId, String? categoryId) async {
     try {
       final url = '$baseUrl/tickets';
@@ -378,11 +336,14 @@ class AppService {
             'customer_id': customerId,
             'ticket_category_id': categoryId!.isNotEmpty ? categoryId : null
           }));
+      final json = jsonDecode(response.body);
+      print(json['data']['ticket']);
 
       if (response.statusCode != 200) {
-        final json = jsonDecode(response.body);
         throw Exception(json['error']['message']);
       }
+
+      return Ticket.fromJson(json['data']['ticket']);
     } catch (e) {
       rethrow;
     }

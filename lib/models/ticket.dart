@@ -37,21 +37,22 @@ class Ticket {
   @JsonKey(name: "bot_id")
   String? botId;
 
-  Ticket(
-      {required this.id,
-      required this.name,
-      required this.status,
-      required this.code,
-      this.assigneeId,
-      this.targetTicketId,
-      required this.createdAt,
-      required this.updatedAt,
-      this.targetTicket,
-      required this.creatorId,
-      required this.autoReply,
-      this.botId,
-      this.assignee,
-      this.bot});
+  Ticket({
+    required this.id,
+    required this.name,
+    required this.status,
+    required this.code,
+    this.assigneeId,
+    this.targetTicketId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.targetTicket,
+    required this.creatorId,
+    required this.autoReply,
+    this.botId,
+    this.assignee,
+    this.bot,
+  });
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);
 

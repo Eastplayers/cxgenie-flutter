@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 const String emptyImg = '''
   <svg width="89" height="89" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -375,11 +376,20 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
   List<TicketCategory> categories = [];
   List<TicketCategory> subCategories = [];
   bool isCreating = false;
+  late IO.Socket socket;
+
+  void connectSocket() {
+    socket = IO.io('https://api-staging.cxgenie.ai', <String, dynamic>{
+      'transports': ['websocket'],
+      'forceNew': true,
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     getTicketCategories();
+    connectSocket();
   }
 
   void getTicketCategories() async {
@@ -713,14 +723,27 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
                                   setState(() {
                                     isCreating = true;
                                   });
-                                  await widget.createTicket(
-                                      widget.workspaceId,
-                                      textController.text,
-                                      widget.customerId,
-                                      selectedSubCategory.isNotEmpty
-                                          ? selectedSubCategory
-                                          : selectedCategory,
-                                      widget.statuses);
+                                  final createdTicket =
+                                      await widget.createTicket(
+                                          widget.workspaceId,
+                                          textController.text,
+                                          widget.customerId,
+                                          selectedSubCategory.isNotEmpty
+                                              ? selectedSubCategory
+                                              : selectedCategory,
+                                          widget.statuses);
+                                  print(createdTicket.id);
+                                  var newMessage = <String, dynamic>{
+                                    'workspace_id': widget.workspaceId,
+                                    'content': textController.text,
+                                    'media': [],
+                                    'customer_id': widget.customerId,
+                                    'sender_id': widget.customerId,
+                                    'type': 'TEXT',
+                                    'ticket_id': createdTicket.id,
+                                  };
+                                  socket.emit(
+                                      'message.ticket.create', newMessage);
                                   textController.clear();
                                   setState(() {
                                     isCreating = false;

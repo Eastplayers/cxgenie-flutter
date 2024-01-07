@@ -1,0 +1,75 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'message.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+MessageMedia _$MessageMediaFromJson(Map<String, dynamic> json) => MessageMedia(
+      url: json['url'] as String,
+    );
+
+Map<String, dynamic> _$MessageMediaToJson(MessageMedia instance) =>
+    <String, dynamic>{
+      'url': instance.url,
+    };
+
+MessageReactions _$MessageReactionsFromJson(Map<String, dynamic> json) =>
+    MessageReactions(
+      like: (json['like'] as List<dynamic>?)
+          ?.map((e) => Reaction.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      dislike: (json['dislike'] as List<dynamic>?)
+          ?.map((e) => Reaction.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$MessageReactionsToJson(MessageReactions instance) =>
+    <String, dynamic>{
+      'like': instance.like,
+      'dislike': instance.dislike,
+    };
+
+Message _$MessageFromJson(Map<String, dynamic> json) => Message(
+      id: json['id'] as String?,
+      content: json['content'] as String?,
+      receiverId: json['receiver_id'] as String?,
+      bot: json['bot'] == null
+          ? null
+          : Bot.fromJson(json['bot'] as Map<String, dynamic>),
+      senderId: json['sender_id'] as String?,
+      type: json['type'] as String,
+      botId: json['bot_id'] as String?,
+      sender: json['sender'] == null
+          ? null
+          : Customer.fromJson(json['sender'] as Map<String, dynamic>),
+      receiver: json['receiver'] == null
+          ? null
+          : Customer.fromJson(json['receiver'] as Map<String, dynamic>),
+      createdAt: json['created_at'] as String?,
+      media: (json['media'] as List<dynamic>?)
+          ?.map((e) => MessageMedia.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      workspaceId: json['workspace_id'] as String?,
+      reactions: json['reactions'] == null
+          ? null
+          : MessageReactions.fromJson(
+              json['reactions'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
+      'id': instance.id,
+      'content': instance.content,
+      'type': instance.type,
+      'bot': instance.bot,
+      'sender': instance.sender,
+      'receiver': instance.receiver,
+      'media': instance.media,
+      'reactions': instance.reactions,
+      'receiver_id': instance.receiverId,
+      'sender_id': instance.senderId,
+      'bot_id': instance.botId,
+      'created_at': instance.createdAt,
+      'workspace_id': instance.workspaceId,
+    };

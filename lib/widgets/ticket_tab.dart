@@ -55,7 +55,7 @@ class TicketTabState extends State<TicketTab> {
                       widget.language == LanguageOptions.vi ? 'Tất cả' : 'All',
                 ),
               ],
-              unselectedLabelColor: Color(0xff7D828B),
+              unselectedLabelColor: const Color(0xff7D828B),
               labelColor:
                   Color(int.parse(widget.themeColor.replaceAll("#", "0xff"))),
               indicatorColor:

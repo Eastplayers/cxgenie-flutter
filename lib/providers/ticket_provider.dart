@@ -74,13 +74,14 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createTicket(String workspaceId, String content,
+  Future<Ticket> createTicket(String workspaceId, String content,
       String customerId, String? categoryId, List<String> statuses) async {
     isCreatingTicket = true;
     isCreated = false;
     notifyListeners();
 
-    await _service.createTicket(workspaceId, content, customerId, categoryId);
+    final createdTicket = await _service.createTicket(
+        workspaceId, content, customerId, categoryId);
 
     final ticketsResponse =
         await _service.getTickets(customerId, workspaceId, statuses);
@@ -89,6 +90,8 @@ class TicketProvider extends ChangeNotifier {
     isCreatingTicket = false;
     isCreated = true;
     notifyListeners();
+
+    return createdTicket;
   }
 
   Future<void> getMessages(String ticketId) async {

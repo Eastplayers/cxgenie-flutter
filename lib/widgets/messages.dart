@@ -103,7 +103,7 @@ class MessagesState extends State<Messages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api.cxgenie.ai',
+    socket = IO.io('https://api-staging.cxgenie.ai',
         IO.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
       socket.emit('room.conversation.join', widget.customerId);

@@ -91,12 +91,7 @@ class MessageItemState extends State<MessageItem> {
 
     return Portal(
       child: Consumer<TicketProvider>(builder: (context, value, child) {
-        print("==========");
-        print(value.selectedTicketMessageId);
-        print(widget.message.id);
         bool showReactions = value.selectedTicketMessageId == widget.message.id;
-        print(showReactions);
-        print("==========");
 
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -180,9 +175,8 @@ class MessageItemState extends State<MessageItem> {
                                     visible: showReactions,
                                     closeDuration: kThemeAnimationDuration,
                                     anchor: const Aligned(
-                                      follower: Alignment(0, 0),
-                                      target: Alignment(1.3, 0.65),
-                                      widthFactor: 1,
+                                      follower: Alignment(-0.2, 1),
+                                      target: Alignment(1, 1),
                                     ),
                                     portalFollower:
                                         TweenAnimationBuilder<double>(

@@ -68,7 +68,6 @@ class TicketProvider extends ChangeNotifier {
 
     final response =
         await _service.getTicketSubCategories(workspaceId, parentId);
-    print(response);
     _ticketSubCategories = response;
 
     notifyListeners();

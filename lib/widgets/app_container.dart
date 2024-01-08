@@ -4,6 +4,7 @@ import 'package:cxgenie/widgets/contact_information.dart';
 import 'package:cxgenie/widgets/messages.dart';
 import 'package:cxgenie/widgets/ticket_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:provider/provider.dart';
 
 class AppContainer extends StatefulWidget {
@@ -40,37 +41,38 @@ class AppContainerState extends State<AppContainer> {
       final customer = value.customer;
 
       return SizedBox(
-          width: (MediaQuery.of(context).size.width),
-          height: (MediaQuery.of(context).size.height),
-          child: Container(
-            child: value.isLoading
-                ? const SizedBox(
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Color(0xffD6DAE1),
-                      ),
+        width: (MediaQuery.of(context).size.width),
+        height: (MediaQuery.of(context).size.height),
+        child: Container(
+          child: value.isLoading
+              ? const SizedBox(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Color(0xffD6DAE1),
                     ),
-                  )
-                : customer == null
-                    ? ContactInformation(
-                        botId: widget.botId,
-                        themeColor: Color(int.parse(color)),
-                        language: widget.language,
-                      )
-                    : bot.isTicketEnable == true
-                        ? TicketContainer(
-                            workspaceId: "${bot.workspaceId}",
-                            customerId: customer.id,
-                            themeColor: bot.themeColor,
-                            language: widget.language,
-                          )
-                        : Messages(
-                            customerId: customer.id,
-                            botId: widget.botId,
-                            themeColor: "${bot.themeColor}",
-                            language: widget.language,
-                          ),
-          ));
+                  ),
+                )
+              : customer == null
+                  ? ContactInformation(
+                      botId: widget.botId,
+                      themeColor: Color(int.parse(color)),
+                      language: widget.language,
+                    )
+                  : bot.isTicketEnable == true
+                      ? TicketContainer(
+                          workspaceId: "${bot.workspaceId}",
+                          customerId: customer.id,
+                          themeColor: bot.themeColor,
+                          language: widget.language,
+                        )
+                      : Messages(
+                          customerId: customer.id,
+                          botId: widget.botId,
+                          themeColor: "${bot.themeColor}",
+                          language: widget.language,
+                        ),
+        ),
+      );
     });
   }
 }

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:image_picker/image_picker.dart';
 
 const String sendIcon = '''
@@ -55,7 +55,7 @@ class Messages extends StatefulWidget {
 
 class MessagesState extends State<Messages> {
   final AppService _service = AppService();
-  late IO.Socket socket;
+  late io.Socket socket;
   final TextEditingController textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   List<MessageMedia> _uploadedFiles = [];
@@ -103,8 +103,8 @@ class MessagesState extends State<Messages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api-staging.cxgenie.ai',
-        IO.OptionBuilder().setTransports(['websocket']).build());
+    socket = io.io('https://api-staging.cxgenie.ai',
+        io.OptionBuilder().setTransports(['websocket']).build());
     socket.onConnect((_) {
       socket.emit('room.conversation.join', widget.customerId);
     });
@@ -180,6 +180,7 @@ class MessagesState extends State<Messages> {
           });
         }
       } catch (e) {
+        // ignore: avoid_print
         print(e);
       }
     }

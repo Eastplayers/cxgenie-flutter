@@ -172,9 +172,7 @@ class AppService {
 
   Future<Ticket> getTicketDetail(String ticketId) async {
     try {
-      print(ticketId);
       final url = '$baseUrl/tickets/$ticketId/public';
-      print(url);
       final uri = Uri.parse(url);
 
       final response = await http.get(
@@ -337,7 +335,6 @@ class AppService {
             'ticket_category_id': categoryId!.isNotEmpty ? categoryId : null
           }));
       final json = jsonDecode(response.body);
-      print(json['data']['ticket']);
 
       if (response.statusCode != 200) {
         throw Exception(json['error']['message']);

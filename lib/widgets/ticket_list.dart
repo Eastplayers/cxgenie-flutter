@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/ticket_category.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
@@ -9,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 const String emptyImg = '''
   <svg width="89" height="89" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -376,10 +374,10 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
   List<TicketCategory> categories = [];
   List<TicketCategory> subCategories = [];
   bool isCreating = false;
-  late IO.Socket socket;
+  late io.Socket socket;
 
   void connectSocket() {
-    socket = IO.io('https://api-staging.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://api-staging.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -417,7 +415,7 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
       shadowColor: const Color.fromRGBO(23, 24, 26, 0.5),
       insetPadding: const EdgeInsets.all(16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      content: Container(
+      content: SizedBox(
         width: (MediaQuery.of(context).size.width),
         child: SingleChildScrollView(
           child: Column(
@@ -732,7 +730,6 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
                                               ? selectedSubCategory
                                               : selectedCategory,
                                           widget.statuses);
-                                  print(createdTicket.id);
                                   var newMessage = <String, dynamic>{
                                     'workspace_id': widget.workspaceId,
                                     'content': textController.text,
@@ -748,6 +745,7 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
                                   setState(() {
                                     isCreating = false;
                                   });
+                                  // ignore: use_build_context_synchronously
                                   Navigator.pop(context, 'Cancel');
                                 }
                               },

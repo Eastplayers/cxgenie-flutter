@@ -11,9 +11,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class TicketMessages extends StatefulWidget {
   const TicketMessages(
@@ -39,7 +38,7 @@ class TicketMessages extends StatefulWidget {
 
 class TicketMessagesState extends State<TicketMessages> {
   final AppService _service = AppService();
-  late IO.Socket socket;
+  late io.Socket socket;
   final TextEditingController textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   List<MessageMedia> _uploadedFiles = [];
@@ -94,7 +93,7 @@ class TicketMessagesState extends State<TicketMessages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = IO.io('https://api-staging.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://api-staging.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -169,6 +168,7 @@ class TicketMessagesState extends State<TicketMessages> {
           });
         }
       } catch (e) {
+        // ignore: avoid_print
         print(e);
       }
     }

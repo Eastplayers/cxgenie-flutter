@@ -263,11 +263,14 @@ class TicketListState extends State<TicketList> {
                                       height: 8,
                                     ),
                                     Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         if (ticket.isReplied == true)
                                           Container(
                                             width: 8,
                                             height: 8,
+                                            margin: EdgeInsets.only(top: 4),
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(10),
@@ -278,14 +281,15 @@ class TicketListState extends State<TicketList> {
                                           const SizedBox(
                                             width: 8,
                                           ),
-                                        Text(
+                                        Expanded(
+                                            child: Text(
                                           ticket.name,
                                           textAlign: TextAlign.left,
                                           style: const TextStyle(
                                             color: Color(0xff2C2E33),
                                             fontWeight: FontWeight.w700,
                                           ),
-                                        )
+                                        ))
                                       ],
                                     )
                                   ]),

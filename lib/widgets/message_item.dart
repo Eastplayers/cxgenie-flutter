@@ -1,11 +1,13 @@
 import 'package:cxgenie/helpers/date.dart';
 import 'package:cxgenie/models/message.dart';
+import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/widgets/icon.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class MessageItem extends StatefulWidget {
@@ -31,7 +33,6 @@ class MessageItem extends StatefulWidget {
 class MessageItemState extends State<MessageItem> {
   bool showReactions = false;
   late io.Socket socket;
-  MessageReactions? reactions;
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
@@ -42,9 +43,15 @@ class MessageItemState extends State<MessageItem> {
 
     socket.on('message.reaction.created', (data) {
       if (data['message']['id'] == widget.message.id) {
-        setState(() {
-          reactions = MessageReactions.fromJson(data['message']['reactions']);
-        });
+        MessageReactions reactions =
+            MessageReactions.fromJson(data['message']['reactions']);
+        if (reactions != null) {
+          Provider.of<TicketProvider>(context, listen: false)
+              .updateMessageReactions("${widget.message.id}", reactions);
+        }
+        // setState(() {
+        //   reactions = MessageReactions.fromJson(data['message']['reactions']);
+        // });
       }
     });
   }
@@ -65,9 +72,6 @@ class MessageItemState extends State<MessageItem> {
   void initState() {
     super.initState();
     connectSocket();
-    setState(() {
-      reactions = widget.message.reactions;
-    });
   }
 
   @override
@@ -84,6 +88,8 @@ class MessageItemState extends State<MessageItem> {
     DateTime createdAt =
         DateTime.parse("${widget.message.createdAt}").toLocal();
     var formatter = DateFormat(isToday(createdAt) ? "hh:mm" : "dd/MM/yy hh:mm");
+    MessageReactions? reactions =
+        widget.message.reactions ?? MessageReactions.fromJson({});
 
     return Portal(
       child: Container(

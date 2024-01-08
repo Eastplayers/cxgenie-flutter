@@ -102,6 +102,20 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateMessageReactions(
+      String messageId, MessageReactions reactions) async {
+    notifyListeners();
+    _messages = _messages.map((message) {
+      if (message.id == messageId) {
+        message.reactions = reactions;
+        return message;
+      }
+
+      return message;
+    }).toList();
+    notifyListeners();
+  }
+
   Future<void> addMessage(Message newMessage) async {
     notifyListeners();
 

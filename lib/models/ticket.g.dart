@@ -27,6 +27,7 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
       bot: json['bot'] == null
           ? null
           : Bot.fromJson(json['bot'] as Map<String, dynamic>),
+      isReplied: json['is_replied'] as bool?,
     );
 
 Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
@@ -36,6 +37,7 @@ Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
       'code': instance.code,
       'assignee': instance.assignee,
       'bot': instance.bot,
+      'is_replied': instance.isReplied,
       'assignee_id': instance.assigneeId,
       'creator_id': instance.creatorId,
       'target_ticket_id': instance.targetTicketId,

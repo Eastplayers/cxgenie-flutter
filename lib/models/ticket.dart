@@ -13,6 +13,9 @@ class Ticket {
   Customer? assignee;
   Bot? bot;
 
+  @JsonKey(name: "is_replied")
+  bool? isReplied;
+
   @JsonKey(name: "assignee_id")
   String? assigneeId;
 
@@ -52,6 +55,7 @@ class Ticket {
     this.botId,
     this.assignee,
     this.bot,
+    this.isReplied,
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);

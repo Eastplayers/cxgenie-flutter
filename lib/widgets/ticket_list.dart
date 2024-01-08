@@ -233,15 +233,17 @@ class TicketListState extends State<TicketList> {
                                                       CrossAxisAlignment.center,
                                                   children: [
                                                     Expanded(
-                                                        child: Text(
-                                                      ticket.name,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: const TextStyle(
-                                                          fontSize: 16,
-                                                          fontWeight:
-                                                              FontWeight.w600),
-                                                    )),
+                                                      child: Text(
+                                                        ticket.name,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: const TextStyle(
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w600),
+                                                      ),
+                                                    ),
                                                     const SizedBox(
                                                       width: 12,
                                                     ),
@@ -300,19 +302,23 @@ class TicketListState extends State<TicketList> {
                                         ),
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
                                           decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(4),
-                                              color: colorMap[ticket.status]
-                                                  ?['background']),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                            color: colorMap[ticket.status]
+                                                ?['background'],
+                                          ),
                                           child: Text(
                                             "${nameMap[ticket.status]?[widget.language]}",
                                             style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: colorMap[ticket.status]
-                                                    ?['color']),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: colorMap[ticket.status]
+                                                  ?['color'],
+                                            ),
                                           ),
                                         )
                                       ],
@@ -320,12 +326,31 @@ class TicketListState extends State<TicketList> {
                                     const SizedBox(
                                       height: 8,
                                     ),
-                                    Text(
-                                      ticket.name,
-                                      textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                          color: Color(0xff2C2E33),
-                                          fontWeight: FontWeight.w700),
+                                    Row(
+                                      children: [
+                                        if (ticket.isReplied == true)
+                                          Container(
+                                            width: 8,
+                                            height: 8,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              color: const Color(0xff364DE7),
+                                            ),
+                                          ),
+                                        if (ticket.isReplied == true)
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                        Text(
+                                          ticket.name,
+                                          textAlign: TextAlign.left,
+                                          style: const TextStyle(
+                                            color: Color(0xff2C2E33),
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        )
+                                      ],
                                     )
                                   ]),
                             ),

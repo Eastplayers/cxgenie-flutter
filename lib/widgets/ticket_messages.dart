@@ -45,15 +45,16 @@ class TicketMessagesState extends State<TicketMessages> {
   bool _isSendingMessage = false;
   final ScrollController _controller = ScrollController();
   Ticket _ticket = Ticket(
-      id: "",
-      name: "",
-      status: "",
-      code: 0,
-      createdAt: "",
-      updatedAt: "",
-      creatorId: "",
-      autoReply: false,
-      botId: "");
+    id: "",
+    name: "",
+    status: "",
+    code: 0,
+    createdAt: "",
+    updatedAt: "",
+    creatorId: "",
+    autoReply: false,
+    botId: "",
+  );
 
   /// Send message
   void sendMessage(String content) async {

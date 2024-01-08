@@ -46,3 +46,14 @@ Send image, render image
 ## 2.0.12
 
 - Change tab widget
+
+## 2.1.0
+
+**New features:**
+
+- Message reaction
+
+**Updates:**
+
+- Change colour of status bar when opening ticket detail
+- Update ticket message UI

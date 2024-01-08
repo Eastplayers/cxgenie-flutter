@@ -33,8 +33,8 @@ class HomeScreen extends StatelessWidget {
           elevation: 0),
       body: const Center(
         child: CXGenie(
-          botId: 'e7778fe2-8dd2-4ea9-ad3c-033c5670017a',
-          // userToken: 'USER_TOKEN',
+          botId: 'BOT_ID',
+          userToken: 'USER_TOKEN',
           language: LanguageOptions.vi,
         ),
       ),

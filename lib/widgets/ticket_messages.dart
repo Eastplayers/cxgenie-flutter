@@ -15,15 +15,15 @@ import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
 class TicketMessages extends StatefulWidget {
-  const TicketMessages(
-      {Key? key,
-      required this.ticketId,
-      required this.workspaceId,
-      required this.customerId,
-      this.language = LanguageOptions.en,
-      this.composerDisabled = false,
-      this.themeColor = "#364DE7"})
-      : super(key: key);
+  const TicketMessages({
+    Key? key,
+    required this.ticketId,
+    required this.workspaceId,
+    required this.customerId,
+    this.language = LanguageOptions.en,
+    this.composerDisabled = false,
+    this.themeColor = "#364DE7",
+  }) : super(key: key);
 
   final String ticketId;
   final String workspaceId;
@@ -59,6 +59,8 @@ class TicketMessagesState extends State<TicketMessages> {
   /// Send message
   void sendMessage(String content) async {
     if (textController.text.trim().isNotEmpty || _uploadedFiles.isNotEmpty) {
+      Provider.of<TicketProvider>(context, listen: false)
+          .updateSelectedTicketMessage(null);
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
       setState(() {
@@ -79,11 +81,13 @@ class TicketMessagesState extends State<TicketMessages> {
       };
       socket.emit('message.ticket.create', newMessage);
       Message internalNewMessage = Message(
-          type: "TEXT",
-          content: content.trim(),
-          media: cloneFiles,
-          senderId: widget.customerId,
-          createdAt: isoDate);
+        type: "TEXT",
+        content: content.trim(),
+        media: cloneFiles,
+        senderId: widget.customerId,
+        createdAt: isoDate,
+        id: DateTime.now().toString(),
+      );
       Provider.of<TicketProvider>(context, listen: false)
           .addMessage(internalNewMessage);
       if (_ticket.botId != null && _ticket.autoReply == true) {
@@ -107,37 +111,10 @@ class TicketMessagesState extends State<TicketMessages> {
     socket.on('new_message', (data) {
       if (data['receiver_id'] == widget.customerId &&
           data['ticket_id'] == widget.ticketId) {
+        Provider.of<TicketProvider>(context, listen: false)
+            .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
-        final bot = data['bot'];
-        final sender = data['sender'];
-        final receiver = data['receiver'];
-        final media = data['media'] == null ? null : data['media'] as List;
-        Message newMessage = Message(
-            id: data['id'],
-            content: data['content'],
-            receiverId: data['receiver_id'],
-            type: data['type'],
-            botId: data['bot_id'],
-            senderId: data['sender_id'],
-            createdAt: data['created_at'],
-            media: media == null
-                ? []
-                : media.map((mediaItem) {
-                    return MessageMedia(url: mediaItem['url']);
-                  }).toList(),
-            bot: bot == null ? null : Bot.fromJson(bot),
-            sender: sender == null
-                ? null
-                : Customer(
-                    id: sender['id'],
-                    name: sender['name'],
-                    avatar: sender['avatar']),
-            receiver: receiver == null
-                ? null
-                : Customer(
-                    id: receiver['id'],
-                    name: receiver['name'],
-                    avatar: receiver['avatar']));
+        Message newMessage = Message.fromJson(data);
 
         Provider.of<TicketProvider>(context, listen: false)
             .addMessage(newMessage);

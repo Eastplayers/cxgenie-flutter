@@ -31,7 +31,6 @@ class MessageItem extends StatefulWidget {
 }
 
 class MessageItemState extends State<MessageItem> {
-  bool showReactions = false;
   late io.Socket socket;
 
   /// Connect to socket to receive messages in real-time
@@ -63,9 +62,8 @@ class MessageItemState extends State<MessageItem> {
       'value': type,
     };
     socket.emit('message.reaction.create', payload);
-    setState(() {
-      showReactions = false;
-    });
+    Provider.of<TicketProvider>(context, listen: false)
+        .updateSelectedTicketMessage(null);
   }
 
   @override
@@ -92,371 +90,393 @@ class MessageItemState extends State<MessageItem> {
         widget.message.reactions ?? MessageReactions.fromJson({});
 
     return Portal(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              child: !isMine
-                  ? widget.message.sender?.avatar == null &&
-                          widget.message.bot?.avatar == null
-                      ? Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Color(
-                              int.parse(foregroundColor),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "${widget.message.sender?.name[0].toUpperCase() ?? widget.message.bot?.name[0].toUpperCase()}",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Color(
-                                  int.parse(color),
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      : ClipOval(
-                          child: Image.network(
-                            "${widget.message.sender?.avatar ?? widget.message.bot?.avatar}",
+      child: Consumer<TicketProvider>(builder: (context, value, child) {
+        print("==========");
+        print(value.selectedTicketMessageId);
+        print(widget.message.id);
+        bool showReactions = value.selectedTicketMessageId == widget.message.id;
+        print(showReactions);
+        print("==========");
+
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                child: !isMine
+                    ? widget.message.sender?.avatar == null &&
+                            widget.message.bot?.avatar == null
+                        ? Container(
                             width: 32,
                             height: 32,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                  : null,
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment:
-                    isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    child: widget.message.content == null ||
-                            widget.message.content!.isEmpty
-                        ? null
-                        : Stack(
-                            // mainAxisAlignment: isMine
-                            //     ? MainAxisAlignment.end
-                            //     : MainAxisAlignment.start,
-                            // crossAxisAlignment: CrossAxisAlignment.end,
-                            clipBehavior: Clip.none,
-                            children: [
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  setState(() {
-                                    showReactions = false;
-                                  });
-                                },
-                                onLongPress: () {
-                                  if (!isMine) {
-                                    setState(() {
-                                      showReactions = true;
-                                    });
-                                    // _showReactionModal(
-                                    //     context, isMine, color, createdAt);
-                                  }
-                                },
-                                child: PortalTarget(
-                                  visible: showReactions,
-                                  closeDuration: kThemeAnimationDuration,
-                                  anchor: const Aligned(
-                                    follower: Alignment(0, 0),
-                                    target: Alignment(1.3, 0.65),
-                                    widthFactor: 1,
-                                  ),
-                                  portalFollower: TweenAnimationBuilder<double>(
-                                    duration: kThemeAnimationDuration,
-                                    curve: Curves.easeOut,
-                                    tween: Tween(
-                                        begin: 0, end: showReactions ? 1 : 0),
-                                    builder: (context, progress, child) {
-                                      return Transform(
-                                        transform: Matrix4.translationValues(
-                                            0, (1 - progress) * 50, 0),
-                                        child: Opacity(
-                                          opacity: progress,
-                                          child: child,
-                                        ),
-                                      );
-                                    },
-                                    child: Center(
-                                      child: ReactionIndicator(
-                                        child: Container(
-                                          width: 56,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(100)),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              ReactionButton(
-                                                reaction:
-                                                    reactions!.like != null
-                                                        ? likedIcon
-                                                        : likeIcon,
-                                                reacted:
-                                                    reactions!.like != null,
-                                                reactMessage: () =>
-                                                    reactMessage('like'),
-                                                bgColor: reactions!.like != null
-                                                    ? const Color(0xff3BA55C)
-                                                    : Colors.white,
-                                              ),
-                                              const SizedBox(width: 8),
-                                              ReactionButton(
-                                                reaction:
-                                                    reactions!.dislike != null
-                                                        ? dislikedIcon
-                                                        : dislikeIcon,
-                                                reacted:
-                                                    reactions!.dislike != null,
-                                                reactMessage: () =>
-                                                    reactMessage('dislike'),
-                                                bgColor: reactions!.dislike !=
-                                                        null
-                                                    ? const Color(0xffFC8B23)
-                                                    : Colors.white,
-                                              ),
-                                              // Add more ReactionButton widgets as needed
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth:
-                                          (MediaQuery.of(context).size.width) -
-                                              180,
-                                    ),
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: isMine
-                                          ? Color(int.parse(color))
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "${widget.message.content?.trim()}",
-                                          style: TextStyle(
-                                            color: isMine
-                                                ? Colors.white
-                                                : const Color(0xff2C2E33),
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        SizedBox(
-                                          child: Text(
-                                            formatter.format(createdAt),
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              color: isMine
-                                                  ? Colors.white
-                                                      .withOpacity(0.7)
-                                                  : const Color(0xffA3A9B3),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Color(
+                                int.parse(foregroundColor),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "${widget.message.sender?.name[0].toUpperCase() ?? widget.message.bot?.name[0].toUpperCase()}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(
+                                    int.parse(color),
                                   ),
                                 ),
                               ),
-                              if (!showReactions &&
-                                  (!isMine &&
-                                      reactions != null &&
-                                      ((reactions!.like != null &&
-                                              reactions!.like!.isNotEmpty) ||
-                                          (reactions!.dislike != null &&
-                                              reactions!.dislike!.isNotEmpty))))
-                                Positioned(
-                                  right: isMine ? null : -16,
-                                  bottom: 0,
-                                  left: isMine ? -16 : null,
-                                  child: Container(
-                                    width: 20,
-                                    height: 20,
-                                    decoration: BoxDecoration(
-                                      color: reactions!.like != null
-                                          ? const Color(0xff3BA55C)
-                                          : const Color(0xffFC8B23),
-                                      borderRadius: BorderRadius.circular(100),
+                            ),
+                          )
+                        : ClipOval(
+                            child: Image.network(
+                              "${widget.message.sender?.avatar ?? widget.message.bot?.avatar}",
+                              width: 32,
+                              height: 32,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                    : null,
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: isMine
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      child: widget.message.content == null ||
+                              widget.message.content!.isEmpty
+                          ? null
+                          : Stack(
+                              // mainAxisAlignment: isMine
+                              //     ? MainAxisAlignment.end
+                              //     : MainAxisAlignment.start,
+                              // crossAxisAlignment: CrossAxisAlignment.end,
+                              clipBehavior: Clip.none,
+                              children: [
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    Provider.of<TicketProvider>(context,
+                                            listen: false)
+                                        .updateSelectedTicketMessage(null);
+                                  },
+                                  onLongPress: () {
+                                    if (!isMine) {
+                                      Provider.of<TicketProvider>(context,
+                                              listen: false)
+                                          .updateSelectedTicketMessage(
+                                              widget.message.id);
+                                      // _showReactionModal(
+                                      //     context, isMine, color, createdAt);
+                                    }
+                                  },
+                                  child: PortalTarget(
+                                    visible: showReactions,
+                                    closeDuration: kThemeAnimationDuration,
+                                    anchor: const Aligned(
+                                      follower: Alignment(0, 0),
+                                      target: Alignment(1.3, 0.65),
+                                      widthFactor: 1,
                                     ),
-                                    child: Center(
-                                      child: Container(
-                                        child: reactions!.like != null
-                                            ? SvgPicture.string(
-                                                likedIcon,
-                                                width: 12,
-                                                height: 12,
-                                              )
-                                            : SvgPicture.string(
-                                                dislikedIcon,
-                                                width: 12,
-                                                height: 12,
+                                    portalFollower:
+                                        TweenAnimationBuilder<double>(
+                                      duration: kThemeAnimationDuration,
+                                      curve: Curves.easeOut,
+                                      tween: Tween(
+                                          begin: 0, end: showReactions ? 1 : 0),
+                                      builder: (context, progress, child) {
+                                        return Transform(
+                                          transform: Matrix4.translationValues(
+                                              0, (1 - progress) * 50, 0),
+                                          child: Opacity(
+                                            opacity: progress,
+                                            child: child,
+                                          ),
+                                        );
+                                      },
+                                      child: Center(
+                                        child: ReactionIndicator(
+                                          child: Container(
+                                            width: 56,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 4,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(100)),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                ReactionButton(
+                                                  reaction:
+                                                      reactions!.like != null
+                                                          ? likedIcon
+                                                          : likeIcon,
+                                                  reacted:
+                                                      reactions!.like != null,
+                                                  reactMessage: () =>
+                                                      reactMessage('like'),
+                                                  bgColor: reactions!.like !=
+                                                          null
+                                                      ? const Color(0xff3BA55C)
+                                                      : Colors.white,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                ReactionButton(
+                                                  reaction:
+                                                      reactions!.dislike != null
+                                                          ? dislikedIcon
+                                                          : dislikeIcon,
+                                                  reacted: reactions!.dislike !=
+                                                      null,
+                                                  reactMessage: () =>
+                                                      reactMessage('dislike'),
+                                                  bgColor: reactions!.dislike !=
+                                                          null
+                                                      ? const Color(0xffFC8B23)
+                                                      : Colors.white,
+                                                ),
+                                                // Add more ReactionButton widgets as needed
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    child: Container(
+                                      constraints: BoxConstraints(
+                                        maxWidth: (MediaQuery.of(context)
+                                                .size
+                                                .width) -
+                                            180,
+                                      ),
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: isMine
+                                            ? Color(int.parse(color))
+                                            : Colors.white,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${widget.message.content?.trim()}",
+                                            style: TextStyle(
+                                              color: isMine
+                                                  ? Colors.white
+                                                  : const Color(0xff2C2E33),
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          SizedBox(
+                                            child: Text(
+                                              formatter.format(createdAt),
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: isMine
+                                                    ? Colors.white
+                                                        .withOpacity(0.7)
+                                                    : const Color(0xffA3A9B3),
                                               ),
+                                            ),
+                                          )
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
-                  ),
-                  Container(
-                    decoration: const BoxDecoration(),
-                    child: widget.message.media != null &&
-                            widget.message.media!.isNotEmpty
-                        ? Column(
-                            children: widget.message.media!
-                                .map(
-                                  (mediaItem) => GestureDetector(
-                                    onTap: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              contentPadding:
-                                                  const EdgeInsets.all(0),
-                                              insetPadding:
-                                                  const EdgeInsets.all(16),
-                                              elevation: 0,
-                                              shadowColor: const Color.fromRGBO(
-                                                  23, 24, 26, 0.5),
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                              content: GestureDetector(
-                                                onTap: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: SizedBox(
-                                                  width: (MediaQuery.of(context)
-                                                      .size
-                                                      .width),
-                                                  height:
-                                                      (MediaQuery.of(context)
-                                                          .size
-                                                          .height),
-                                                  child: Stack(
-                                                    children: [
-                                                      Center(
-                                                        child: Container(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  vertical: 32),
-                                                          child: Image.network(
-                                                            mediaItem.url,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      Positioned(
-                                                        top: 0,
-                                                        right: 0,
-                                                        child: GestureDetector(
-                                                          onTap: () {
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop();
-                                                          },
-                                                          child: Container(
-                                                            width: 32,
-                                                            height: 32,
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              color: const Color
-                                                                  .fromRGBO(
-                                                                  0, 0, 0, 0.7),
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          16),
-                                                            ),
-                                                            child: const Icon(
-                                                              Icons.close,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          });
-                                    },
+                                if (!showReactions &&
+                                    (!isMine &&
+                                        reactions != null &&
+                                        ((reactions!.like != null &&
+                                                reactions!.like!.isNotEmpty) ||
+                                            (reactions!.dislike != null &&
+                                                reactions!
+                                                    .dislike!.isNotEmpty))))
+                                  Positioned(
+                                    right: isMine ? null : -16,
+                                    bottom: 0,
+                                    left: isMine ? -16 : null,
                                     child: Container(
-                                      clipBehavior: Clip.hardEdge,
-                                      margin: const EdgeInsets.only(top: 4),
-                                      width: 120,
-                                      height: 120,
+                                      width: 20,
+                                      height: 20,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: Colors.white,
-                                        border: Border.all(
-                                          color: const Color(0xffD6DAE1),
-                                          width: 1,
-                                        ),
+                                        color: reactions!.like != null
+                                            ? const Color(0xff3BA55C)
+                                            : const Color(0xffFC8B23),
+                                        borderRadius:
+                                            BorderRadius.circular(100),
                                       ),
-                                      child: Image.network(
-                                        mediaItem.url,
-                                        fit: BoxFit.cover,
+                                      child: Center(
+                                        child: Container(
+                                          child: reactions!.like != null
+                                              ? SvgPicture.string(
+                                                  likedIcon,
+                                                  width: 12,
+                                                  height: 12,
+                                                )
+                                              : SvgPicture.string(
+                                                  dislikedIcon,
+                                                  width: 12,
+                                                  height: 12,
+                                                ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                )
-                                .toList(),
+                              ],
+                            ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(),
+                      child: widget.message.media != null &&
+                              widget.message.media!.isNotEmpty
+                          ? Column(
+                              children: widget.message.media!
+                                  .map(
+                                    (mediaItem) => GestureDetector(
+                                      onTap: () {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                contentPadding:
+                                                    const EdgeInsets.all(0),
+                                                insetPadding:
+                                                    const EdgeInsets.all(16),
+                                                elevation: 0,
+                                                shadowColor:
+                                                    const Color.fromRGBO(
+                                                        23, 24, 26, 0.5),
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                content: GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: SizedBox(
+                                                    width:
+                                                        (MediaQuery.of(context)
+                                                            .size
+                                                            .width),
+                                                    height:
+                                                        (MediaQuery.of(context)
+                                                            .size
+                                                            .height),
+                                                    child: Stack(
+                                                      children: [
+                                                        Center(
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                                    vertical:
+                                                                        32),
+                                                            child:
+                                                                Image.network(
+                                                              mediaItem.url,
+                                                              fit: BoxFit.cover,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          top: 0,
+                                                          right: 0,
+                                                          child:
+                                                              GestureDetector(
+                                                            onTap: () {
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop();
+                                                            },
+                                                            child: Container(
+                                                              width: 32,
+                                                              height: 32,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: const Color
+                                                                    .fromRGBO(0,
+                                                                    0, 0, 0.7),
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            16),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons.close,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            });
+                                      },
+                                      child: Container(
+                                        clipBehavior: Clip.hardEdge,
+                                        margin: const EdgeInsets.only(top: 4),
+                                        width: 120,
+                                        height: 120,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          color: Colors.white,
+                                          border: Border.all(
+                                            color: const Color(0xffD6DAE1),
+                                            width: 1,
+                                          ),
+                                        ),
+                                        child: Image.network(
+                                          mediaItem.url,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            )
+                          : null,
+                    ),
+                    if (widget.message.content?.trim() == '')
+                      Column(
+                        children: [
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          Text(
+                            formatter.format(createdAt),
+                            style: const TextStyle(
+                                fontSize: 11, color: Color(0xffA3A9B3)),
                           )
-                        : null,
-                  ),
-                  if (widget.message.content?.trim() == '')
-                    Column(
-                      children: [
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          formatter.format(createdAt),
-                          style: const TextStyle(
-                              fontSize: 11, color: Color(0xffA3A9B3)),
-                        )
-                      ],
-                    )
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
+                        ],
+                      )
+                  ],
+                ),
+              )
+            ],
+          ),
+        );
+      }),
     );
   }
 

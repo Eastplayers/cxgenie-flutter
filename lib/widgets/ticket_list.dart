@@ -2,6 +2,7 @@ import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/ticket_category.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/services/app_service.dart';
+import 'package:cxgenie/widgets/ticket_detail.dart';
 import 'package:cxgenie/widgets/ticket_messages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -203,81 +204,16 @@ class TicketListState extends State<TicketList> {
                           child: GestureDetector(
                             onTap: () {
                               showCupertinoModalPopup(
-                                  context: context,
-                                  builder: (content) {
-                                    return ChangeNotifierProvider(
-                                      create: (context) => TicketProvider(),
-                                      child: Scaffold(
-                                        body: Container(
-                                          width: (MediaQuery.of(context)
-                                              .size
-                                              .width),
-                                          height: (MediaQuery.of(context)
-                                              .size
-                                              .height),
-                                          color: Colors.white,
-                                          child: SafeArea(
-                                              child: Column(
-                                            children: [
-                                              Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 20,
-                                                        vertical: 16),
-                                                color: Colors.white,
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        ticket.name,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: const TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      width: 12,
-                                                    ),
-                                                    GestureDetector(
-                                                      child: const Icon(
-                                                          Icons.close),
-                                                      onTap: () {
-                                                        Navigator.pop(
-                                                            context, 'Cancel');
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                              Expanded(
-                                                  child: TicketMessages(
-                                                ticketId: ticket.id,
-                                                themeColor: widget.themeColor,
-                                                customerId:
-                                                    "${widget.customerId}",
-                                                workspaceId: widget.workspaceId,
-                                                language: widget.language,
-                                                composerDisabled: ticket
-                                                            .status ==
-                                                        'CLOSED' ||
-                                                    ticket.status == 'MERGED' ||
-                                                    ticket.status == 'SOLVED',
-                                              ))
-                                            ],
-                                          )),
-                                        ),
-                                      ),
-                                    );
-                                  });
+                                context: context,
+                                builder: (content) {
+                                  return TicketDetail(
+                                    workspaceId: widget.workspaceId,
+                                    customerId: "${widget.customerId}",
+                                    ticket: ticket,
+                                    themeColor: widget.themeColor,
+                                  );
+                                },
+                              );
                             },
                             child: Container(
                               padding: const EdgeInsets.all(12),

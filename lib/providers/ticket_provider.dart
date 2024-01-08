@@ -15,6 +15,9 @@ class TicketProvider extends ChangeNotifier {
   bool isCreatingTicket = false;
   bool isCreated = false;
 
+  String? _selectedTicketMessageId;
+  String? get selectedTicketMessageId => _selectedTicketMessageId;
+
   List<Ticket> _tickets = [];
   List<Ticket> get tickets => _tickets;
 
@@ -116,9 +119,12 @@ class TicketProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addMessage(Message newMessage) async {
+  void updateSelectedTicketMessage(String? id) {
+    _selectedTicketMessageId = id;
     notifyListeners();
+  }
 
+  Future<void> addMessage(Message newMessage) async {
     _messages = [newMessage, ..._messages];
     notifyListeners();
   }

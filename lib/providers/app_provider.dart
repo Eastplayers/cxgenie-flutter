@@ -23,6 +23,9 @@ class AppProvider extends ChangeNotifier {
   List<Message> _messages = [];
   List<Message> get messages => _messages;
 
+  String? _selectedTicketMessageId;
+  String? get selectedTicketMessageId => _selectedTicketMessageId;
+
   Future<void> getBotDetail(String id, String? token) async {
     isLoading = true;
     notifyListeners();
@@ -61,9 +64,26 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> addMessage(Message newMessage) async {
-    notifyListeners();
-
     _messages = [newMessage, ..._messages];
+    notifyListeners();
+  }
+
+  void updateMessageReactions(
+      String messageId, MessageReactions reactions) async {
+    notifyListeners();
+    _messages = _messages.map((message) {
+      if (message.id == messageId) {
+        message.reactions = reactions;
+        return message;
+      }
+
+      return message;
+    }).toList();
+    notifyListeners();
+  }
+
+  void updateSelectedTicketMessage(String? id) {
+    _selectedTicketMessageId = id;
     notifyListeners();
   }
 }

@@ -1,12 +1,10 @@
 import 'package:cxgenie/enums/language.dart';
-import 'package:cxgenie/models/bot.dart';
-import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/services/app_service.dart';
 import 'package:cxgenie/widgets/icon.dart';
-import 'package:cxgenie/widgets/message_item.dart';
+import 'package:cxgenie/widgets/ticket_message_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -86,7 +84,7 @@ class TicketMessagesState extends State<TicketMessages> {
         media: cloneFiles,
         senderId: widget.customerId,
         createdAt: isoDate,
-        id: DateTime.now().toString(),
+        id: isoDate,
       );
       Provider.of<TicketProvider>(context, listen: false)
           .addMessage(internalNewMessage);
@@ -415,7 +413,7 @@ class TicketMessagesState extends State<TicketMessages> {
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       reverse: true,
       itemBuilder: (context, int index) {
-        return MessageItem(
+        return TicketMessageItem(
           message: messages[index],
           index: index,
           messages: messages,

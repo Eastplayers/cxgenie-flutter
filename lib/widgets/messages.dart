@@ -4,6 +4,7 @@ import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/providers/app_provider.dart';
 import 'package:cxgenie/services/app_service.dart';
+import 'package:cxgenie/widgets/message_item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -65,6 +66,8 @@ class MessagesState extends State<Messages> {
   /// Send message
   void sendMessage(String content) async {
     if (textController.text.trim().isNotEmpty || _uploadedFiles.isNotEmpty) {
+      Provider.of<AppProvider>(context, listen: false)
+          .updateSelectedTicketMessage(null);
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
       setState(() {
@@ -85,17 +88,17 @@ class MessagesState extends State<Messages> {
       };
       socket.emit('message.bot.create', newMessage);
       Message internalNewMessage = Message(
-          type: "TEXT",
-          content: content.trim(),
-          media: cloneFiles,
-          senderId: widget.customerId,
-          createdAt: isoDate);
+        type: "TEXT",
+        content: content.trim(),
+        media: cloneFiles,
+        senderId: widget.customerId,
+        createdAt: isoDate,
+        id: isoDate,
+      );
       Provider.of<AppProvider>(context, listen: false)
           .addMessage(internalNewMessage);
-      if (Provider.of<AppProvider>(context, listen: false)
-              .customer!
-              .autoReply ==
-          true) {
+      var customer = Provider.of<AppProvider>(context, listen: false).customer;
+      if (customer != null && customer.autoReply == true) {
         _isSendingMessage = true;
       }
     }
@@ -110,6 +113,8 @@ class MessagesState extends State<Messages> {
     });
     socket.on('new_message', (data) {
       if (data['receiver_id'] == widget.customerId) {
+        Provider.of<AppProvider>(context, listen: false)
+            .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
         final bot = data['bot'];
         final sender = data['sender'];
@@ -423,7 +428,14 @@ class MessagesState extends State<Messages> {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         reverse: true,
         itemBuilder: (context, int index) {
-          return _buildMessageItem(messages[index], bot, index, messages);
+          return MessageItem(
+            message: messages[index],
+            index: index,
+            messages: messages,
+            customerId: widget.customerId,
+            themeColor: widget.themeColor,
+            bot: bot,
+          );
         });
   }
 

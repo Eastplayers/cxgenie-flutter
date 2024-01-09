@@ -31,11 +31,13 @@ class HomeScreen extends StatelessWidget {
           title: const Text('Chat'),
           backgroundColor: const Color(0xFF364de7),
           elevation: 0),
-      body: const Center(
-        child: CXGenie(
-          botId: 'BOT_ID',
-          userToken: 'USER_TOKEN',
-          language: LanguageOptions.vi,
+      body: const SafeArea(
+        child: Center(
+          child: CXGenie(
+            botId: 'e1caaec4-b56c-4b7d-9cd7-86b3df5c77af',
+            // userToken: 'USER_TOKEN',
+            language: LanguageOptions.vi,
+          ),
         ),
       ),
     );

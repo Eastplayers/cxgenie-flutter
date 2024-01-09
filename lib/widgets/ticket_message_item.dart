@@ -1,7 +1,5 @@
 import 'package:cxgenie/helpers/date.dart';
-import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/message.dart';
-import 'package:cxgenie/providers/app_provider.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/widgets/icon.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
@@ -12,29 +10,27 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 
-class MessageItem extends StatefulWidget {
+class TicketMessageItem extends StatefulWidget {
   final Message message;
   final int index;
   final List<Message> messages;
   final String customerId;
   final String themeColor;
-  final Bot bot;
 
-  const MessageItem({
+  const TicketMessageItem({
     Key? key,
     required this.message,
     required this.index,
     required this.messages,
     required this.customerId,
     required this.themeColor,
-    required this.bot,
   }) : super(key: key);
 
   @override
-  MessageItemState createState() => MessageItemState();
+  TicketMessageItemState createState() => TicketMessageItemState();
 }
 
-class MessageItemState extends State<MessageItem> {
+class TicketMessageItemState extends State<TicketMessageItem> {
   late io.Socket socket;
 
   /// Connect to socket to receive messages in real-time
@@ -47,9 +43,14 @@ class MessageItemState extends State<MessageItem> {
     socket.on('message.reaction.created', (data) {
       if (data['message']['id'] == widget.message.id) {
         MessageReactions reactions =
-            MessageReactions.fromJson(data['message']['reactions'] ?? "{}");
-        Provider.of<AppProvider>(context, listen: false)
-            .updateMessageReactions("${widget.message.id}", reactions);
+            MessageReactions.fromJson(data['message']['reactions']);
+        if (reactions != null) {
+          Provider.of<TicketProvider>(context, listen: false)
+              .updateMessageReactions("${widget.message.id}", reactions);
+        }
+        // setState(() {
+        //   reactions = MessageReactions.fromJson(data['message']['reactions']);
+        // });
       }
     });
   }
@@ -61,7 +62,7 @@ class MessageItemState extends State<MessageItem> {
       'value': type,
     };
     socket.emit('message.reaction.create', payload);
-    Provider.of<AppProvider>(context, listen: false)
+    Provider.of<TicketProvider>(context, listen: false)
         .updateSelectedTicketMessage(null);
   }
 
@@ -89,9 +90,8 @@ class MessageItemState extends State<MessageItem> {
         widget.message.reactions ?? MessageReactions.fromJson({});
 
     return Portal(
-      child: Consumer<AppProvider>(builder: (context, value, child) {
+      child: Consumer<TicketProvider>(builder: (context, value, child) {
         bool showReactions = value.selectedTicketMessageId == widget.message.id;
-        Bot bot = widget.bot;
 
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 6),
@@ -100,10 +100,9 @@ class MessageItemState extends State<MessageItem> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               SizedBox(
-                width: 32,
-                height: 32,
                 child: !isMine
-                    ? bot.avatar == null || bot.avatar == ""
+                    ? widget.message.sender?.avatar == null &&
+                            widget.message.bot?.avatar == null
                         ? Container(
                             width: 32,
                             height: 32,
@@ -115,7 +114,7 @@ class MessageItemState extends State<MessageItem> {
                             ),
                             child: Center(
                               child: Text(
-                                bot.name[0].toUpperCase(),
+                                "${widget.message.sender?.name[0].toUpperCase() ?? widget.message.bot?.name[0].toUpperCase()}",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   color: Color(
@@ -127,7 +126,7 @@ class MessageItemState extends State<MessageItem> {
                           )
                         : ClipOval(
                             child: Image.network(
-                              "${bot.avatar}",
+                              "${widget.message.sender?.avatar ?? widget.message.bot?.avatar}",
                               width: 32,
                               height: 32,
                               fit: BoxFit.cover,
@@ -135,7 +134,9 @@ class MessageItemState extends State<MessageItem> {
                           )
                     : null,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(
+                width: 8,
+              ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: isMine
@@ -156,13 +157,13 @@ class MessageItemState extends State<MessageItem> {
                                 GestureDetector(
                                   behavior: HitTestBehavior.opaque,
                                   onTap: () {
-                                    Provider.of<AppProvider>(context,
+                                    Provider.of<TicketProvider>(context,
                                             listen: false)
                                         .updateSelectedTicketMessage(null);
                                   },
                                   onLongPress: () {
                                     if (!isMine) {
-                                      Provider.of<AppProvider>(context,
+                                      Provider.of<TicketProvider>(context,
                                               listen: false)
                                           .updateSelectedTicketMessage(
                                               widget.message.id);

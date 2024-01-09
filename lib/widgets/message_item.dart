@@ -275,7 +275,9 @@ class MessageItemState extends State<MessageItem> {
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
-                                            formatter.format(createdAt),
+                                            isToday(createdAt)
+                                                ? "Hôm nay, ${formatter.format(createdAt)}"
+                                                : formatter.format(createdAt),
                                             style: TextStyle(
                                               fontSize: 11,
                                               color: isMine
@@ -451,7 +453,9 @@ class MessageItemState extends State<MessageItem> {
                             height: 4,
                           ),
                           Text(
-                            formatter.format(createdAt),
+                            isToday(createdAt)
+                                ? "Hôm nay, ${formatter.format(createdAt)}"
+                                : formatter.format(createdAt),
                             style: const TextStyle(
                                 fontSize: 11, color: Color(0xffA3A9B3)),
                           )

@@ -1,5 +1,6 @@
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
+import 'package:cxgenie/models/ticket_category.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'ticket.g.dart';
@@ -40,6 +41,9 @@ class Ticket {
   @JsonKey(name: "bot_id")
   String? botId;
 
+  @JsonKey(name: "ticket_category")
+  TicketCategory? ticketCategory;
+
   Ticket({
     required this.id,
     required this.name,
@@ -56,6 +60,7 @@ class Ticket {
     this.assignee,
     this.bot,
     this.isReplied,
+    this.ticketCategory,
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);

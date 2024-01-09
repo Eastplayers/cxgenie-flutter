@@ -97,7 +97,7 @@ class MessageItemState extends State<MessageItem> {
           padding: const EdgeInsets.symmetric(vertical: 6),
           alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               SizedBox(
                 child: !isMine
@@ -253,7 +253,7 @@ class MessageItemState extends State<MessageItem> {
                                                 .width) -
                                             180,
                                       ),
-                                      padding: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(12),
                                       decoration: BoxDecoration(
                                         color: isMine
                                             ? Color(int.parse(color))
@@ -261,8 +261,6 @@ class MessageItemState extends State<MessageItem> {
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
@@ -275,20 +273,17 @@ class MessageItemState extends State<MessageItem> {
                                               fontSize: 14,
                                             ),
                                           ),
-                                          const SizedBox(height: 4),
-                                          SizedBox(
-                                            child: Text(
-                                              formatter.format(createdAt),
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: isMine
-                                                    ? Colors.white
-                                                        .withOpacity(0.7)
-                                                    : const Color(0xffA3A9B3),
-                                              ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            formatter.format(createdAt),
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              color: isMine
+                                                  ? Colors.white
+                                                      .withOpacity(0.7)
+                                                  : const Color(0xffA3A9B3),
                                             ),
-                                          )
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -296,12 +291,10 @@ class MessageItemState extends State<MessageItem> {
                                 ),
                                 if (!showReactions &&
                                     (!isMine &&
-                                        reactions != null &&
-                                        ((reactions!.like != null &&
-                                                reactions!.like!.isNotEmpty) ||
-                                            (reactions!.dislike != null &&
-                                                reactions!
-                                                    .dislike!.isNotEmpty))))
+                                            (reactions.like != null &&
+                                                reactions.like!.isNotEmpty) ||
+                                        (reactions.dislike != null &&
+                                            reactions.dislike!.isNotEmpty)))
                                   Positioned(
                                     right: isMine ? null : -16,
                                     bottom: 0,

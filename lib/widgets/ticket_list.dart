@@ -6,6 +6,7 @@ import 'package:cxgenie/widgets/ticket_detail.dart';
 import 'package:cxgenie/widgets/ticket_messages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
@@ -198,102 +199,136 @@ class TicketListState extends State<TicketList> {
                       },
                       itemBuilder: (context, index) {
                         var ticket = value.tickets[index];
+                        DateTime updated =
+                            DateTime.parse(ticket.createdAt).toLocal();
+                        var formatter = DateFormat("dd/MM/yy hh:mm");
 
-                        return Container(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: GestureDetector(
-                            onTap: () {
-                              showCupertinoModalPopup(
-                                context: context,
-                                builder: (content) {
-                                  return TicketDetail(
-                                    workspaceId: widget.workspaceId,
-                                    customerId: "${widget.customerId}",
-                                    ticket: ticket,
-                                    themeColor: widget.themeColor,
-                                  );
-                                },
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          "#${ticket.code}",
-                                          style: const TextStyle(
-                                              color: Color(0xff7D828B),
-                                              fontSize: 14),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
+                        return GestureDetector(
+                          onTap: () {
+                            showCupertinoModalPopup(
+                              context: context,
+                              builder: (content) {
+                                return TicketDetail(
+                                  workspaceId: widget.workspaceId,
+                                  customerId: "${widget.customerId}",
+                                  ticket: ticket,
+                                  themeColor: widget.themeColor,
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "#${ticket.code}",
+                                            style: const TextStyle(
+                                                color: Color(0xff7D828B),
+                                                fontSize: 12),
                                           ),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                            color: colorMap[ticket.status]
-                                                ?['background'],
-                                          ),
-                                          child: Text(
-                                            "${nameMap[ticket.status]?[widget.language]}",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              color: colorMap[ticket.status]
-                                                  ?['color'],
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 8,
-                                    ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (ticket.isReplied == true)
+                                          const SizedBox(width: 8),
                                           Container(
-                                            width: 8,
-                                            height: 8,
-                                            margin: EdgeInsets.only(top: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(10),
-                                              color: const Color(0xff364DE7),
+                                              color: colorMap[ticket.status]
+                                                  ?['background'],
                                             ),
-                                          ),
-                                        if (ticket.isReplied == true)
-                                          const SizedBox(
-                                            width: 8,
-                                          ),
-                                        Expanded(
                                             child: Text(
-                                          ticket.name,
-                                          textAlign: TextAlign.left,
-                                          style: const TextStyle(
-                                            color: Color(0xff2C2E33),
-                                            fontWeight: FontWeight.w700,
+                                              "${nameMap[ticket.status]?[widget.language]}",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w600,
+                                                color: colorMap[ticket.status]
+                                                    ?['color'],
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      Text(
+                                        formatter.format(updated),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Color(0xffA3A9B3),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 8,
+                                  ),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (ticket.isReplied == true)
+                                        Container(
+                                          width: 8,
+                                          height: 8,
+                                          margin: const EdgeInsets.only(top: 4),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: const Color(0xff364DE7),
                                           ),
-                                        ))
+                                        ),
+                                      if (ticket.isReplied == true)
+                                        const SizedBox(
+                                          width: 8,
+                                        ),
+                                      Expanded(
+                                          child: Text(
+                                        ticket.name,
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                          color: Color(0xff2C2E33),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ))
+                                    ],
+                                  ),
+                                  if (ticket.ticketCategory != null)
+                                    Column(
+                                      children: [
+                                        const SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            if (ticket.ticketCategory!.parent !=
+                                                null)
+                                              Text(
+                                                "${ticket.ticketCategory!.parent!.name} / ",
+                                                style: const TextStyle(
+                                                  fontSize: 14,
+                                                  color: Color(0xff5C6169),
+                                                ),
+                                              ),
+                                            Text(
+                                              ticket.ticketCategory!.name,
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Color(0xff5C6169),
+                                              ),
+                                            ),
+                                          ],
+                                        )
                                       ],
                                     )
-                                  ]),
-                            ),
+                                ]),
                           ),
                         );
                       }),

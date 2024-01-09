@@ -19,13 +19,17 @@ class TicketCategory {
   @JsonKey(name: "updated_at")
   String updatedAt;
 
-  TicketCategory(
-      {required this.id,
-      required this.name,
-      required this.workspaceId,
-      this.parentId,
-      required this.createdAt,
-      required this.updatedAt});
+  TicketCategory? parent;
+
+  TicketCategory({
+    required this.id,
+    required this.name,
+    required this.workspaceId,
+    this.parentId,
+    required this.createdAt,
+    required this.updatedAt,
+    this.parent,
+  });
 
   factory TicketCategory.fromJson(Map<String, dynamic> json) =>
       _$TicketCategoryFromJson(json);

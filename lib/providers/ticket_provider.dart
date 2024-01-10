@@ -18,6 +18,13 @@ class TicketProvider extends ChangeNotifier {
   String? _selectedTicketMessageId;
   String? get selectedTicketMessageId => _selectedTicketMessageId;
 
+  int _selectedPage = 0;
+  int get selectedPage => _selectedPage;
+
+  TicketStatusCount _ticketStatusCount =
+      TicketStatusCount(open: 0, closed: 0, all: 0);
+  TicketStatusCount get ticketStatusCount => _ticketStatusCount;
+
   List<Ticket> _tickets = [];
   List<Ticket> get tickets => _tickets;
 
@@ -32,6 +39,14 @@ class TicketProvider extends ChangeNotifier {
 
   Customer? _customer;
   Customer? get customer => _customer;
+
+  Future<void> getTicketStatusCount(
+      String customerId, String workspaceId) async {
+    final response = await _service.getTicketCount(customerId, workspaceId);
+    _ticketStatusCount = response;
+
+    notifyListeners();
+  }
 
   Future<void> getTickets(
       String customerId, String workspaceId, List<String> statuses) async {
@@ -88,6 +103,8 @@ class TicketProvider extends ChangeNotifier {
     final ticketsResponse =
         await _service.getTickets(customerId, workspaceId, statuses);
 
+    getTicketStatusCount(customerId, workspaceId);
+
     _tickets = ticketsResponse;
     isCreatingTicket = false;
     isCreated = true;
@@ -121,6 +138,11 @@ class TicketProvider extends ChangeNotifier {
 
   void updateSelectedTicketMessage(String? id) {
     _selectedTicketMessageId = id;
+    notifyListeners();
+  }
+
+  void setSelectedPage(int page) {
+    _selectedPage = page;
     notifyListeners();
   }
 

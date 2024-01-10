@@ -5,6 +5,18 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'ticket.g.dart';
 
+class TicketStatusCount {
+  int open;
+  int closed;
+  int all;
+
+  TicketStatusCount({
+    required this.open,
+    required this.closed,
+    required this.all,
+  });
+}
+
 @JsonSerializable()
 class Ticket {
   String id;

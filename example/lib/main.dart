@@ -28,13 +28,14 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Chat'),
-          backgroundColor: const Color(0xFF364de7),
-          elevation: 0),
+        title: const Text('Chat'),
+        backgroundColor: const Color(0xFF364de7),
+        elevation: 0,
+      ),
       body: const SafeArea(
         child: Center(
           child: CXGenie(
-            botId: 'e1caaec4-b56c-4b7d-9cd7-86b3df5c77af',
+            botId: '8db85cb8-195d-4c80-9ec6-8267ade443e6',
             // userToken: 'USER_TOKEN',
             language: LanguageOptions.vi,
           ),

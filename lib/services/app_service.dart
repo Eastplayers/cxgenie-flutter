@@ -194,6 +194,45 @@ class AppService {
     }
   }
 
+  Future<TicketStatusCount> getTicketCount(
+      String customerId, String workspaceId) async {
+    try {
+      final uri = Uri(
+          scheme: 'https',
+          host: 'api.cxgenie.ai',
+          path: '/api/v1/tickets/each-statuses',
+          queryParameters: {
+            'creator_id': customerId,
+            'workspace_id': workspaceId,
+          });
+
+      final response = await http.get(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8'
+        },
+      );
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final data = json['data'];
+        return TicketStatusCount(
+          open: data['OPEN'] + data['IN_PROGRESS'],
+          closed: data['SOLVED'] + data['CLOSED'] + data['MERGED'],
+          all: data['OPEN'] +
+              data['IN_PROGRESS'] +
+              data['SOLVED'] +
+              data['CLOSED'] +
+              data['MERGED'],
+        );
+      }
+
+      final json = jsonDecode(response.body);
+      throw Exception(json['error']['message']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<List<TicketCategory>> getTicketCategories(String workspaceId) async {
     try {
       final uri = Uri(

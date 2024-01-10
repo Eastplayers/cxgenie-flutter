@@ -3,7 +3,6 @@ import 'package:cxgenie/models/ticket_category.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/services/app_service.dart';
 import 'package:cxgenie/widgets/ticket_detail.dart';
-import 'package:cxgenie/widgets/ticket_messages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -81,23 +80,19 @@ Map<String, Map<LanguageOptions, String>> nameMap = {
 class TicketList extends StatefulWidget {
   const TicketList({
     Key? key,
-    required this.index,
     required this.workspaceId,
     this.customerId,
     this.userToken,
     this.language = LanguageOptions.en,
     required this.themeColor,
-    this.showCreateButton = true,
     this.statuses = const ['OPEN', 'IN_PROGRESS'],
   }) : super(key: key);
 
-  final int index;
   final String workspaceId;
   final String? customerId;
   final String? userToken;
   final String themeColor;
   final LanguageOptions? language;
-  final bool? showCreateButton;
   final List<String> statuses;
 
   @override
@@ -118,9 +113,10 @@ class TicketListState extends State<TicketList> {
   Widget build(BuildContext context) {
     return Consumer<TicketProvider>(builder: (context, value, child) {
       String color = widget.themeColor.replaceAll("#", "0xff");
+      int selectedPage = value.selectedPage;
 
       return Scaffold(
-        floatingActionButton: widget.showCreateButton == false
+        floatingActionButton: selectedPage == 1
             ? null
             : FloatingActionButton(
                 onPressed: () {
@@ -186,15 +182,14 @@ class TicketListState extends State<TicketList> {
                     )
                   : ListView.separated(
                       padding: EdgeInsets.only(
-                        left: 12,
-                        right: 12,
                         top: 6,
-                        bottom: widget.index == 1 ? 6 : 120,
+                        bottom: selectedPage == 1 ? 6 : 120,
                       ),
                       itemCount: value.tickets.length,
                       separatorBuilder: (context, index) {
-                        return const Divider(
-                          color: Color(0xffD6DAE1),
+                        return Container(
+                          color: const Color(0xffF2F3F5),
+                          height: 1,
                         );
                       },
                       itemBuilder: (context, index) {
@@ -203,7 +198,7 @@ class TicketListState extends State<TicketList> {
                             DateTime.parse(ticket.createdAt).toLocal();
                         var formatter = DateFormat("dd/MM/yy hh:mm");
 
-                        return GestureDetector(
+                        return InkWell(
                           onTap: () {
                             showCupertinoModalPopup(
                               context: context,
@@ -218,7 +213,7 @@ class TicketListState extends State<TicketList> {
                             );
                           },
                           child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            padding: const EdgeInsets.all(12),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -338,9 +333,16 @@ class TicketListState extends State<TicketList> {
   }
 
   Future<void> _pullRefresh() async {
+    int selectedPage =
+        Provider.of<TicketProvider>(context, listen: false).selectedPage;
     Provider.of<TicketProvider>(context, listen: false).getTickets(
-        "${widget.customerId}", widget.workspaceId, widget.statuses);
-    await Future.delayed(const Duration(seconds: 1));
+        "${widget.customerId}",
+        widget.workspaceId,
+        selectedPage == 0
+            ? const ['OPEN', 'IN_PROGRESS']
+            : selectedPage == 1
+                ? const ['SOLVED', 'CLOSED']
+                : const ['OPEN', 'IN_PROGRESS', 'SOLVED', 'CLOSED']);
   }
 }
 

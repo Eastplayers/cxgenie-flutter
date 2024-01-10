@@ -88,6 +88,7 @@ class TicketMessagesState extends State<TicketMessages> {
       );
       Provider.of<TicketProvider>(context, listen: false)
           .addMessage(internalNewMessage);
+      _getTicketDetail();
       if (_ticket.botId != null && _ticket.autoReply == true) {
         _isSendingMessage = true;
       }

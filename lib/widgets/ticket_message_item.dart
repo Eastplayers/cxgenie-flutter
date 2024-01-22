@@ -256,7 +256,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                 .width) -
                                             180,
                                       ),
-                                      padding: const EdgeInsets.all(12),
+                                      padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(
                                         color: isMine
                                             ? Color(int.parse(color))

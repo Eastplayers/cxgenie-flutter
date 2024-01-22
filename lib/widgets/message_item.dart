@@ -2,8 +2,8 @@ import 'package:cxgenie/helpers/date.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/providers/app_provider.dart';
-import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/widgets/icon.dart';
+import 'package:cxgenie/widgets/linkify.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -11,6 +11,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 class MessageItem extends StatefulWidget {
   final Message message;
@@ -252,7 +254,7 @@ class MessageItemState extends State<MessageItem> {
                                                 .width) -
                                             180,
                                       ),
-                                      padding: const EdgeInsets.all(12),
+                                      padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(
                                         color: isMine
                                             ? Color(int.parse(color))
@@ -263,26 +265,93 @@ class MessageItemState extends State<MessageItem> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            "${widget.message.content?.trim()}",
-                                            style: TextStyle(
-                                              color: isMine
-                                                  ? Colors.white
-                                                  : const Color(0xff2C2E33),
-                                              fontSize: 14,
+                                          RegExp('<[^>]*>',
+                                                      multiLine: true,
+                                                      caseSensitive: false)
+                                                  .hasMatch(
+                                                      "${widget.message.content?.trim()}")
+                                              ? Html(
+                                                  data:
+                                                      """<div class="container">${widget.message.content}<div/>""",
+                                                  onLinkTap: (url, attributes,
+                                                      element) async {
+                                                    if (await canLaunchUrl(
+                                                        Uri.parse(url!))) {
+                                                      await launchUrl(
+                                                          Uri.parse(url));
+                                                    }
+                                                  },
+                                                  style: {
+                                                    'div.container': Style(
+                                                      color: isMine
+                                                          ? Colors.white
+                                                          : const Color(
+                                                              0xff2C2E33),
+                                                      fontSize: FontSize.medium,
+                                                      padding:
+                                                          HtmlPaddings.all(0),
+                                                      margin: Margins.all(0),
+                                                      alignment:
+                                                          Alignment.topLeft,
+                                                    ),
+                                                    'a': Style(
+                                                      color: isMine
+                                                          ? Colors.white
+                                                          : Color(
+                                                              int.parse(color)),
+                                                      fontSize: FontSize.medium,
+                                                    )
+                                                  },
+                                                )
+                                              : Container(
+                                                  padding:
+                                                      const EdgeInsets.all(8),
+                                                  child: Linkify(
+                                                    onOpen: (link) async {
+                                                      if (await canLaunchUrl(
+                                                          Uri.parse(
+                                                              link.url))) {
+                                                        await launchUrl(
+                                                            Uri.parse(
+                                                                link.url));
+                                                      }
+                                                    },
+                                                    text: Bidi.stripHtmlIfNeeded(
+                                                            "${widget.message.content?.trim()}")
+                                                        .trim(),
+                                                    style: TextStyle(
+                                                      color: isMine
+                                                          ? Colors.white
+                                                          : const Color(
+                                                              0xff2C2E33),
+                                                      fontSize: 14,
+                                                    ),
+                                                    linkStyle: TextStyle(
+                                                      color: isMine
+                                                          ? Colors.white
+                                                          : Color(
+                                                              int.parse(color),
+                                                            ),
+                                                    ),
+                                                  ),
+                                                ),
+                                          Container(
+                                            padding: const EdgeInsets.only(
+                                              left: 8,
+                                              right: 8,
+                                              bottom: 4,
                                             ),
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Text(
-                                            isToday(createdAt)
-                                                ? "Hôm nay, ${formatter.format(createdAt)}"
-                                                : formatter.format(createdAt),
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              color: isMine
-                                                  ? Colors.white
-                                                      .withOpacity(0.7)
-                                                  : const Color(0xffA3A9B3),
+                                            child: Text(
+                                              isToday(createdAt)
+                                                  ? "Hôm nay, ${formatter.format(createdAt)}"
+                                                  : formatter.format(createdAt),
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: isMine
+                                                    ? Colors.white
+                                                        .withOpacity(0.7)
+                                                    : const Color(0xffA3A9B3),
+                                              ),
                                             ),
                                           ),
                                         ],

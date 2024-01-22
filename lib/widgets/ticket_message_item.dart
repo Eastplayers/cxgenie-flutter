@@ -88,7 +88,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
     bool isMine = widget.message.senderId == widget.customerId;
     DateTime createdAt =
         DateTime.parse("${widget.message.createdAt}").toLocal();
-    var formatter = DateFormat(isToday(createdAt) ? "hh:mm" : "dd/MM/yy hh:mm");
+    var formatter = DateFormat(isToday(createdAt) ? "HH:mm" : "dd/MM/yy HH:mm");
     MessageReactions? reactions =
         widget.message.reactions ?? MessageReactions.fromJson({});
 

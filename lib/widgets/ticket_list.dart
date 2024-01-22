@@ -196,7 +196,7 @@ class TicketListState extends State<TicketList> {
                         var ticket = value.tickets[index];
                         DateTime updated =
                             DateTime.parse(ticket.createdAt).toLocal();
-                        var formatter = DateFormat("dd/MM/yy hh:mm");
+                        var formatter = DateFormat("dd/MM/yy HH:mm");
 
                         return InkWell(
                           onTap: () {

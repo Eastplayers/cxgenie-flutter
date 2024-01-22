@@ -57,3 +57,9 @@ Send image, render image
 
 - Change colour of status bar when opening ticket detail
 - Update ticket message UI
+
+## 2.1.5
+
+**Updates:**
+
+- Separate Chat and Tickets

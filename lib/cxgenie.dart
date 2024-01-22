@@ -1,3 +1,4 @@
 library cxgenie;
 
-export 'screens/cxgenie.dart';
+export 'screens/chat.dart';
+export 'screens/tickets.dart';

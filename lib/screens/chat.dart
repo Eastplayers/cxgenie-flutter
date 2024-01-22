@@ -4,8 +4,8 @@ import 'package:cxgenie/widgets/app_container.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class CXGenie extends StatefulWidget {
-  const CXGenie({
+class Chat extends StatefulWidget {
+  const Chat({
     Key? key,
     required this.botId,
     this.userToken,
@@ -17,10 +17,10 @@ class CXGenie extends StatefulWidget {
   final LanguageOptions? language;
 
   @override
-  CXGenieState createState() => CXGenieState();
+  ChatState createState() => ChatState();
 }
 
-class CXGenieState extends State<CXGenie> {
+class ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

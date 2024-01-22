@@ -63,3 +63,9 @@ Send image, render image
 **Updates:**
 
 - Separate Chat and Tickets
+
+## 2.1.6
+
+**Updates:**
+
+- Render and handle click on link

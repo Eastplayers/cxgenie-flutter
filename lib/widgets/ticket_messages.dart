@@ -55,7 +55,7 @@ class TicketMessagesState extends State<TicketMessages> {
   );
 
   /// Send message
-  void sendMessage(String content) async {
+  Future<void> sendMessage(String content) async {
     if (textController.text.trim().isNotEmpty || _uploadedFiles.isNotEmpty) {
       Provider.of<TicketProvider>(context, listen: false)
           .updateSelectedTicketMessage(null);
@@ -88,10 +88,6 @@ class TicketMessagesState extends State<TicketMessages> {
       );
       Provider.of<TicketProvider>(context, listen: false)
           .addMessage(internalNewMessage);
-      _getTicketDetail();
-      if (_ticket.botId != null && _ticket.autoReply == true) {
-        _isSendingMessage = true;
-      }
     }
   }
 
@@ -105,9 +101,11 @@ class TicketMessagesState extends State<TicketMessages> {
       socket.emit('room.conversation.join', widget.customerId);
     });
     socket.on('is_typing', (isTyping) {
-      _isSendingMessage = isTyping;
+      setState(() {
+        _isSendingMessage = isTyping;
+      });
     });
-    socket.on('new_message', (data) {
+    socket.on('message.created', (data) {
       if (data['receiver_id'] == widget.customerId &&
           data['ticket_id'] == widget.ticketId) {
         Provider.of<TicketProvider>(context, listen: false)
@@ -169,7 +167,7 @@ class TicketMessagesState extends State<TicketMessages> {
 
   @override
   void dispose() {
-    socket.disconnect();
+    socket.dispose();
     super.dispose();
   }
 

@@ -1,6 +1,6 @@
 name: cxgenie
 description: The cxgenie Flutter Package seamlessly integrates https://cxgenie.ai cutting-edge Conversational AI and NLP capabilities into Flutter apps.
-version: 2.1.9
+version: 2.1.10
 homepage: https://cxgenie.ai
 
 environment:
@@ -25,7 +25,8 @@ dependencies:
   flutter_linkify: ^6.0.0
   url_launcher: ^6.2.3
   linkify: ^5.0.0
-  flutter_html: ^3.0.0-beta.2
+  flutter_html: 3.0.0-alpha.6
+  flutter_html_iframe: ^3.0.0-alpha.3
 
 dev_dependencies:
   flutter_test:

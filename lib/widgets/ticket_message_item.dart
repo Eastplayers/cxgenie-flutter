@@ -6,6 +6,7 @@ import 'package:cxgenie/widgets/linkify.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
@@ -275,7 +276,9 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                               ? Html(
                                                   data:
                                                       """<div class="container">${widget.message.content}<div/>""",
-                                                  onLinkTap: (url, attributes,
+                                                  onLinkTap: (url,
+                                                      context,
+                                                      attributes,
                                                       element) async {
                                                     if (await canLaunchUrl(
                                                         Uri.parse(url!))) {
@@ -291,7 +294,8 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                               0xff2C2E33),
                                                       fontSize: FontSize.medium,
                                                       padding:
-                                                          HtmlPaddings.all(0),
+                                                          const EdgeInsets.all(
+                                                              0),
                                                       margin: Margins.all(0),
                                                       alignment:
                                                           Alignment.topLeft,
@@ -304,7 +308,10 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                       fontSize: FontSize.medium,
                                                     )
                                                   },
-                                                )
+                                                  customRenders: {
+                                                    iframeMatcher():
+                                                        iframeRender(),
+                                                  })
                                               : Container(
                                                   padding:
                                                       const EdgeInsets.all(8),

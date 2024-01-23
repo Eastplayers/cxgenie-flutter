@@ -273,7 +273,9 @@ class MessageItemState extends State<MessageItem> {
                                               ? Html(
                                                   data:
                                                       """<div class="container">${widget.message.content}<div/>""",
-                                                  onLinkTap: (url, attributes,
+                                                  onLinkTap: (url,
+                                                      context,
+                                                      attributes,
                                                       element) async {
                                                     if (await canLaunchUrl(
                                                         Uri.parse(url!))) {
@@ -289,7 +291,8 @@ class MessageItemState extends State<MessageItem> {
                                                               0xff2C2E33),
                                                       fontSize: FontSize.medium,
                                                       padding:
-                                                          HtmlPaddings.all(0),
+                                                          const EdgeInsets.all(
+                                                              0),
                                                       margin: Margins.all(0),
                                                       alignment:
                                                           Alignment.topLeft,

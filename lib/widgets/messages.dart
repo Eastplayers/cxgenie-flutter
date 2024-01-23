@@ -106,55 +106,24 @@ class MessagesState extends State<Messages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://api.cxgenie.ai',
-        io.OptionBuilder().setTransports(['websocket']).build());
+    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
+      'transports': ['websocket'],
+      'forceNew': true,
+    });
     socket.onConnect((_) {
       socket.emit('room.conversation.join', widget.customerId);
     });
-    socket.on('new_message', (data) {
+    socket.on('is_typing', (isTyping) {
+      setState(() {
+        _isSendingMessage = isTyping;
+      });
+    });
+    socket.on('message.created', (data) {
       if (data['receiver_id'] == widget.customerId) {
         Provider.of<AppProvider>(context, listen: false)
             .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
-        final bot = data['bot'];
-        final sender = data['sender'];
-        final receiver = data['receiver'];
-        final media = data['media'] == null ? null : data['media'] as List;
-        Message newMessage = Message(
-            id: data['id'],
-            content: data['content'],
-            receiverId: data['receiver_id'],
-            type: data['type'],
-            botId: data['bot_id'],
-            senderId: data['sender_id'],
-            createdAt: data['created_at'],
-            media: media == null
-                ? []
-                : media.map((mediaItem) {
-                    return MessageMedia(url: mediaItem['url']);
-                  }).toList(),
-            bot: bot == null
-                ? null
-                : Bot(
-                    id: bot['id'],
-                    name: bot['name'],
-                    themeColor: bot['theme_color'],
-                    createdAt: bot['created_at'],
-                    updatedAt: bot['updated_at'],
-                    workspaceId: bot['workspace_id'],
-                  ),
-            sender: sender == null
-                ? null
-                : Customer(
-                    id: sender['id'],
-                    name: sender['name'],
-                    avatar: sender['avatar']),
-            receiver: receiver == null
-                ? null
-                : Customer(
-                    id: receiver['id'],
-                    name: receiver['name'],
-                    avatar: receiver['avatar']));
+        Message newMessage = Message.fromJson(data);
 
         Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
       }
@@ -199,6 +168,12 @@ class MessagesState extends State<Messages> {
           .getMessages(widget.customerId);
     });
     connectSocket();
+  }
+
+  @override
+  void dispose() {
+    socket.dispose();
+    super.dispose();
   }
 
   @override

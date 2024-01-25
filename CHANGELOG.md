@@ -69,3 +69,13 @@ Send image, render image
 **Updates:**
 
 - Render and handle click on link
+
+## 2.1.11
+
+**New features:**
+
+- Add sending status for message
+
+**Updates:**
+
+- Update is_typing behaviour

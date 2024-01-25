@@ -61,6 +61,12 @@ class Message {
   @JsonKey(name: "workspace_id")
   String? workspaceId;
 
+  @JsonKey(name: "sending_status")
+  String? sendingStatus;
+
+  @JsonKey(name: "local_id")
+  String? localId;
+
   Message({
     this.id,
     this.content,
@@ -75,6 +81,8 @@ class Message {
     this.media,
     this.workspaceId,
     this.reactions,
+    this.sendingStatus,
+    this.localId,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>

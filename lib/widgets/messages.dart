@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
@@ -12,6 +14,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:image_picker/image_picker.dart';
+import 'package:uuid/uuid.dart';
 
 const String sendIcon = '''
   <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -85,22 +88,29 @@ class MessagesState extends State<Messages> {
         'customer_id': widget.customerId,
         'sender_id': widget.customerId,
         'type': 'TEXT',
+        'local_id': const Uuid().v4(),
+        'sending_status': 'sending'
       };
-      socket.emit('message.bot.create', newMessage);
-      Message internalNewMessage = Message(
-        type: "TEXT",
-        content: content.trim(),
-        media: cloneFiles,
-        senderId: widget.customerId,
-        createdAt: isoDate,
-        id: isoDate,
-      );
+      var localMessage = <String, dynamic>{
+        ...newMessage,
+        'id': const Uuid().v4(),
+        'created_at': isoDate,
+      };
+
+      Message internalNewMessage = Message.fromJson(localMessage);
+
       Provider.of<AppProvider>(context, listen: false)
           .addMessage(internalNewMessage);
-      var customer = Provider.of<AppProvider>(context, listen: false).customer;
-      if (customer != null && customer.autoReply == true) {
-        _isSendingMessage = true;
-      }
+      Timer(
+          const Duration(milliseconds: 750),
+          () => Provider.of<AppProvider>(context, listen: false).updateMessage(
+              Message.fromJson({...localMessage, 'sending_status': 'sent'})));
+      Timer(
+          const Duration(milliseconds: 1500),
+          () => Provider.of<AppProvider>(context, listen: false).updateMessage(
+              Message.fromJson({...localMessage, 'sending_status': 'seen'})));
+      Timer(const Duration(milliseconds: 1750),
+          () => socket.emit('message.bot.create', newMessage));
     }
   }
 
@@ -113,10 +123,12 @@ class MessagesState extends State<Messages> {
     socket.onConnect((_) {
       socket.emit('room.conversation.join', widget.customerId);
     });
-    socket.on('is_typing', (isTyping) {
-      setState(() {
-        _isSendingMessage = isTyping;
-      });
+    socket.on('is_typing', (data) {
+      if (data['customer_id'] == widget.customerId) {
+        setState(() {
+          _isSendingMessage = data['is_typing'];
+        });
+      }
     });
     socket.on('message.created', (data) {
       if (data['receiver_id'] == widget.customerId) {

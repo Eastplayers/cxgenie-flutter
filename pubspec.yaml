@@ -27,6 +27,7 @@ dependencies:
   linkify: ^5.0.0
   flutter_html: 3.0.0-alpha.6
   flutter_html_iframe: ^3.0.0-alpha.3
+  uuid: ^4.2.2
 
 dev_dependencies:
   flutter_test:

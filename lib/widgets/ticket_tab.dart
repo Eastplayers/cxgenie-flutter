@@ -12,14 +12,14 @@ Map<String, Map<LanguageOptions, String>> nameMap = {
 };
 
 class TicketTab extends StatefulWidget {
-  const TicketTab(
-      {Key? key,
-      required this.workspaceId,
-      this.customerId,
-      this.userToken,
-      this.language = LanguageOptions.en,
-      required this.themeColor})
-      : super(key: key);
+  const TicketTab({
+    Key? key,
+    required this.workspaceId,
+    this.customerId,
+    this.userToken,
+    this.language = LanguageOptions.en,
+    required this.themeColor,
+  }) : super(key: key);
 
   final String workspaceId;
   final String? customerId;

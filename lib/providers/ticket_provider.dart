@@ -150,4 +150,9 @@ class TicketProvider extends ChangeNotifier {
     _messages = [newMessage, ..._messages];
     notifyListeners();
   }
+
+  Future<void> updateMessage(Message newMessage) async {
+    _messages[_messages.indexWhere((m) => m.id == newMessage.id)] = newMessage;
+    notifyListeners();
+  }
 }

@@ -68,6 +68,11 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateMessage(Message newMessage) async {
+    _messages[_messages.indexWhere((m) => m.id == newMessage.id)] = newMessage;
+    notifyListeners();
+  }
+
   void updateMessageReactions(
       String messageId, MessageReactions reactions) async {
     notifyListeners();

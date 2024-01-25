@@ -208,6 +208,7 @@ class TicketListState extends State<TicketList> {
                                   customerId: "${widget.customerId}",
                                   ticket: ticket,
                                   themeColor: widget.themeColor,
+                                  language: widget.language,
                                 );
                               },
                             );
@@ -215,119 +216,110 @@ class TicketListState extends State<TicketList> {
                           child: Container(
                             padding: const EdgeInsets.all(12),
                             child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "#${ticket.code}",
-                                            style: const TextStyle(
-                                                color: Color(0xff7D828B),
-                                                fontSize: 12),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              color: colorMap[ticket.status]
-                                                  ?['background'],
-                                            ),
-                                            child: Text(
-                                              "${nameMap[ticket.status]?[widget.language]}",
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w600,
-                                                color: colorMap[ticket.status]
-                                                    ?['color'],
-                                              ),
-                                            ),
-                                          )
-                                        ],
-                                      ),
-                                      Text(
-                                        formatter.format(updated),
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                          color: Color(0xffA3A9B3),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 8,
-                                  ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      // if (ticket.isReplied == true)
-                                      //   Container(
-                                      //     width: 8,
-                                      //     height: 8,
-                                      //     margin: const EdgeInsets.only(top: 4),
-                                      //     decoration: BoxDecoration(
-                                      //       borderRadius:
-                                      //           BorderRadius.circular(10),
-                                      //       color: const Color(0xff364DE7),
-                                      //     ),
-                                      //   ),
-                                      // if (ticket.isReplied == true)
-                                      //   const SizedBox(
-                                      //     width: 8,
-                                      //   ),
-                                      Expanded(
-                                        child: Text(
-                                          ticket.name,
-                                          textAlign: TextAlign.left,
-                                          style: const TextStyle(
-                                            color: Color(0xff2C2E33),
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  if (ticket.ticketCategory != null)
-                                    Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
                                       children: [
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          children: [
-                                            if (ticket.ticketCategory!.parent !=
-                                                null)
-                                              Text(
-                                                "${ticket.ticketCategory!.parent!.name} / ",
-                                                style: const TextStyle(
-                                                  fontSize: 14,
-                                                  color: Color(0xff5C6169),
-                                                ),
-                                              ),
-                                            Text(
-                                              ticket.ticketCategory!.name,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                color: Color(0xff5C6169),
-                                              ),
+                                        Text(
+                                          "#${ticket.code}",
+                                          style: const TextStyle(
+                                              color: Color(0xff7D828B),
+                                              fontSize: 12),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            color: colorMap[ticket.status]
+                                                ?['background'],
+                                          ),
+                                          child: Text(
+                                            "${nameMap[ticket.status]?[widget.language]}",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: colorMap[ticket.status]
+                                                  ?['color'],
                                             ),
-                                          ],
+                                          ),
                                         )
                                       ],
+                                    ),
+                                    Text(
+                                      formatter.format(updated),
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xffA3A9B3),
+                                      ),
                                     )
-                                ]),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // if (ticket.isReplied == true)
+                                    //   Container(
+                                    //     width: 8,
+                                    //     height: 8,
+                                    //     margin: const EdgeInsets.only(top: 4),
+                                    //     decoration: BoxDecoration(
+                                    //       borderRadius:
+                                    //           BorderRadius.circular(10),
+                                    //       color: const Color(0xff364DE7),
+                                    //     ),
+                                    //   ),
+                                    // if (ticket.isReplied == true)
+                                    //   const SizedBox(
+                                    //     width: 8,
+                                    //   ),
+                                    Expanded(
+                                      child: Text(
+                                        ticket.name,
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                          color: Color(0xff2C2E33),
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                if (ticket.ticketCategory != null)
+                                  Column(
+                                    children: [
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        child: Text(
+                                          ticket.ticketCategory!.parent != null
+                                              ? "${ticket.ticketCategory!.parent!.name} / ${ticket.ticketCategory!.name}"
+                                              : ticket.ticketCategory!.name,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Color(0xff5C6169),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                              ],
+                            ),
                           ),
                         );
-                      }),
+                      },
+                    ),
         ),
       );
     });
@@ -481,6 +473,7 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
                                   height: 4,
                                 ),
                                 DropdownButtonFormField<String>(
+                                  isExpanded: true,
                                   items: categories
                                       .map<DropdownMenuItem<String>>(
                                           (TicketCategory category) {
@@ -489,6 +482,15 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
                                       child: Text(category.name),
                                     );
                                   }).toList(),
+                                  selectedItemBuilder: (BuildContext context) {
+                                    return categories
+                                        .map<Widget>((TicketCategory cate) {
+                                      return Text(
+                                        cate.name,
+                                        overflow: TextOverflow.ellipsis,
+                                      );
+                                    }).toList();
+                                  },
                                   onChanged: (String? v) {
                                     setState(() {
                                       selectedCategory = v!;

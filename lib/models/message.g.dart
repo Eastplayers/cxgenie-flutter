@@ -56,6 +56,8 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           ? null
           : MessageReactions.fromJson(
               json['reactions'] as Map<String, dynamic>),
+      sendingStatus: json['sending_status'] as String?,
+      localId: json['local_id'] as String?,
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -72,4 +74,6 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'bot_id': instance.botId,
       'created_at': instance.createdAt,
       'workspace_id': instance.workspaceId,
+      'sending_status': instance.sendingStatus,
+      'local_id': instance.localId,
     };

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/models/ticket.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+import 'package:uuid/uuid.dart';
 
 class TicketMessages extends StatefulWidget {
   const TicketMessages({
@@ -76,18 +79,29 @@ class TicketMessagesState extends State<TicketMessages> {
         'sender_id': widget.customerId,
         'type': 'TEXT',
         'ticket_id': widget.ticketId,
+        'local_id': const Uuid().v4(),
+        'sending_status': 'sending'
       };
-      socket.emit('message.ticket.create', newMessage);
-      Message internalNewMessage = Message(
-        type: "TEXT",
-        content: content.trim(),
-        media: cloneFiles,
-        senderId: widget.customerId,
-        createdAt: isoDate,
-        id: isoDate,
-      );
+      var localMessage = <String, dynamic>{
+        ...newMessage,
+        'id': const Uuid().v4(),
+        'created_at': isoDate,
+      };
+      Message internalNewMessage = Message.fromJson(localMessage);
       Provider.of<TicketProvider>(context, listen: false)
           .addMessage(internalNewMessage);
+      Timer(
+          const Duration(milliseconds: 750),
+          () => Provider.of<TicketProvider>(context, listen: false)
+              .updateMessage(Message.fromJson(
+                  {...localMessage, 'sending_status': 'sent'})));
+      Timer(
+          const Duration(milliseconds: 1500),
+          () => Provider.of<TicketProvider>(context, listen: false)
+              .updateMessage(Message.fromJson(
+                  {...localMessage, 'sending_status': 'seen'})));
+      Timer(const Duration(milliseconds: 1750),
+          () => socket.emit('message.ticket.create', newMessage));
     }
   }
 
@@ -100,10 +114,12 @@ class TicketMessagesState extends State<TicketMessages> {
     socket.onConnect((_) {
       socket.emit('room.conversation.join', widget.customerId);
     });
-    socket.on('is_typing', (isTyping) {
-      setState(() {
-        _isSendingMessage = isTyping;
-      });
+    socket.on('is_typing', (data) {
+      if (data['ticket_id'] == _ticket.id) {
+        setState(() {
+          _isSendingMessage = data['is_typing'];
+        });
+      }
     });
     socket.on('message.created', (data) {
       if (data['receiver_id'] == widget.customerId &&
@@ -289,18 +305,14 @@ class TicketMessagesState extends State<TicketMessages> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               color: const Color.fromRGBO(255, 255, 255, 1),
               child: widget.composerDisabled
-                  ? Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          child: Text(
-                            widget.language == LanguageOptions.en
-                                ? "You can no longer send message to this ticket"
-                                : "Bạn không thể gửi tin nhắn cho thẻ hỗ trợ này nữa",
-                            style: const TextStyle(color: Color(0xffA3A9B3)),
-                          ),
-                        )
-                      ],
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        widget.language == LanguageOptions.en
+                            ? "This conversation has been closed, and you cannot continue sending new messages here. Please create a new support ticket."
+                            : "Hộp thoại này đã đóng, bạn không thể tiếp tục gửi tin nhắn mới ở đây. Bạn tạo 1 thẻ hỗ trợ mới nhé.",
+                        style: const TextStyle(color: Color(0xffA3A9B3)),
+                      ),
                     )
                   : Row(
                       children: <Widget>[

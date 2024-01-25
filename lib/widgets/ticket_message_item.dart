@@ -350,17 +350,47 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                               right: 8,
                                               bottom: 4,
                                             ),
-                                            child: Text(
-                                              isToday(createdAt)
-                                                  ? "Hôm nay, ${formatter.format(createdAt)}"
-                                                  : formatter.format(createdAt),
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: isMine
-                                                    ? Colors.white
-                                                        .withOpacity(0.7)
-                                                    : const Color(0xffA3A9B3),
-                                              ),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  isToday(createdAt)
+                                                      ? "Hôm nay, ${formatter.format(createdAt)}"
+                                                      : formatter
+                                                          .format(createdAt),
+                                                  style: TextStyle(
+                                                    fontSize: 11,
+                                                    color: isMine
+                                                        ? Colors.white
+                                                            .withOpacity(0.7)
+                                                        : const Color(
+                                                            0xffA3A9B3),
+                                                  ),
+                                                ),
+                                                if (widget.message
+                                                        .sendingStatus !=
+                                                    null)
+                                                  Row(
+                                                    children: [
+                                                      const SizedBox(width: 4),
+                                                      SvgPicture.string(
+                                                        widget.message
+                                                                    .sendingStatus ==
+                                                                'sending'
+                                                            ? sendingIcon
+                                                            : widget.message
+                                                                        .sendingStatus ==
+                                                                    'sent'
+                                                                ? sentIcon
+                                                                : seenIcon,
+                                                        width: 12,
+                                                        height: 12,
+                                                      )
+                                                    ],
+                                                  )
+                                              ],
                                             ),
                                           ),
                                         ],

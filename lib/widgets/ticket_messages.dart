@@ -42,7 +42,7 @@ class TicketMessagesState extends State<TicketMessages> {
   late io.Socket socket;
   final TextEditingController textController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  List<MessageMedia> _uploadedFiles = [];
+  List<Map<String, String>> _uploadedFiles = [];
   bool _isSendingMessage = false;
   final ScrollController _controller = ScrollController();
   Ticket _ticket = Ticket(
@@ -64,6 +64,7 @@ class TicketMessagesState extends State<TicketMessages> {
           .updateSelectedTicketMessage(null);
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
+      print(cloneFiles);
       setState(() {
         _uploadedFiles = [];
       });
@@ -155,7 +156,10 @@ class TicketMessagesState extends State<TicketMessages> {
         if (pickedFile != null) {
           var result = await _service.uploadFile(pickedFile);
           setState(() {
-            _uploadedFiles = [..._uploadedFiles, MessageMedia(url: result)];
+            _uploadedFiles = [
+              ..._uploadedFiles,
+              {'url': result}
+            ];
           });
         }
       } catch (e) {
@@ -232,7 +236,7 @@ class TicketMessagesState extends State<TicketMessages> {
                                         ),
                                         borderRadius: BorderRadius.circular(8)),
                                     child: Image.network(
-                                      _uploadedFiles[index].url,
+                                      "${_uploadedFiles[index]['url']}",
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -245,8 +249,8 @@ class TicketMessagesState extends State<TicketMessages> {
                                       setState(() {
                                         _uploadedFiles = _uploadedFiles
                                             .where((file) =>
-                                                file.url !=
-                                                _uploadedFiles[index].url)
+                                                file['url'] !=
+                                                _uploadedFiles[index]['url'])
                                             .toList();
                                       });
                                     },

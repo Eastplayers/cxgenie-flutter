@@ -553,12 +553,34 @@ class MessageItemState extends State<MessageItem> {
                           const SizedBox(
                             height: 4,
                           ),
-                          Text(
-                            isToday(createdAt)
-                                ? "Hôm nay, ${formatter.format(createdAt)}"
-                                : formatter.format(createdAt),
-                            style: const TextStyle(
-                                fontSize: 11, color: Color(0xffA3A9B3)),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                isToday(createdAt)
+                                    ? "Hôm nay, ${formatter.format(createdAt)}"
+                                    : formatter.format(createdAt),
+                                style: const TextStyle(
+                                    fontSize: 11, color: Color(0xffA3A9B3)),
+                              ),
+                              if (widget.message.sendingStatus != null)
+                                Row(
+                                  children: [
+                                    const SizedBox(width: 4),
+                                    SvgPicture.string(
+                                      widget.message.sendingStatus == 'sending'
+                                          ? sendingGreyIcon
+                                          : widget.message.sendingStatus ==
+                                                  'sent'
+                                              ? sentGreyIcon
+                                              : seenGreyIcon,
+                                      width: 12,
+                                      height: 12,
+                                    )
+                                  ],
+                                )
+                            ],
                           )
                         ],
                       )

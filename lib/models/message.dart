@@ -45,6 +45,7 @@ class Message {
   Customer? receiver;
   List<MessageMedia>? media;
   MessageReactions? reactions;
+  bool unsent;
 
   @JsonKey(name: "receiver_id")
   String? receiverId;
@@ -67,6 +68,12 @@ class Message {
   @JsonKey(name: "local_id")
   String? localId;
 
+  @JsonKey(name: "quoted_id")
+  String? quotedId;
+
+  @JsonKey(name: "quoted_from")
+  Message? quotedFrom;
+
   Message({
     this.id,
     this.content,
@@ -83,6 +90,9 @@ class Message {
     this.reactions,
     this.sendingStatus,
     this.localId,
+    this.quotedId,
+    this.quotedFrom,
+    required this.unsent,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>

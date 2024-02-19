@@ -1,9 +1,11 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/helpers/date.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/providers/app_provider.dart';
 import 'package:cxgenie/widgets/icon.dart';
 import 'package:cxgenie/widgets/linkify.dart';
+import 'package:cxgenie/widgets/message_quote.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -21,6 +23,7 @@ class MessageItem extends StatefulWidget {
   final String customerId;
   final String themeColor;
   final Bot bot;
+  final LanguageOptions? language;
 
   const MessageItem({
     Key? key,
@@ -30,6 +33,7 @@ class MessageItem extends StatefulWidget {
     required this.customerId,
     required this.themeColor,
     required this.bot,
+    this.language = LanguageOptions.en,
   }) : super(key: key);
 
   @override
@@ -89,6 +93,71 @@ class MessageItemState extends State<MessageItem> {
     var formatter = DateFormat(isToday(createdAt) ? "HH:mm" : "dd/MM/yy HH:mm");
     MessageReactions? reactions =
         widget.message.reactions ?? MessageReactions.fromJson({});
+
+    if (widget.message.unsent) {
+      return Consumer<AppProvider>(builder: (context, value, child) {
+        Bot bot = widget.bot;
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                width: 32,
+                height: 32,
+                child: !isMine
+                    ? bot.avatar == null || bot.avatar == ""
+                        ? Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Color(
+                                int.parse(foregroundColor),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                bot.name[0].toUpperCase(),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(
+                                    int.parse(color),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : ClipOval(
+                            child: Image.network(
+                              "${bot.avatar}",
+                              width: 32,
+                              height: 32,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                    : null,
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xffC4C9D2), width: 1),
+                ),
+                child: Text(
+                  widget.language == LanguageOptions.en
+                      ? 'Unsent message'
+                      : 'Tin nhắn đã bị thu hồi',
+                  style: const TextStyle(color: Color(0xffA3A9B3)),
+                ),
+              )
+            ],
+          ),
+        );
+      });
+    }
 
     return Portal(
       child: Consumer<AppProvider>(builder: (context, value, child) {
@@ -265,6 +334,14 @@ class MessageItemState extends State<MessageItem> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
+                                          if (widget.message.quotedFrom != null)
+                                            MessageQuote(
+                                              message:
+                                                  widget.message.quotedFrom,
+                                              isMine: isMine,
+                                              customerId: widget.customerId,
+                                              language: widget.language,
+                                            ),
                                           RegExp('<[^>]*>',
                                                       multiLine: true,
                                                       caseSensitive: false)

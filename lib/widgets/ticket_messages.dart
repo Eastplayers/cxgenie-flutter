@@ -134,6 +134,10 @@ class TicketMessagesState extends State<TicketMessages> {
             .addMessage(newMessage);
       }
     });
+    socket.on('message.unsend.success', (data) {
+      Provider.of<TicketProvider>(context, listen: false)
+          .updateMessageUnsentSatus(data['message_id']);
+    });
     socket.onDisconnect((_) {
       socket.emit('room.conversation.leave', widget.customerId);
     });
@@ -434,6 +438,7 @@ class TicketMessagesState extends State<TicketMessages> {
           messages: messages,
           customerId: widget.customerId,
           themeColor: widget.themeColor,
+          language: widget.language,
         );
       },
     );

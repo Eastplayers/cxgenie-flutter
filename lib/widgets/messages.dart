@@ -38,14 +38,14 @@ const String supportIcon = '''
 ''';
 
 class Messages extends StatefulWidget {
-  const Messages(
-      {Key? key,
-      required this.customerId,
-      required this.botId,
-      this.workspaceId,
-      this.language = LanguageOptions.en,
-      this.themeColor = "#364DE7"})
-      : super(key: key);
+  const Messages({
+    Key? key,
+    required this.customerId,
+    required this.botId,
+    this.workspaceId,
+    this.language = LanguageOptions.en,
+    this.themeColor = "#364DE7",
+  }) : super(key: key);
 
   final String customerId;
   final String botId;
@@ -139,6 +139,10 @@ class MessagesState extends State<Messages> {
 
         Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
       }
+    });
+    socket.on('message.unsend.success', (data) {
+      Provider.of<AppProvider>(context, listen: false)
+          .updateMessageUnsentSatus(data['message_id']);
     });
     socket.onDisconnect((_) {
       socket.emit('room.conversation.leave', widget.customerId);
@@ -426,6 +430,7 @@ class MessagesState extends State<Messages> {
             customerId: widget.customerId,
             themeColor: widget.themeColor,
             bot: bot,
+            language: widget.language,
           );
         });
   }

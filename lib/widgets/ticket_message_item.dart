@@ -1,8 +1,10 @@
+import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/helpers/date.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/widgets/icon.dart';
 import 'package:cxgenie/widgets/linkify.dart';
+import 'package:cxgenie/widgets/message_quote.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -20,6 +22,7 @@ class TicketMessageItem extends StatefulWidget {
   final List<Message> messages;
   final String customerId;
   final String themeColor;
+  final LanguageOptions? language;
 
   const TicketMessageItem({
     Key? key,
@@ -28,6 +31,7 @@ class TicketMessageItem extends StatefulWidget {
     required this.messages,
     required this.customerId,
     required this.themeColor,
+    this.language = LanguageOptions.en,
   }) : super(key: key);
 
   @override
@@ -92,6 +96,69 @@ class TicketMessageItemState extends State<TicketMessageItem> {
     var formatter = DateFormat(isToday(createdAt) ? "HH:mm" : "dd/MM/yy HH:mm");
     MessageReactions? reactions =
         widget.message.reactions ?? MessageReactions.fromJson({});
+
+    if (widget.message.unsent) {
+      return Consumer<TicketProvider>(builder: (context, value, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              SizedBox(
+                child: !isMine
+                    ? widget.message.sender?.avatar == null &&
+                            widget.message.bot?.avatar == null
+                        ? Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              color: Color(
+                                int.parse(foregroundColor),
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "${widget.message.sender?.name[0].toUpperCase() ?? widget.message.bot?.name[0].toUpperCase()}",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(
+                                    int.parse(color),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : ClipOval(
+                            child: Image.network(
+                              "${widget.message.sender?.avatar ?? widget.message.bot?.avatar}",
+                              width: 32,
+                              height: 32,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                    : null,
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xffC4C9D2), width: 1),
+                ),
+                child: Text(
+                  widget.language == LanguageOptions.en
+                      ? 'Unsent message'
+                      : 'Tin nhắn đã bị thu hồi',
+                  style: const TextStyle(color: Color(0xffA3A9B3)),
+                ),
+              )
+            ],
+          ),
+        );
+      });
+    }
 
     return Portal(
       child: Consumer<TicketProvider>(builder: (context, value, child) {
@@ -268,6 +335,14 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
+                                          if (widget.message.quotedFrom != null)
+                                            MessageQuote(
+                                              message:
+                                                  widget.message.quotedFrom,
+                                              isMine: isMine,
+                                              customerId: widget.customerId,
+                                              language: widget.language,
+                                            ),
                                           RegExp('<[^>]*>',
                                                       multiLine: true,
                                                       caseSensitive: false)

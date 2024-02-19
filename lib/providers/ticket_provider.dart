@@ -155,4 +155,17 @@ class TicketProvider extends ChangeNotifier {
     _messages[_messages.indexWhere((m) => m.id == newMessage.id)] = newMessage;
     notifyListeners();
   }
+
+  void updateMessageUnsentSatus(String messageId) async {
+    notifyListeners();
+    _messages = _messages.map((message) {
+      if (message.id == messageId) {
+        message.unsent = true;
+        return message;
+      }
+
+      return message;
+    }).toList();
+    notifyListeners();
+  }
 }

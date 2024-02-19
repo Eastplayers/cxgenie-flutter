@@ -79,3 +79,10 @@ Send image, render image
 **Updates:**
 
 - Update is_typing behaviour
+
+## 2.2.0
+
+**New features:**
+
+- Render unsent message
+- Render quoted message

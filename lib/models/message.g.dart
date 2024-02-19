@@ -58,6 +58,11 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
               json['reactions'] as Map<String, dynamic>),
       sendingStatus: json['sending_status'] as String?,
       localId: json['local_id'] as String?,
+      quotedId: json['quoted_id'] as String?,
+      quotedFrom: json['quoted_from'] == null
+          ? null
+          : Message.fromJson(json['quoted_from'] as Map<String, dynamic>),
+      unsent: json['unsent'] as bool,
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -69,6 +74,7 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'receiver': instance.receiver,
       'media': instance.media,
       'reactions': instance.reactions,
+      'unsent': instance.unsent,
       'receiver_id': instance.receiverId,
       'sender_id': instance.senderId,
       'bot_id': instance.botId,
@@ -76,4 +82,6 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'workspace_id': instance.workspaceId,
       'sending_status': instance.sendingStatus,
       'local_id': instance.localId,
+      'quoted_id': instance.quotedId,
+      'quoted_from': instance.quotedFrom,
     };

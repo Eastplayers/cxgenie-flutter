@@ -86,3 +86,9 @@ Send image, render image
 
 - Render unsent message
 - Render quoted message
+
+## 2.3.0
+
+**New features:**
+
+- Message flow (Normal, Text, Feedback)

@@ -1,3 +1,4 @@
+import 'package:cxgenie/models/block.dart';
 import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/customer.dart';
 import 'package:cxgenie/models/reaction.dart';
@@ -8,9 +9,11 @@ part 'message.g.dart';
 @JsonSerializable()
 class MessageMedia {
   String url;
+  String? type;
 
   MessageMedia({
     required this.url,
+    this.type,
   });
 
   factory MessageMedia.fromJson(Map<String, dynamic> json) =>
@@ -45,7 +48,8 @@ class Message {
   Customer? receiver;
   List<MessageMedia>? media;
   MessageReactions? reactions;
-  bool unsent;
+  bool? unsent;
+  Block? block;
 
   @JsonKey(name: "receiver_id")
   String? receiverId;

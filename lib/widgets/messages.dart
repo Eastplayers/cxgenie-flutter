@@ -89,7 +89,8 @@ class MessagesState extends State<Messages> {
         'sender_id': widget.customerId,
         'type': 'TEXT',
         'local_id': const Uuid().v4(),
-        'sending_status': 'sending'
+        'sending_status': 'sending',
+        'unsent': false,
       };
       var localMessage = <String, dynamic>{
         ...newMessage,
@@ -131,7 +132,8 @@ class MessagesState extends State<Messages> {
       }
     });
     socket.on('message.created', (data) {
-      if (data['receiver_id'] == widget.customerId) {
+      if (data['receiver_id'] == widget.customerId ||
+          data['sender_id'] == widget.customerId) {
         Provider.of<AppProvider>(context, listen: false)
             .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
@@ -431,6 +433,7 @@ class MessagesState extends State<Messages> {
             themeColor: widget.themeColor,
             bot: bot,
             language: widget.language,
+            isLastMessage: index == 0,
           );
         });
   }
@@ -511,7 +514,6 @@ class MessagesState extends State<Messages> {
                         ),
                 ),
                 Container(
-                  decoration: const BoxDecoration(),
                   child: message.media != null && message.media!.isNotEmpty
                       ? Column(
                           children: message.media!

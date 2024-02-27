@@ -1,5 +1,6 @@
 import 'package:cxgenie/cxgenie.dart';
 import 'package:cxgenie/enums/language.dart';
+import 'package:cxgenie/models/ticket.dart';
 import 'package:flutter/material.dart';
 
 void main() {

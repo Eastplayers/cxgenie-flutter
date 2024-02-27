@@ -32,6 +32,7 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
           ? null
           : TicketCategory.fromJson(
               json['ticket_category'] as Map<String, dynamic>),
+      workspaceId: json['workspace_id'] as String?,
     );
 
 Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
@@ -51,4 +52,5 @@ Map<String, dynamic> _$TicketToJson(Ticket instance) => <String, dynamic>{
       'auto_reply': instance.autoReply,
       'bot_id': instance.botId,
       'ticket_category': instance.ticketCategory,
+      'workspace_id': instance.workspaceId,
     };

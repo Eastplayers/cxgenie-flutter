@@ -56,6 +56,9 @@ class Ticket {
   @JsonKey(name: "ticket_category")
   TicketCategory? ticketCategory;
 
+  @JsonKey(name: "workspace_id")
+  String? workspaceId;
+
   Ticket({
     required this.id,
     required this.name,
@@ -73,6 +76,7 @@ class Ticket {
     this.bot,
     this.isReplied,
     this.ticketCategory,
+    this.workspaceId,
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) => _$TicketFromJson(json);

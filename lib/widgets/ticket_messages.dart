@@ -81,7 +81,8 @@ class TicketMessagesState extends State<TicketMessages> {
         'type': 'TEXT',
         'ticket_id': widget.ticketId,
         'local_id': const Uuid().v4(),
-        'sending_status': 'sending'
+        'sending_status': 'sending',
+        'unsent': false,
       };
       var localMessage = <String, dynamic>{
         ...newMessage,
@@ -123,11 +124,16 @@ class TicketMessagesState extends State<TicketMessages> {
       }
     });
     socket.on('message.created', (data) {
-      if (data['receiver_id'] == widget.customerId &&
+      if ((data['receiver_id'] == widget.customerId ||
+              (data['sender_id'] == widget.customerId &&
+                  data['type'] == 'FEEDBACK')) &&
           data['ticket_id'] == widget.ticketId) {
         Provider.of<TicketProvider>(context, listen: false)
             .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
+        if (data['reactions'] is List<dynamic>) {
+          data['reactions'] = <String, dynamic>{};
+        }
         Message newMessage = Message.fromJson(data);
 
         Provider.of<TicketProvider>(context, listen: false)
@@ -439,6 +445,10 @@ class TicketMessagesState extends State<TicketMessages> {
           customerId: widget.customerId,
           themeColor: widget.themeColor,
           language: widget.language,
+          isLastMessage: index == 0,
+          ticketId: widget.ticketId,
+          workspaceId: "${_ticket.workspaceId}",
+          botId: _ticket.botId,
         );
       },
     );

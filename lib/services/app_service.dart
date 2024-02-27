@@ -51,6 +51,40 @@ class AppService {
     }
   }
 
+  Future<bool> createFeedback(
+    String rating,
+    String botId,
+    String customerId,
+    String blockId,
+    String? ticketId,
+  ) async {
+    try {
+      final url = '$baseUrl/messages/flows/feedbacks';
+      final uri = Uri.parse(url);
+      final payload = <String, String>{
+        'bot_id': botId,
+        'rating': rating,
+        'customer_id': customerId,
+        'block_id': blockId,
+      };
+      if (ticketId != null) {
+        payload['ticket_id'] = ticketId;
+      }
+      final response = await http.post(uri,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8'
+          },
+          body: jsonEncode(payload));
+      if (response.statusCode == 200) {
+        return true;
+      }
+
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<Customer?> startAuthorizedSession(String botId, String token) async {
     try {
       final url = '$baseUrl/bot-sessions/start-bot-session';

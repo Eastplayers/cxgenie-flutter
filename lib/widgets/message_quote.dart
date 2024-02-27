@@ -1,5 +1,6 @@
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/message.dart';
+import 'package:cxgenie/widgets/video.dart';
 import 'package:flutter/material.dart';
 
 class MessageQuote extends StatefulWidget {
@@ -74,10 +75,14 @@ class MessageQuoteState extends State<MessageQuote> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.message!.content!.isEmpty
-                        ? widget.language == LanguageOptions.en
-                            ? "image"
-                            : "hình ảnh"
+                    widget.message!.content == null
+                        ? widget.message!.media!.length == 1 &&
+                                widget.message!.media![0].type!
+                                    .contains('video')
+                            ? 'video'
+                            : widget.language == LanguageOptions.en
+                                ? "image"
+                                : "hình ảnh"
                         : "${widget.message?.content}",
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -99,10 +104,14 @@ class MessageQuoteState extends State<MessageQuote> {
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.white,
               ),
-              child: Image.network(
-                "${widget.message!.media?[0].url}",
-                fit: BoxFit.cover,
-              ),
+              child: widget.message!.media!.length == 1 &&
+                      widget.message!.media![0].type != null &&
+                      widget.message!.media![0].type!.contains('video')
+                  ? Video(url: widget.message!.media![0].url, playable: false)
+                  : Image.network(
+                      "${widget.message!.media?[0].url}",
+                      fit: BoxFit.cover,
+                    ),
             )
         ],
       ),

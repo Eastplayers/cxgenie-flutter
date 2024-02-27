@@ -8,11 +8,13 @@ part of 'message.dart';
 
 MessageMedia _$MessageMediaFromJson(Map<String, dynamic> json) => MessageMedia(
       url: json['url'] as String,
+      type: json['type'] as String?,
     );
 
 Map<String, dynamic> _$MessageMediaToJson(MessageMedia instance) =>
     <String, dynamic>{
       'url': instance.url,
+      'type': instance.type,
     };
 
 MessageReactions _$MessageReactionsFromJson(Map<String, dynamic> json) =>
@@ -62,8 +64,10 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       quotedFrom: json['quoted_from'] == null
           ? null
           : Message.fromJson(json['quoted_from'] as Map<String, dynamic>),
-      unsent: json['unsent'] as bool,
-    );
+      unsent: json['unsent'] as bool?,
+    )..block = json['block'] == null
+        ? null
+        : Block.fromJson(json['block'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'id': instance.id,
@@ -75,6 +79,7 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'media': instance.media,
       'reactions': instance.reactions,
       'unsent': instance.unsent,
+      'block': instance.block,
       'receiver_id': instance.receiverId,
       'sender_id': instance.senderId,
       'bot_id': instance.botId,

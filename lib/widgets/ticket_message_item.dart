@@ -436,7 +436,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                         "${widget.message.content?.trim()}")
                                                 ? Html(
                                                     data:
-                                                        """<div class="container">${widget.message.content}<div/>""",
+                                                        """<body class="container">${widget.message.content?.trim()}<body/>""",
                                                     onLinkTap: (url,
                                                         context,
                                                         attributes,
@@ -448,7 +448,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                       }
                                                     },
                                                     style: {
-                                                      'div.container': Style(
+                                                      'body.container': Style(
                                                         color: isMine
                                                             ? Colors.white
                                                             : const Color(
@@ -457,10 +457,16 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                             FontSize.medium,
                                                         padding:
                                                             const EdgeInsets
-                                                                .all(0),
+                                                                .symmetric(
+                                                                vertical: 6,
+                                                                horizontal: 8),
                                                         margin: Margins.all(0),
                                                         alignment:
                                                             Alignment.topLeft,
+                                                      ),
+                                                      'p': Style(
+                                                        margin: Margins.only(
+                                                            bottom: 2),
                                                       ),
                                                       'a': Style(
                                                         color: isMine
@@ -471,7 +477,10 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                             FontSize.medium,
                                                       )
                                                     },
-                                                  )
+                                                    customRenders: {
+                                                      iframeMatcher():
+                                                          iframeRender(),
+                                                    })
                                                 : Container(
                                                     padding:
                                                         const EdgeInsets.all(8),
@@ -865,7 +874,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                       "${widget.message.content?.trim()}")
                                               ? Html(
                                                   data:
-                                                      """<div class="container">${widget.message.content}<div/>""",
+                                                      """<body class="container">${widget.message.content?.trim()}<body/>""",
                                                   onLinkTap: (url,
                                                       context,
                                                       attributes,
@@ -877,18 +886,23 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                     }
                                                   },
                                                   style: {
-                                                    'div.container': Style(
+                                                    'body.container': Style(
                                                       color: isMine
                                                           ? Colors.white
                                                           : const Color(
                                                               0xff2C2E33),
                                                       fontSize: FontSize.medium,
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              0),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 6,
+                                                          horizontal: 8),
                                                       margin: Margins.all(0),
                                                       alignment:
                                                           Alignment.topLeft,
+                                                    ),
+                                                    'p': Style(
+                                                      margin: Margins.only(
+                                                          bottom: 2),
                                                     ),
                                                     'a': Style(
                                                       color: isMine

@@ -57,56 +57,81 @@ class MessageFeedbackState extends State<MessageFeedback> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       margin: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: ['1', '2', '3', '4', '5']
-            .map(
-              (item) => GestureDetector(
-                child: Stack(children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    padding: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xffd6dae1),
-                        width: 1,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: ['1', '2', '3', '4', '5']
+                .map(
+                  (item) => GestureDetector(
+                    child: Stack(children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: const Color(0xffd6dae1),
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Image.asset(
+                          AssetImage(
+                            'images/$item.png',
+                          ).assetName,
+                          fit: BoxFit.cover,
+                          package: 'cxgenie',
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Image.asset(
-                      AssetImage(
-                        'images/$item.png',
-                      ).assetName,
-                      fit: BoxFit.cover,
-                      package: 'cxgenie',
-                    ),
+                      if (_loading)
+                        Container(
+                          width: 40,
+                          height: 40,
+                          padding: const EdgeInsets.all(5),
+                          color: Colors.white.withOpacity(0.5),
+                          child: Container(),
+                        ),
+                      if (_loading && _selectedItem == item)
+                        Container(
+                          width: 40,
+                          height: 40,
+                          padding: const EdgeInsets.all(5),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 4,
+                            color: Color(int.parse(widget.themeColor)),
+                          ),
+                        )
+                    ]),
+                    onTap: () {
+                      createFeedback(item);
+                    },
                   ),
-                  if (_loading)
-                    Container(
-                      width: 40,
-                      height: 40,
-                      padding: const EdgeInsets.all(5),
-                      color: Colors.white.withOpacity(0.5),
-                      child: Container(),
-                    ),
-                  if (_loading && _selectedItem == item)
-                    Container(
-                      width: 40,
-                      height: 40,
-                      padding: const EdgeInsets.all(5),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                        color: Color(int.parse(widget.themeColor)),
-                      ),
-                    )
-                ]),
-                onTap: () {
-                  createFeedback(item);
-                },
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Not satisfied',
+                style: TextStyle(
+                  color: Color(0xffA3A9B3),
+                  fontSize: 12,
+                ),
               ),
-            )
-            .toList(),
+              Text(
+                'Very satisfied',
+                style: TextStyle(
+                  color: Color(0xffA3A9B3),
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
       ),
     );
   }

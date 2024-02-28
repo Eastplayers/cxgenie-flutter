@@ -406,7 +406,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                           maxWidth: (MediaQuery.of(context)
                                                   .size
                                                   .width) -
-                                              180,
+                                              150,
                                         ),
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
@@ -530,7 +530,8 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                 color: color,
                                                 customerId: widget.customerId,
                                                 botId: "${widget.botId}",
-                                                blockId: "${widget.message.id}",
+                                                blockId:
+                                                    widget.message.block!.id,
                                                 themeColor: color,
                                                 ticketId: widget.ticketId,
                                               ),
@@ -846,7 +847,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                         maxWidth: (MediaQuery.of(context)
                                                 .size
                                                 .width) -
-                                            180,
+                                            150,
                                       ),
                                       padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(

@@ -399,7 +399,7 @@ class MessageItemState extends State<MessageItem> {
                                           maxWidth: (MediaQuery.of(context)
                                                   .size
                                                   .width) -
-                                              180,
+                                              150,
                                         ),
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
@@ -523,7 +523,8 @@ class MessageItemState extends State<MessageItem> {
                                                 color: color,
                                                 customerId: widget.customerId,
                                                 botId: widget.bot.id,
-                                                blockId: "${widget.message.id}",
+                                                blockId:
+                                                    widget.message.block!.id,
                                                 themeColor: color,
                                               ),
                                             Container(
@@ -838,7 +839,7 @@ class MessageItemState extends State<MessageItem> {
                                         maxWidth: (MediaQuery.of(context)
                                                 .size
                                                 .width) -
-                                            180,
+                                            150,
                                       ),
                                       padding: const EdgeInsets.all(4),
                                       decoration: BoxDecoration(

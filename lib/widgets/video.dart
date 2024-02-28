@@ -35,23 +35,27 @@ class VideoState extends State<Video> {
   }
 
   Future<void> initializePlayer() async {
-    _controller = VideoPlayerController.networkUrl(
-      Uri.parse(widget.url),
-      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-    );
+    try {
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(widget.url),
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
 
-    await _controller.initialize();
-    _chewieController = ChewieController(
-      videoPlayerController: _controller,
-      autoPlay: false,
-      looping: false,
-      progressIndicatorDelay:
-          bufferDelay != null ? Duration(milliseconds: bufferDelay!) : null,
-      hideControlsTimer: const Duration(seconds: 1),
-      showControls: widget.playable,
-      fullScreenByDefault: true,
-    );
-    setState(() {});
+      await _controller.initialize();
+      _chewieController = ChewieController(
+        videoPlayerController: _controller,
+        autoPlay: false,
+        looping: false,
+        progressIndicatorDelay:
+            bufferDelay != null ? Duration(milliseconds: bufferDelay!) : null,
+        hideControlsTimer: const Duration(seconds: 1),
+        showControls: widget.playable,
+        fullScreenByDefault: true,
+      );
+      setState(() {});
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override

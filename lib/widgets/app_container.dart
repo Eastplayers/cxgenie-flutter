@@ -83,6 +83,7 @@ class AppContainerState extends State<AppContainer> {
                               botId: widget.botId,
                               themeColor: "${bot.themeColor}",
                               language: widget.language,
+                              workspaceId: bot.workspaceId,
                             ),
         ),
       );

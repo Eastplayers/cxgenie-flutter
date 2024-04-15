@@ -507,9 +507,8 @@ class MessageItemState extends State<MessageItem> {
                                                       ),
                                                     ),
                                                   ),
-                                            if (widget.isLastMessage &&
-                                                widget.message.block!.type !=
-                                                    'FEEDBACK')
+                                            if (widget.message.block!.type !=
+                                                'FEEDBACK')
                                               MessageActions(
                                                 actions: widget
                                                     .message.block!.actions,
@@ -583,39 +582,62 @@ class MessageItemState extends State<MessageItem> {
                                       ),
                                     ),
                                   ),
-                                  if (!showReactions &&
-                                      (!isMine &&
-                                              (reactions.like != null &&
-                                                  reactions.like!.isNotEmpty) ||
-                                          (reactions.dislike != null &&
-                                              reactions.dislike!.isNotEmpty)))
+                                  if (!showReactions && !isMine)
                                     Positioned(
-                                      right: isMine ? null : -16,
+                                      right: isMine ? null : -10,
                                       bottom: 0,
-                                      left: isMine ? -16 : null,
-                                      child: Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                          color: reactions!.like != null
-                                              ? const Color(0xff3BA55C)
-                                              : const Color(0xffFC8B23),
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                        ),
-                                        child: Center(
-                                          child: Container(
-                                            child: reactions!.like != null
-                                                ? SvgPicture.string(
-                                                    likedIcon,
-                                                    width: 12,
-                                                    height: 12,
-                                                  )
-                                                : SvgPicture.string(
-                                                    dislikedIcon,
-                                                    width: 12,
-                                                    height: 12,
-                                                  ),
+                                      left: isMine ? -10 : null,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Provider.of<AppProvider>(context,
+                                                  listen: false)
+                                              .updateSelectedTicketMessage(
+                                                  null);
+                                        },
+                                        child: Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                            color: reactions.like == null &&
+                                                    reactions.dislike == null
+                                                ? Colors.white
+                                                : reactions!.like != null
+                                                    ? const Color(0xff3BA55C)
+                                                    : const Color(0xffFC8B23),
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.2),
+                                                spreadRadius: 2,
+                                                blurRadius: 7,
+                                                offset: const Offset(0,
+                                                    3), // changes position of shadow
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Container(
+                                              child: reactions.like == null &&
+                                                      reactions.dislike == null
+                                                  ? SvgPicture.string(
+                                                      likeIcon,
+                                                      width: 12,
+                                                      height: 12,
+                                                    )
+                                                  : reactions!.like != null
+                                                      ? SvgPicture.string(
+                                                          likedIcon,
+                                                          width: 12,
+                                                          height: 12,
+                                                        )
+                                                      : SvgPicture.string(
+                                                          dislikedIcon,
+                                                          width: 12,
+                                                          height: 12,
+                                                        ),
+                                            ),
                                           ),
                                         ),
                                       ),

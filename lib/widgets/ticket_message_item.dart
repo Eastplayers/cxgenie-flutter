@@ -514,9 +514,8 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                       ),
                                                     ),
                                                   ),
-                                            if (widget.isLastMessage &&
-                                                widget.message.block!.type !=
-                                                    'FEEDBACK')
+                                            if (widget.message.block!.type !=
+                                                'FEEDBACK')
                                               MessageActions(
                                                 actions: widget
                                                     .message.block!.actions,
@@ -743,304 +742,346 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                       child: widget.message.content == null ||
                               widget.message.content!.isEmpty
                           ? null
-                          : Stack(
-                              // mainAxisAlignment: isMine
-                              //     ? MainAxisAlignment.end
-                              //     : MainAxisAlignment.start,
-                              // crossAxisAlignment: CrossAxisAlignment.end,
-                              clipBehavior: Clip.none,
-                              children: [
-                                GestureDetector(
-                                  behavior: HitTestBehavior.opaque,
-                                  onTap: () {
-                                    Provider.of<TicketProvider>(context,
-                                            listen: false)
-                                        .updateSelectedTicketMessage(null);
-                                  },
-                                  onLongPress: () {
-                                    if (!isMine) {
+                          : Container(
+                              padding: EdgeInsets.only(right: !isMine ? 10 : 0),
+                              child: Stack(
+                                // mainAxisAlignment: isMine
+                                //     ? MainAxisAlignment.end
+                                //     : MainAxisAlignment.start,
+                                // crossAxisAlignment: CrossAxisAlignment.end,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: () {
                                       Provider.of<TicketProvider>(context,
                                               listen: false)
-                                          .updateSelectedTicketMessage(
-                                              widget.message.id);
-                                      // _showReactionModal(
-                                      //     context, isMine, color, createdAt);
-                                    }
-                                  },
-                                  child: PortalTarget(
-                                    visible: showReactions,
-                                    closeDuration: kThemeAnimationDuration,
-                                    anchor: const Aligned(
-                                      follower: Alignment(-0.2, 1),
-                                      target: Alignment(1, 1),
-                                    ),
-                                    portalFollower:
-                                        TweenAnimationBuilder<double>(
-                                      duration: kThemeAnimationDuration,
-                                      curve: Curves.easeOut,
-                                      tween: Tween(
-                                          begin: 0, end: showReactions ? 1 : 0),
-                                      builder: (context, progress, child) {
-                                        return Transform(
-                                          transform: Matrix4.translationValues(
-                                              0, (1 - progress) * 50, 0),
-                                          child: Opacity(
-                                            opacity: progress,
-                                            child: child,
-                                          ),
-                                        );
-                                      },
-                                      child: Center(
-                                        child: ReactionIndicator(
-                                          child: Container(
-                                            width: 56,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 4,
-                                              vertical: 4,
+                                          .updateSelectedTicketMessage(null);
+                                    },
+                                    onLongPress: () {
+                                      if (!isMine) {
+                                        Provider.of<TicketProvider>(context,
+                                                listen: false)
+                                            .updateSelectedTicketMessage(
+                                                widget.message.id);
+                                        // _showReactionModal(
+                                        //     context, isMine, color, createdAt);
+                                      }
+                                    },
+                                    child: PortalTarget(
+                                      visible: showReactions,
+                                      closeDuration: kThemeAnimationDuration,
+                                      anchor: const Aligned(
+                                        follower: Alignment(-0.2, 1),
+                                        target: Alignment(1, 1),
+                                      ),
+                                      portalFollower:
+                                          TweenAnimationBuilder<double>(
+                                        duration: kThemeAnimationDuration,
+                                        curve: Curves.easeOut,
+                                        tween: Tween(
+                                            begin: 0,
+                                            end: showReactions ? 1 : 0),
+                                        builder: (context, progress, child) {
+                                          return Transform(
+                                            transform:
+                                                Matrix4.translationValues(
+                                                    0, (1 - progress) * 50, 0),
+                                            child: Opacity(
+                                              opacity: progress,
+                                              child: child,
                                             ),
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(100)),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                ReactionButton(
-                                                  reaction:
-                                                      reactions!.like != null
-                                                          ? likedIcon
-                                                          : likeIcon,
-                                                  reacted:
-                                                      reactions!.like != null,
-                                                  reactMessage: () =>
-                                                      reactMessage('like'),
-                                                  bgColor: reactions!.like !=
-                                                          null
-                                                      ? const Color(0xff3BA55C)
-                                                      : Colors.white,
-                                                ),
-                                                const SizedBox(width: 8),
-                                                ReactionButton(
-                                                  reaction:
-                                                      reactions!.dislike != null
-                                                          ? dislikedIcon
-                                                          : dislikeIcon,
-                                                  reacted: reactions!.dislike !=
-                                                      null,
-                                                  reactMessage: () =>
-                                                      reactMessage('dislike'),
-                                                  bgColor: reactions!.dislike !=
-                                                          null
-                                                      ? const Color(0xffFC8B23)
-                                                      : Colors.white,
-                                                ),
-                                                // Add more ReactionButton widgets as needed
-                                              ],
+                                          );
+                                        },
+                                        child: Center(
+                                          child: ReactionIndicator(
+                                            child: Container(
+                                              width: 56,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 4,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          100)),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  ReactionButton(
+                                                    reaction:
+                                                        reactions!.like != null
+                                                            ? likedIcon
+                                                            : likeIcon,
+                                                    reacted:
+                                                        reactions!.like != null,
+                                                    reactMessage: () =>
+                                                        reactMessage('like'),
+                                                    bgColor:
+                                                        reactions!.like != null
+                                                            ? const Color(
+                                                                0xff3BA55C)
+                                                            : Colors.white,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  ReactionButton(
+                                                    reaction:
+                                                        reactions!.dislike !=
+                                                                null
+                                                            ? dislikedIcon
+                                                            : dislikeIcon,
+                                                    reacted:
+                                                        reactions!.dislike !=
+                                                            null,
+                                                    reactMessage: () =>
+                                                        reactMessage('dislike'),
+                                                    bgColor:
+                                                        reactions!.dislike !=
+                                                                null
+                                                            ? const Color(
+                                                                0xffFC8B23)
+                                                            : Colors.white,
+                                                  ),
+                                                  // Add more ReactionButton widgets as needed
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    child: Container(
-                                      constraints: BoxConstraints(
-                                        maxWidth: (MediaQuery.of(context)
-                                                .size
-                                                .width) -
-                                            150,
-                                      ),
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: isMine
-                                            ? Color(int.parse(color))
-                                            : Colors.white,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (widget.message.quotedFrom != null)
-                                            MessageQuote(
-                                              message:
-                                                  widget.message.quotedFrom,
-                                              isMine: isMine,
-                                              customerId: widget.customerId,
-                                              language: widget.language,
-                                            ),
-                                          RegExp('<[^>]*>',
-                                                      multiLine: true,
-                                                      caseSensitive: false)
-                                                  .hasMatch(
-                                                      "${widget.message.content?.trim()}")
-                                              ? Html(
-                                                  data:
-                                                      """<body class="container">${widget.message.content?.trim()}<body/>""",
-                                                  onLinkTap: (url,
-                                                      context,
-                                                      attributes,
-                                                      element) async {
-                                                    if (await canLaunchUrl(
-                                                        Uri.parse(url!))) {
-                                                      await launchUrl(
-                                                          Uri.parse(url));
-                                                    }
-                                                  },
-                                                  style: {
-                                                    'body.container': Style(
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : const Color(
-                                                              0xff2C2E33),
-                                                      fontSize: FontSize.medium,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 6,
-                                                          horizontal: 8),
-                                                      margin: Margins.all(0),
-                                                      alignment:
-                                                          Alignment.topLeft,
-                                                    ),
-                                                    'p': Style(
-                                                      margin: Margins.only(
-                                                          bottom: 2),
-                                                    ),
-                                                    'a': Style(
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : Color(
-                                                              int.parse(color)),
-                                                      fontSize: FontSize.medium,
-                                                    )
-                                                  },
-                                                  customRenders: {
-                                                    iframeMatcher():
-                                                        iframeRender(),
-                                                  })
-                                              : Container(
-                                                  padding:
-                                                      const EdgeInsets.all(8),
-                                                  child: Linkify(
-                                                    onOpen: (link) async {
+                                      child: Container(
+                                        constraints: BoxConstraints(
+                                          maxWidth: (MediaQuery.of(context)
+                                                  .size
+                                                  .width) -
+                                              150,
+                                        ),
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: isMine
+                                              ? Color(int.parse(color))
+                                              : Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (widget.message.quotedFrom !=
+                                                null)
+                                              MessageQuote(
+                                                message:
+                                                    widget.message.quotedFrom,
+                                                isMine: isMine,
+                                                customerId: widget.customerId,
+                                                language: widget.language,
+                                              ),
+                                            RegExp('<[^>]*>',
+                                                        multiLine: true,
+                                                        caseSensitive: false)
+                                                    .hasMatch(
+                                                        "${widget.message.content?.trim()}")
+                                                ? Html(
+                                                    data:
+                                                        """<body class="container">${widget.message.content?.trim()}<body/>""",
+                                                    onLinkTap: (url,
+                                                        context,
+                                                        attributes,
+                                                        element) async {
                                                       if (await canLaunchUrl(
-                                                          Uri.parse(
-                                                              link.url))) {
+                                                          Uri.parse(url!))) {
                                                         await launchUrl(
-                                                            Uri.parse(
-                                                                link.url));
+                                                            Uri.parse(url));
                                                       }
                                                     },
-                                                    text: Bidi.stripHtmlIfNeeded(
-                                                            "${widget.message.content?.trim()}")
-                                                        .trim(),
-                                                    style: TextStyle(
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : const Color(
-                                                              0xff2C2E33),
-                                                      fontSize: 14,
-                                                    ),
-                                                    linkStyle: TextStyle(
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : Color(
-                                                              int.parse(color),
-                                                            ),
-                                                    ),
-                                                  ),
-                                                ),
-                                          Container(
-                                            padding: const EdgeInsets.only(
-                                              left: 8,
-                                              right: 8,
-                                              bottom: 4,
-                                            ),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  isToday(createdAt)
-                                                      ? "Hôm nay, ${formatter.format(createdAt)}"
-                                                      : formatter
-                                                          .format(createdAt),
-                                                  style: TextStyle(
-                                                    fontSize: 11,
-                                                    color: isMine
-                                                        ? Colors.white
-                                                            .withOpacity(0.7)
-                                                        : const Color(
-                                                            0xffA3A9B3),
-                                                  ),
-                                                ),
-                                                if (widget.message
-                                                        .sendingStatus !=
-                                                    null)
-                                                  Row(
-                                                    children: [
-                                                      const SizedBox(width: 4),
-                                                      SvgPicture.string(
-                                                        widget.message
-                                                                    .sendingStatus ==
-                                                                'sending'
-                                                            ? sendingIcon
-                                                            : widget.message
-                                                                        .sendingStatus ==
-                                                                    'sent'
-                                                                ? sentIcon
-                                                                : seenIcon,
-                                                        width: 12,
-                                                        height: 12,
+                                                    style: {
+                                                      'body.container': Style(
+                                                        color: isMine
+                                                            ? Colors.white
+                                                            : const Color(
+                                                                0xff2C2E33),
+                                                        fontSize:
+                                                            FontSize.medium,
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                                vertical: 6,
+                                                                horizontal: 8),
+                                                        margin: Margins.all(0),
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                      ),
+                                                      'p': Style(
+                                                        margin: Margins.only(
+                                                            bottom: 2),
+                                                      ),
+                                                      'a': Style(
+                                                        color: isMine
+                                                            ? Colors.white
+                                                            : Color(int.parse(
+                                                                color)),
+                                                        fontSize:
+                                                            FontSize.medium,
                                                       )
-                                                    ],
-                                                  )
-                                              ],
+                                                    },
+                                                    customRenders: {
+                                                      iframeMatcher():
+                                                          iframeRender(),
+                                                    })
+                                                : Container(
+                                                    padding:
+                                                        const EdgeInsets.all(8),
+                                                    child: Linkify(
+                                                      onOpen: (link) async {
+                                                        if (await canLaunchUrl(
+                                                            Uri.parse(
+                                                                link.url))) {
+                                                          await launchUrl(
+                                                              Uri.parse(
+                                                                  link.url));
+                                                        }
+                                                      },
+                                                      text: Bidi.stripHtmlIfNeeded(
+                                                              "${widget.message.content?.trim()}")
+                                                          .trim(),
+                                                      style: TextStyle(
+                                                        color: isMine
+                                                            ? Colors.white
+                                                            : const Color(
+                                                                0xff2C2E33),
+                                                        fontSize: 14,
+                                                      ),
+                                                      linkStyle: TextStyle(
+                                                        color: isMine
+                                                            ? Colors.white
+                                                            : Color(
+                                                                int.parse(
+                                                                    color),
+                                                              ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                            Container(
+                                              padding: const EdgeInsets.only(
+                                                left: 8,
+                                                right: 8,
+                                                bottom: 4,
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    isToday(createdAt)
+                                                        ? "Hôm nay, ${formatter.format(createdAt)}"
+                                                        : formatter
+                                                            .format(createdAt),
+                                                    style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: isMine
+                                                          ? Colors.white
+                                                              .withOpacity(0.7)
+                                                          : const Color(
+                                                              0xffA3A9B3),
+                                                    ),
+                                                  ),
+                                                  if (widget.message
+                                                          .sendingStatus !=
+                                                      null)
+                                                    Row(
+                                                      children: [
+                                                        const SizedBox(
+                                                            width: 4),
+                                                        SvgPicture.string(
+                                                          widget.message
+                                                                      .sendingStatus ==
+                                                                  'sending'
+                                                              ? sendingIcon
+                                                              : widget.message
+                                                                          .sendingStatus ==
+                                                                      'sent'
+                                                                  ? sentIcon
+                                                                  : seenIcon,
+                                                          width: 12,
+                                                          height: 12,
+                                                        )
+                                                      ],
+                                                    )
+                                                ],
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                if (!showReactions &&
-                                    (!isMine &&
-                                            (reactions.like != null &&
-                                                reactions.like!.isNotEmpty) ||
-                                        (reactions.dislike != null &&
-                                            reactions.dislike!.isNotEmpty)))
-                                  Positioned(
-                                    right: isMine ? null : -16,
-                                    bottom: 0,
-                                    left: isMine ? -16 : null,
-                                    child: Container(
-                                      width: 20,
-                                      height: 20,
-                                      decoration: BoxDecoration(
-                                        color: reactions!.like != null
-                                            ? const Color(0xff3BA55C)
-                                            : const Color(0xffFC8B23),
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                      ),
-                                      child: Center(
-                                        child: Container(
-                                          child: reactions!.like != null
-                                              ? SvgPicture.string(
-                                                  likedIcon,
-                                                  width: 12,
-                                                  height: 12,
-                                                )
-                                              : SvgPicture.string(
-                                                  dislikedIcon,
-                                                  width: 12,
-                                                  height: 12,
-                                                ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
-                              ],
+                                  if (!showReactions && !isMine)
+                                    Positioned(
+                                      right: isMine ? null : -10,
+                                      bottom: 0,
+                                      left: isMine ? -10 : null,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Provider.of<TicketProvider>(context,
+                                                  listen: false)
+                                              .updateSelectedTicketMessage(
+                                                  widget.message.id);
+                                        },
+                                        child: Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                            color: reactions.like == null &&
+                                                    reactions.dislike == null
+                                                ? Colors.white
+                                                : reactions!.like != null
+                                                    ? const Color(0xff3BA55C)
+                                                    : const Color(0xffFC8B23),
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.grey
+                                                    .withOpacity(0.2),
+                                                spreadRadius: 2,
+                                                blurRadius: 7,
+                                                offset: const Offset(0,
+                                                    3), // changes position of shadow
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Container(
+                                              child: reactions.like == null &&
+                                                      reactions.dislike == null
+                                                  ? SvgPicture.string(
+                                                      likeIcon,
+                                                      width: 12,
+                                                      height: 12,
+                                                    )
+                                                  : reactions!.like != null
+                                                      ? SvgPicture.string(
+                                                          likedIcon,
+                                                          width: 12,
+                                                          height: 12,
+                                                        )
+                                                      : SvgPicture.string(
+                                                          dislikedIcon,
+                                                          width: 12,
+                                                          height: 12,
+                                                        ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                     ),
                     Container(

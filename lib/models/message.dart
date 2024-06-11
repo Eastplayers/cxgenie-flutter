@@ -97,6 +97,7 @@ class Message {
     this.quotedId,
     this.quotedFrom,
     required this.unsent,
+    this.block,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>

@@ -116,29 +116,29 @@ class TicketListState extends State<TicketList> {
       int selectedPage = value.selectedPage;
 
       return Scaffold(
-        floatingActionButton: selectedPage == 1
-            ? null
-            : FloatingActionButton(
-                onPressed: () {
-                  showDialog(
-                    barrierDismissible: false,
-                    context: context,
-                    builder: (context) {
-                      return DynamicHeightDialog(
-                        language: widget.language,
-                        workspaceId: widget.workspaceId,
-                        customerId: "${widget.customerId}",
-                        color: Color(int.parse(color)),
-                        statuses: widget.statuses,
-                        createTicket: value.createTicket,
-                      );
-                    },
-                  );
-                },
-                backgroundColor: Color(int.parse(color)),
-                elevation: 0,
-                child: const Icon(Icons.add),
-              ),
+        // floatingActionButton: selectedPage == 1
+        //     ? null
+        //     : FloatingActionButton(
+        //         onPressed: () {
+        //           showDialog(
+        //             barrierDismissible: false,
+        //             context: context,
+        //             builder: (context) {
+        //               return DynamicHeightDialog(
+        //                 language: widget.language,
+        //                 workspaceId: widget.workspaceId,
+        //                 customerId: "${widget.customerId}",
+        //                 color: Color(int.parse(color)),
+        //                 statuses: widget.statuses,
+        //                 createTicket: value.createTicket,
+        //               );
+        //             },
+        //           );
+        //         },
+        //         backgroundColor: Color(int.parse(color)),
+        //         elevation: 0,
+        //         child: const Icon(Icons.add),
+        //       ),
         backgroundColor: Colors.white,
         body: RefreshIndicator(
           color: Color(int.parse(color)),
@@ -372,7 +372,7 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
   late io.Socket socket;
 
   void connectSocket() {
-    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://api-staging.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });

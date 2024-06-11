@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
 class AppService {
-  final baseUrl = 'https://api.cxgenie.ai/api/v1';
+  final baseUrl = 'https://api-staging.cxgenie.ai/api/v1';
 
   Future<Bot> getBotDetail(String id) async {
     try {
@@ -173,7 +173,7 @@ class AppService {
       // final uri = Uri.parse(url);
       final uri = Uri(
           scheme: 'https',
-          host: 'api.cxgenie.ai',
+          host: 'api-staging.cxgenie.ai',
           path: '/api/v1/tickets/public',
           queryParameters: {
             'creator_id': customerId,
@@ -233,7 +233,7 @@ class AppService {
     try {
       final uri = Uri(
           scheme: 'https',
-          host: 'api.cxgenie.ai',
+          host: 'api-staging.cxgenie.ai',
           path: '/api/v1/tickets/each-statuses',
           queryParameters: {
             'creator_id': customerId,
@@ -271,7 +271,7 @@ class AppService {
     try {
       final uri = Uri(
           scheme: 'https',
-          host: 'api.cxgenie.ai',
+          host: 'api-staging.cxgenie.ai',
           path: '/api/v1/ticket-categories',
           queryParameters: {
             'limit': '100',
@@ -306,7 +306,7 @@ class AppService {
     try {
       final uri = Uri(
           scheme: 'https',
-          host: 'api.cxgenie.ai',
+          host: 'api-staging.cxgenie.ai',
           path: '/api/v1/ticket-categories',
           queryParameters: {
             'limit': '100',

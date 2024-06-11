@@ -109,7 +109,7 @@ class TicketMessagesState extends State<TicketMessages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://api-staging.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });

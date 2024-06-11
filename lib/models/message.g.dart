@@ -65,9 +65,10 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           ? null
           : Message.fromJson(json['quoted_from'] as Map<String, dynamic>),
       unsent: json['unsent'] as bool?,
-    )..block = json['block'] == null
-        ? null
-        : Block.fromJson(json['block'] as Map<String, dynamic>);
+      block: json['block'] == null
+          ? null
+          : Block.fromJson(json['block'] as Map<String, dynamic>),
+    );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'id': instance.id,

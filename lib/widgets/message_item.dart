@@ -55,7 +55,7 @@ class MessageItemState extends State<MessageItem> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://api-staging.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -589,10 +589,14 @@ class MessageItemState extends State<MessageItem> {
                                       left: isMine ? -10 : null,
                                       child: GestureDetector(
                                         onTap: () {
-                                          Provider.of<AppProvider>(context,
-                                                  listen: false)
-                                              .updateSelectedTicketMessage(
-                                                  null);
+                                          if (!isMine) {
+                                            Provider.of<AppProvider>(context,
+                                                    listen: false)
+                                                .updateSelectedTicketMessage(
+                                                    widget.message.id);
+                                            // _showReactionModal(
+                                            //     context, isMine, color, createdAt);
+                                          }
                                         },
                                         child: Container(
                                           width: 24,
@@ -1024,9 +1028,14 @@ class MessageItemState extends State<MessageItem> {
                                     left: isMine ? -10 : null,
                                     child: GestureDetector(
                                       onTap: () {
-                                        Provider.of<AppProvider>(context,
-                                                listen: false)
-                                            .updateSelectedTicketMessage(null);
+                                        if (!isMine) {
+                                          Provider.of<AppProvider>(context,
+                                                  listen: false)
+                                              .updateSelectedTicketMessage(
+                                                  widget.message.id);
+                                          // _showReactionModal(
+                                          //     context, isMine, color, createdAt);
+                                        }
                                       },
                                       child: Container(
                                         width: 24,

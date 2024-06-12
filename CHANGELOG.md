@@ -92,3 +92,13 @@ Send image, render image
 **New features:**
 
 - Message flow (Normal, Text, Feedback)
+
+## 2.4.0
+
+**New features:**
+
+- Add link preview
+
+**Updates:**
+
+- Handle load new messages & reconnect socket after locking screen or change app state to background

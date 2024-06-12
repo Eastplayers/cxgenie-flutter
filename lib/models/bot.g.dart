@@ -6,6 +6,22 @@ part of 'bot.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+Workspace _$WorkspaceFromJson(Map<String, dynamic> json) => Workspace(
+      id: json['id'] as String,
+      companyName: json['company_name'] as String?,
+      customTicketDomain: json['custom_ticket_domain'] as String?,
+      logo: json['logo'] as String,
+      name: json['name'] as String,
+    );
+
+Map<String, dynamic> _$WorkspaceToJson(Workspace instance) => <String, dynamic>{
+      'id': instance.id,
+      'logo': instance.logo,
+      'name': instance.name,
+      'company_name': instance.companyName,
+      'custom_ticket_domain': instance.customTicketDomain,
+    };
+
 Bot _$BotFromJson(Map<String, dynamic> json) => Bot(
       id: json['id'] as String,
       avatar: json['avatar'] as String?,
@@ -18,12 +34,16 @@ Bot _$BotFromJson(Map<String, dynamic> json) => Bot(
       workspaceRequiredLogin: json['workspace_required_login'] as bool?,
       isTicketEnable: json['is_ticket_enable'] as bool?,
       workspaceId: json['workspace_id'] as String?,
+      workspace: json['workspace'] == null
+          ? null
+          : Workspace.fromJson(json['workspace'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$BotToJson(Bot instance) => <String, dynamic>{
       'id': instance.id,
       'avatar': instance.avatar,
       'name': instance.name,
+      'workspace': instance.workspace,
       'theme_color': instance.themeColor,
       'reply_language': instance.replyLanguage,
       'created_at': instance.createdAt,

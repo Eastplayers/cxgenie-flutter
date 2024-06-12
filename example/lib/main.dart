@@ -35,8 +35,8 @@ class HomeScreen extends StatelessWidget {
       ),
       body: const SafeArea(
         child: Center(
-          child: Tickets(
-            botId: 'f6bee7f9-0dc8-4de6-8bd5-cce436b4fa56',
+          child: Chat(
+            botId: '8388af8d-4f3e-41d3-9a91-1f3c251a8d6c',
             // userToken: 'USER_TOKEN',
             language: LanguageOptions.vi,
           ),

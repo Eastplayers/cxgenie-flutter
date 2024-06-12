@@ -33,6 +33,22 @@ Map<String, dynamic> _$MessageReactionsToJson(MessageReactions instance) =>
       'dislike': instance.dislike,
     };
 
+MessageMetaTag _$MessageMetaTagFromJson(Map<String, dynamic> json) =>
+    MessageMetaTag(
+      description: json['description'] as String?,
+      image: json['image'] as String?,
+      title: json['title'] as String,
+      url: json['url'] as String,
+    );
+
+Map<String, dynamic> _$MessageMetaTagToJson(MessageMetaTag instance) =>
+    <String, dynamic>{
+      'description': instance.description,
+      'image': instance.image,
+      'title': instance.title,
+      'url': instance.url,
+    };
+
 Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       id: json['id'] as String?,
       content: json['content'] as String?,
@@ -41,7 +57,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           ? null
           : Bot.fromJson(json['bot'] as Map<String, dynamic>),
       senderId: json['sender_id'] as String?,
-      type: json['type'] as String,
+      type: json['type'] as String?,
       botId: json['bot_id'] as String?,
       sender: json['sender'] == null
           ? null
@@ -68,6 +84,9 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       block: json['block'] == null
           ? null
           : Block.fromJson(json['block'] as Map<String, dynamic>),
+      metaTags: (json['meta_tags'] as List<dynamic>)
+          .map((e) => MessageMetaTag.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -90,4 +109,5 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'local_id': instance.localId,
       'quoted_id': instance.quotedId,
       'quoted_from': instance.quotedFrom,
+      'meta_tags': instance.metaTags,
     };

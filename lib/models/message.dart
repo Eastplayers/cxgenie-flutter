@@ -39,10 +39,30 @@ class MessageReactions {
 }
 
 @JsonSerializable()
+class MessageMetaTag {
+  String? description;
+  String? image;
+  String title;
+  String url;
+
+  MessageMetaTag({
+    this.description,
+    this.image,
+    required this.title,
+    required this.url,
+  });
+
+  factory MessageMetaTag.fromJson(Map<String, dynamic> json) =>
+      _$MessageMetaTagFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MessageMetaTagToJson(this);
+}
+
+@JsonSerializable()
 class Message {
   String? id;
   String? content;
-  String type;
+  String? type;
   Bot? bot;
   Customer? sender;
   Customer? receiver;
@@ -78,13 +98,16 @@ class Message {
   @JsonKey(name: "quoted_from")
   Message? quotedFrom;
 
+  @JsonKey(name: "meta_tags")
+  List<MessageMetaTag> metaTags;
+
   Message({
     this.id,
     this.content,
     this.receiverId,
     this.bot,
     this.senderId,
-    required this.type,
+    this.type,
     this.botId,
     this.sender,
     this.receiver,
@@ -98,6 +121,7 @@ class Message {
     this.quotedFrom,
     required this.unsent,
     this.block,
+    required this.metaTags,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>

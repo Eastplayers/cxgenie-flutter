@@ -74,6 +74,7 @@ class ContactInformationState extends State<ContactInformation> {
                             child: FormBuilderTextField(
                               name: 'name',
                               cursorColor: widget.themeColor,
+                              initialValue: 'Quyen',
                               decoration: InputDecoration(
                                 hintText: widget.language == LanguageOptions.en
                                     ? "Enter your name"
@@ -137,6 +138,7 @@ class ContactInformationState extends State<ContactInformation> {
                             child: FormBuilderTextField(
                               name: 'email',
                               keyboardType: TextInputType.emailAddress,
+                              initialValue: 'quyen@gmail.com',
                               cursorColor: widget.themeColor,
                               decoration: InputDecoration(
                                 hintText: widget.language == LanguageOptions.en

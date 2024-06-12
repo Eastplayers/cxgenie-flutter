@@ -91,6 +91,7 @@ class MessagesState extends State<Messages> {
         'local_id': const Uuid().v4(),
         'sending_status': 'sending',
         'unsent': false,
+        'meta_tags': []
       };
       var localMessage = <String, dynamic>{
         ...newMessage,
@@ -145,6 +146,16 @@ class MessagesState extends State<Messages> {
     socket.on('message.unsend.success', (data) {
       Provider.of<AppProvider>(context, listen: false)
           .updateMessageUnsentSatus(data['message_id']);
+    });
+    socket.on('message.send_success', (data) {
+      if (data['local_id'] != null && data['meta_tags'] != null) {
+        var metaTags = data['meta_tags'] as List;
+        List<MessageMetaTag> convertedMetaTags = metaTags.map((metaTag) {
+          return MessageMetaTag.fromJson(metaTag);
+        }).toList();
+        Provider.of<AppProvider>(context, listen: false)
+            .updateMessageMetaTags(data['local_id'], convertedMetaTags);
+      }
     });
     socket.onDisconnect((_) {
       socket.emit('room.conversation.leave', widget.customerId);

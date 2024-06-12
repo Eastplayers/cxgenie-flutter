@@ -38,6 +38,7 @@ class AppContainerState extends State<AppContainer> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(builder: (context, value, child) {
       final bot = value.bot;
+      print(bot.workspace?.id);
       String color = bot.themeColor!.replaceAll("#", "0xff");
       final customer = value.customer;
 
@@ -73,7 +74,7 @@ class AppContainerState extends State<AppContainer> {
                         )
                       : widget.isTicket == true
                           ? TicketContainer(
-                              workspaceId: "${bot.workspaceId}",
+                              workspaceId: "${bot.workspace!.id}",
                               customerId: customer.id,
                               themeColor: bot.themeColor,
                               language: widget.language,
@@ -83,7 +84,7 @@ class AppContainerState extends State<AppContainer> {
                               botId: widget.botId,
                               themeColor: "${bot.themeColor}",
                               language: widget.language,
-                              workspaceId: bot.workspaceId,
+                              workspaceId: bot.workspace!.id,
                             ),
         ),
       );

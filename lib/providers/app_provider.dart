@@ -100,6 +100,20 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateMessageMetaTags(
+      String messageLocalId, List<MessageMetaTag> metaTags) async {
+    notifyListeners();
+    _messages = _messages.map((message) {
+      if (message.localId == messageLocalId) {
+        message.metaTags = metaTags;
+        return message;
+      }
+
+      return message;
+    }).toList();
+    notifyListeners();
+  }
+
   void updateSelectedTicketMessage(String? id) {
     _selectedTicketMessageId = id;
     notifyListeners();

@@ -10,6 +10,7 @@ import 'package:cxgenie/widgets/icon.dart';
 import 'package:cxgenie/widgets/linkify.dart';
 import 'package:cxgenie/widgets/message_actions.dart';
 import 'package:cxgenie/widgets/message_feedback.dart';
+import 'package:cxgenie/widgets/message_link_preview.dart';
 import 'package:cxgenie/widgets/message_media.dart';
 import 'package:cxgenie/widgets/message_quote.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
@@ -89,7 +90,7 @@ class MessageItemState extends State<MessageItem> {
       DateTime now = DateTime.now();
       String isoDate = now.toIso8601String();
       var newMessage = <String, dynamic>{
-        'workspace_id': widget.bot.workspaceId,
+        'workspace_id': widget.bot.workspace!.id,
         'bot_id': widget.bot.id,
         'content': action.data.label.trim(),
         'media': [],
@@ -655,6 +656,12 @@ class MessageItemState extends State<MessageItem> {
                           media: widget.message.media,
                         ),
                       ),
+                      Container(
+                        decoration: const BoxDecoration(),
+                        child: MessageLinkPreview(
+                          metaTags: widget.message.metaTags,
+                        ),
+                      ),
                       if (widget.message.content?.trim() == '')
                         Column(
                           children: [
@@ -1092,6 +1099,12 @@ class MessageItemState extends State<MessageItem> {
                       decoration: const BoxDecoration(),
                       child: MessageMediaView(
                         media: widget.message.media,
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(),
+                      child: MessageLinkPreview(
+                        metaTags: widget.message.metaTags,
                       ),
                     ),
                     if (widget.message.content?.trim() == '')

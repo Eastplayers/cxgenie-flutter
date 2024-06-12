@@ -64,7 +64,6 @@ class TicketMessagesState extends State<TicketMessages> {
           .updateSelectedTicketMessage(null);
       textController.clear();
       var cloneFiles = [..._uploadedFiles];
-      print(cloneFiles);
       setState(() {
         _uploadedFiles = [];
       });

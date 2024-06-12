@@ -38,7 +38,6 @@ class AppContainerState extends State<AppContainer> {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(builder: (context, value, child) {
       final bot = value.bot;
-      print(bot.workspace?.id);
       String color = bot.themeColor!.replaceAll("#", "0xff");
       final customer = value.customer;
 

@@ -37,7 +37,8 @@ class TicketMessages extends StatefulWidget {
   TicketMessagesState createState() => TicketMessagesState();
 }
 
-class TicketMessagesState extends State<TicketMessages> {
+class TicketMessagesState extends State<TicketMessages>
+    with WidgetsBindingObserver {
   final AppService _service = AppService();
   late io.Socket socket;
   final TextEditingController textController = TextEditingController();
@@ -82,6 +83,7 @@ class TicketMessagesState extends State<TicketMessages> {
         'local_id': const Uuid().v4(),
         'sending_status': 'sending',
         'unsent': false,
+        'meta_tags': [],
       };
       var localMessage = <String, dynamic>{
         ...newMessage,
@@ -108,7 +110,7 @@ class TicketMessagesState extends State<TicketMessages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://api-staging.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -186,6 +188,7 @@ class TicketMessagesState extends State<TicketMessages> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<TicketProvider>(context, listen: false)
           .getMessages(widget.ticketId);
@@ -197,7 +200,26 @@ class TicketMessagesState extends State<TicketMessages> {
   @override
   void dispose() {
     socket.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        Provider.of<TicketProvider>(context, listen: false)
+            .getMessages(widget.ticketId);
+        connectSocket();
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        socket.disconnect();
+        break;
+    }
   }
 
   @override

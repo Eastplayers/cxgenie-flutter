@@ -57,7 +57,7 @@ class Messages extends StatefulWidget {
   MessagesState createState() => MessagesState();
 }
 
-class MessagesState extends State<Messages> {
+class MessagesState extends State<Messages> with WidgetsBindingObserver {
   final AppService _service = AppService();
   late io.Socket socket;
   final TextEditingController textController = TextEditingController();
@@ -91,7 +91,7 @@ class MessagesState extends State<Messages> {
         'local_id': const Uuid().v4(),
         'sending_status': 'sending',
         'unsent': false,
-        'meta_tags': []
+        'meta_tags': [],
       };
       var localMessage = <String, dynamic>{
         ...newMessage,
@@ -118,7 +118,7 @@ class MessagesState extends State<Messages> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://api-staging.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -195,6 +195,7 @@ class MessagesState extends State<Messages> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<AppProvider>(context, listen: false)
           .getMessages(widget.customerId);
@@ -205,7 +206,26 @@ class MessagesState extends State<Messages> {
   @override
   void dispose() {
     socket.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        Provider.of<AppProvider>(context, listen: false)
+            .getMessages(widget.customerId);
+        connectSocket();
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        socket.disconnect();
+        break;
+    }
   }
 
   @override

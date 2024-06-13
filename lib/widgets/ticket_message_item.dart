@@ -8,6 +8,7 @@ import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/widgets/icon.dart';
 import 'package:cxgenie/widgets/linkify.dart';
 import 'package:cxgenie/widgets/message_actions.dart';
+import 'package:cxgenie/widgets/message_content_renderer.dart';
 import 'package:cxgenie/widgets/message_feedback.dart';
 import 'package:cxgenie/widgets/message_media.dart';
 import 'package:cxgenie/widgets/message_quote.dart';
@@ -428,96 +429,12 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                 customerId: widget.customerId,
                                                 language: widget.language,
                                               ),
-                                            RegExp('<[^>]*>',
-                                                        multiLine: true,
-                                                        caseSensitive: false)
-                                                    .hasMatch(
-                                                        "${widget.message.content?.trim()}")
-                                                ? HtmlWidget(
-                                                    """<div class="container">${widget.message.content?.trim()}<div/>""",
-                                                    onTapUrl: (url) async {
-                                                    if (await canLaunchUrl(
-                                                        Uri.parse(url!))) {
-                                                      await launchUrl(
-                                                          Uri.parse(url));
-                                                      return true;
-                                                    }
-                                                    return false;
-                                                  }, customStylesBuilder:
-                                                        (element) {
-                                                    print(element.localName);
-                                                    if (element.classes
-                                                        .contains(
-                                                            'container')) {
-                                                      return {
-                                                        'color': isMine
-                                                            ? 'white'
-                                                            : '#2C2E33',
-                                                        'font-size': '14px',
-                                                        'padding': '6px 8px',
-                                                        'margin': '0px',
-                                                        'width': 'auto'
-                                                      };
-                                                    }
-
-                                                    if (element.localName ==
-                                                        'a') {
-                                                      return {
-                                                        'color': !isMine
-                                                            ? widget.themeColor
-                                                            : 'white',
-                                                        'font-size': '14px',
-                                                        'margin': '0px',
-                                                        'width': 'auto'
-                                                      };
-                                                    }
-
-                                                    return null;
-                                                  },
-                                                    textStyle: TextStyle(
-                                                      fontSize: 14,
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : const Color(
-                                                              0xff2C2E33),
-                                                      decorationColor: isMine
-                                                          ? Colors.white
-                                                          : Color(
-                                                              int.parse(color)),
-                                                    ))
-                                                : Container(
-                                                    padding:
-                                                        const EdgeInsets.all(8),
-                                                    child: Linkify(
-                                                      onOpen: (link) async {
-                                                        if (await canLaunchUrl(
-                                                            Uri.parse(
-                                                                link.url))) {
-                                                          await launchUrl(
-                                                              Uri.parse(
-                                                                  link.url));
-                                                        }
-                                                      },
-                                                      text: Bidi.stripHtmlIfNeeded(
-                                                              "${widget.message.content?.trim()}")
-                                                          .trim(),
-                                                      style: TextStyle(
-                                                        color: isMine
-                                                            ? Colors.white
-                                                            : const Color(
-                                                                0xff2C2E33),
-                                                        fontSize: 14,
-                                                      ),
-                                                      linkStyle: TextStyle(
-                                                        color: isMine
-                                                            ? Colors.white
-                                                            : Color(
-                                                                int.parse(
-                                                                    color),
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ),
+                                            MessageContentRenderer(
+                                              content: widget.message.content
+                                                  ?.trim(),
+                                              themeColor: widget.themeColor,
+                                              isMine: isMine,
+                                            ),
                                             if (widget.message.block!.type !=
                                                 'FEEDBACK')
                                               MessageActions(
@@ -907,96 +824,12 @@ class TicketMessageItemState extends State<TicketMessageItem> {
                                                 customerId: widget.customerId,
                                                 language: widget.language,
                                               ),
-                                            RegExp('<[^>]*>',
-                                                        multiLine: true,
-                                                        caseSensitive: false)
-                                                    .hasMatch(
-                                                        "${widget.message.content?.trim()}")
-                                                ? HtmlWidget(
-                                                    """<div class="container">${widget.message.content?.trim()}<div/>""",
-                                                    onTapUrl: (url) async {
-                                                    if (await canLaunchUrl(
-                                                        Uri.parse(url!))) {
-                                                      await launchUrl(
-                                                          Uri.parse(url));
-                                                      return true;
-                                                    }
-                                                    return false;
-                                                  }, customStylesBuilder:
-                                                        (element) {
-                                                    print(element.localName);
-                                                    if (element.classes
-                                                        .contains(
-                                                            'container')) {
-                                                      return {
-                                                        'color': isMine
-                                                            ? 'white'
-                                                            : '#2C2E33',
-                                                        'font-size': '14px',
-                                                        'padding': '6px 8px',
-                                                        'margin': '0px',
-                                                        'width': 'auto'
-                                                      };
-                                                    }
-
-                                                    if (element.localName ==
-                                                        'a') {
-                                                      return {
-                                                        'color': !isMine
-                                                            ? widget.themeColor
-                                                            : 'white',
-                                                        'font-size': '14px',
-                                                        'margin': '0px',
-                                                        'width': 'auto'
-                                                      };
-                                                    }
-
-                                                    return null;
-                                                  },
-                                                    textStyle: TextStyle(
-                                                      fontSize: 14,
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : const Color(
-                                                              0xff2C2E33),
-                                                      decorationColor: isMine
-                                                          ? Colors.white
-                                                          : Color(
-                                                              int.parse(color)),
-                                                    ))
-                                                : Container(
-                                                    padding:
-                                                        const EdgeInsets.all(8),
-                                                    child: Linkify(
-                                                      onOpen: (link) async {
-                                                        if (await canLaunchUrl(
-                                                            Uri.parse(
-                                                                link.url))) {
-                                                          await launchUrl(
-                                                              Uri.parse(
-                                                                  link.url));
-                                                        }
-                                                      },
-                                                      text: Bidi.stripHtmlIfNeeded(
-                                                              "${widget.message.content?.trim()}")
-                                                          .trim(),
-                                                      style: TextStyle(
-                                                        color: isMine
-                                                            ? Colors.white
-                                                            : const Color(
-                                                                0xff2C2E33),
-                                                        fontSize: 14,
-                                                      ),
-                                                      linkStyle: TextStyle(
-                                                        color: isMine
-                                                            ? Colors.white
-                                                            : Color(
-                                                                int.parse(
-                                                                    color),
-                                                              ),
-                                                      ),
-                                                    ),
-                                                  ),
+                                            MessageContentRenderer(
+                                              content: widget.message.content
+                                                  ?.trim(),
+                                              themeColor: widget.themeColor,
+                                              isMine: isMine,
+                                            ),
                                             Container(
                                               padding: const EdgeInsets.only(
                                                 left: 8,

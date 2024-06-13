@@ -14,15 +14,15 @@ import 'package:cxgenie/widgets/message_link_preview.dart';
 import 'package:cxgenie/widgets/message_media.dart';
 import 'package:cxgenie/widgets/message_quote.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:uuid/uuid.dart';
 
 class MessageItem extends StatefulWidget {
@@ -428,53 +428,58 @@ class MessageItemState extends State<MessageItem> {
                                                         caseSensitive: false)
                                                     .hasMatch(
                                                         "${widget.message.content?.trim()}")
-                                                ? Html(
-                                                    data:
-                                                        """<body class="container">${widget.message.content?.trim()}<body/>""",
-                                                    onLinkTap: (url,
-                                                        context,
-                                                        attributes,
-                                                        element) async {
-                                                      if (await canLaunchUrl(
-                                                          Uri.parse(url!))) {
-                                                        await launchUrl(
-                                                            Uri.parse(url));
-                                                      }
-                                                    },
-                                                    style: {
-                                                      'body.container': Style(
-                                                        color: isMine
-                                                            ? Colors.white
-                                                            : const Color(
-                                                                0xff2C2E33),
-                                                        fontSize:
-                                                            FontSize.medium,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                vertical: 6,
-                                                                horizontal: 8),
-                                                        margin: Margins.all(0),
-                                                        alignment:
-                                                            Alignment.topLeft,
-                                                      ),
-                                                      'p': Style(
-                                                        margin: Margins.only(
-                                                            bottom: 2),
-                                                      ),
-                                                      'a': Style(
-                                                        color: isMine
-                                                            ? Colors.white
-                                                            : Color(int.parse(
-                                                                color)),
-                                                        fontSize:
-                                                            FontSize.medium,
-                                                      )
-                                                    },
-                                                    customRenders: {
-                                                      iframeMatcher():
-                                                          iframeRender(),
-                                                    })
+                                                ? HtmlWidget(
+                                                    """<div class="container">${widget.message.content?.trim()}<div/>""",
+                                                    onTapUrl: (url) async {
+                                                    if (await canLaunchUrl(
+                                                        Uri.parse(url!))) {
+                                                      await launchUrl(
+                                                          Uri.parse(url));
+                                                      return true;
+                                                    }
+                                                    return false;
+                                                  }, customStylesBuilder:
+                                                        (element) {
+                                                    print(element.localName);
+                                                    if (element.classes
+                                                        .contains(
+                                                            'container')) {
+                                                      return {
+                                                        'color': isMine
+                                                            ? 'white'
+                                                            : '#2C2E33',
+                                                        'font-size': '14px',
+                                                        'padding': '6px 8px',
+                                                        'margin': '0px',
+                                                        'width': 'auto'
+                                                      };
+                                                    }
+
+                                                    if (element.localName ==
+                                                        'a') {
+                                                      return {
+                                                        'color': !isMine
+                                                            ? widget.themeColor
+                                                            : 'white',
+                                                        'font-size': '14px',
+                                                        'margin': '0px',
+                                                        'width': 'auto'
+                                                      };
+                                                    }
+
+                                                    return null;
+                                                  },
+                                                    textStyle: TextStyle(
+                                                      fontSize: 14,
+                                                      color: isMine
+                                                          ? Colors.white
+                                                          : const Color(
+                                                              0xff2C2E33),
+                                                      decorationColor: isMine
+                                                          ? Colors.white
+                                                          : Color(
+                                                              int.parse(color)),
+                                                    ))
                                                 : Container(
                                                     padding:
                                                         const EdgeInsets.all(8),
@@ -898,50 +903,57 @@ class MessageItemState extends State<MessageItem> {
                                                       caseSensitive: false)
                                                   .hasMatch(
                                                       "${widget.message.content?.trim()}")
-                                              ? Html(
-                                                  data:
-                                                      """<body class="container">${widget.message.content?.trim()}<body/>""",
-                                                  onLinkTap: (url,
-                                                      context,
-                                                      attributes,
-                                                      element) async {
-                                                    if (await canLaunchUrl(
-                                                        Uri.parse(url!))) {
-                                                      await launchUrl(
-                                                          Uri.parse(url));
-                                                    }
-                                                  },
-                                                  style: {
-                                                    'body.container': Style(
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : const Color(
-                                                              0xff2C2E33),
-                                                      fontSize: FontSize.medium,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          vertical: 6,
-                                                          horizontal: 8),
-                                                      margin: Margins.all(0),
-                                                      alignment:
-                                                          Alignment.topLeft,
-                                                    ),
-                                                    'p': Style(
-                                                      margin: Margins.only(
-                                                          bottom: 2),
-                                                    ),
-                                                    'a': Style(
-                                                      color: isMine
-                                                          ? Colors.white
-                                                          : Color(
-                                                              int.parse(color)),
-                                                      fontSize: FontSize.medium,
-                                                    )
-                                                  },
-                                                  customRenders: {
-                                                    iframeMatcher():
-                                                        iframeRender(),
-                                                  })
+                                              ? HtmlWidget(
+                                                  """<div class="container">${widget.message.content?.trim()}<div/>""",
+                                                  onTapUrl: (url) async {
+                                                  if (await canLaunchUrl(
+                                                      Uri.parse(url!))) {
+                                                    await launchUrl(
+                                                        Uri.parse(url));
+                                                    return true;
+                                                  }
+                                                  return false;
+                                                }, customStylesBuilder:
+                                                      (element) {
+                                                  print(element.localName);
+                                                  if (element.classes
+                                                      .contains('container')) {
+                                                    return {
+                                                      'color': isMine
+                                                          ? 'white'
+                                                          : '#2C2E33',
+                                                      'font-size': '14px',
+                                                      'padding': '6px 8px',
+                                                      'margin': '0px',
+                                                      'width': 'auto'
+                                                    };
+                                                  }
+
+                                                  if (element.localName ==
+                                                      'a') {
+                                                    return {
+                                                      'color': !isMine
+                                                          ? widget.themeColor
+                                                          : 'white',
+                                                      'font-size': '14px',
+                                                      'margin': '0px',
+                                                      'width': 'auto'
+                                                    };
+                                                  }
+
+                                                  return null;
+                                                },
+                                                  textStyle: TextStyle(
+                                                    fontSize: 14,
+                                                    color: isMine
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xff2C2E33),
+                                                    decorationColor: isMine
+                                                        ? Colors.white
+                                                        : Color(
+                                                            int.parse(color)),
+                                                  ))
                                               : Container(
                                                   padding:
                                                       const EdgeInsets.all(8),

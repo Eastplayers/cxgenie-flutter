@@ -58,7 +58,7 @@ class MessageLinkPreviewState extends State<MessageLinkPreview> {
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.left,
                               style: const TextStyle(
-                                fontSize: 12,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 height: 1.2,
                                 color: Color(0xff202225),
@@ -72,7 +72,7 @@ class MessageLinkPreviewState extends State<MessageLinkPreview> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                    fontSize: 10,
+                                    fontSize: 12,
                                     color: Color(0xff7d828b),
                                     height: 1.2,
                                   ),

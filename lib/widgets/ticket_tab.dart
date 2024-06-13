@@ -1,5 +1,4 @@
 import 'package:cxgenie/enums/language.dart';
-import 'package:cxgenie/providers/app_provider.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';
 import 'package:cxgenie/widgets/ticket_list.dart';
 import 'package:flutter/material.dart';

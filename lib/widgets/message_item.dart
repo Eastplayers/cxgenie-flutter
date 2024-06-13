@@ -7,7 +7,6 @@ import 'package:cxgenie/models/bot.dart';
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/providers/app_provider.dart';
 import 'package:cxgenie/widgets/icon.dart';
-import 'package:cxgenie/widgets/linkify.dart';
 import 'package:cxgenie/widgets/message_actions.dart';
 import 'package:cxgenie/widgets/message_content_renderer.dart';
 import 'package:cxgenie/widgets/message_feedback.dart';
@@ -15,15 +14,12 @@ import 'package:cxgenie/widgets/message_link_preview.dart';
 import 'package:cxgenie/widgets/message_media.dart';
 import 'package:cxgenie/widgets/message_quote.dart';
 import 'package:cxgenie/widgets/reaction_indicator.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
-import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 class MessageItem extends StatefulWidget {
@@ -357,15 +353,15 @@ class MessageItemState extends State<MessageItem> {
                                                 children: [
                                                   ReactionButton(
                                                     reaction:
-                                                        reactions!.like != null
+                                                        reactions.like != null
                                                             ? likedIcon
                                                             : likeIcon,
                                                     reacted:
-                                                        reactions!.like != null,
+                                                        reactions.like != null,
                                                     reactMessage: () =>
                                                         reactMessage('like'),
                                                     bgColor:
-                                                        reactions!.like != null
+                                                        reactions.like != null
                                                             ? const Color(
                                                                 0xff3BA55C)
                                                             : Colors.white,
@@ -373,17 +369,17 @@ class MessageItemState extends State<MessageItem> {
                                                   const SizedBox(width: 8),
                                                   ReactionButton(
                                                     reaction:
-                                                        reactions!.dislike !=
+                                                        reactions.dislike !=
                                                                 null
                                                             ? dislikedIcon
                                                             : dislikeIcon,
                                                     reacted:
-                                                        reactions!.dislike !=
+                                                        reactions.dislike !=
                                                             null,
                                                     reactMessage: () =>
                                                         reactMessage('dislike'),
                                                     bgColor:
-                                                        reactions!.dislike !=
+                                                        reactions.dislike !=
                                                                 null
                                                             ? const Color(
                                                                 0xffFC8B23)
@@ -528,7 +524,7 @@ class MessageItemState extends State<MessageItem> {
                                             color: reactions.like == null &&
                                                     reactions.dislike == null
                                                 ? Colors.white
-                                                : reactions!.like != null
+                                                : reactions.like != null
                                                     ? const Color(0xff3BA55C)
                                                     : const Color(0xffFC8B23),
                                             borderRadius:
@@ -553,7 +549,7 @@ class MessageItemState extends State<MessageItem> {
                                                       width: 12,
                                                       height: 12,
                                                     )
-                                                  : reactions!.like != null
+                                                  : reactions.like != null
                                                       ? SvgPicture.string(
                                                           likedIcon,
                                                           width: 12,
@@ -755,14 +751,14 @@ class MessageItemState extends State<MessageItem> {
                                               children: [
                                                 ReactionButton(
                                                   reaction:
-                                                      reactions!.like != null
+                                                      reactions.like != null
                                                           ? likedIcon
                                                           : likeIcon,
                                                   reacted:
-                                                      reactions!.like != null,
+                                                      reactions.like != null,
                                                   reactMessage: () =>
                                                       reactMessage('like'),
-                                                  bgColor: reactions!.like !=
+                                                  bgColor: reactions.like !=
                                                           null
                                                       ? const Color(0xff3BA55C)
                                                       : Colors.white,
@@ -770,14 +766,14 @@ class MessageItemState extends State<MessageItem> {
                                                 const SizedBox(width: 8),
                                                 ReactionButton(
                                                   reaction:
-                                                      reactions!.dislike != null
+                                                      reactions.dislike != null
                                                           ? dislikedIcon
                                                           : dislikeIcon,
-                                                  reacted: reactions!.dislike !=
+                                                  reacted: reactions.dislike !=
                                                       null,
                                                   reactMessage: () =>
                                                       reactMessage('dislike'),
-                                                  bgColor: reactions!.dislike !=
+                                                  bgColor: reactions.dislike !=
                                                           null
                                                       ? const Color(0xffFC8B23)
                                                       : Colors.white,
@@ -898,7 +894,7 @@ class MessageItemState extends State<MessageItem> {
                                           color: reactions.like == null &&
                                                   reactions.dislike == null
                                               ? Colors.white
-                                              : reactions!.like != null
+                                              : reactions.like != null
                                                   ? const Color(0xff3BA55C)
                                                   : const Color(0xffFC8B23),
                                           borderRadius:
@@ -923,7 +919,7 @@ class MessageItemState extends State<MessageItem> {
                                                     width: 12,
                                                     height: 12,
                                                   )
-                                                : reactions!.like != null
+                                                : reactions.like != null
                                                     ? SvgPicture.string(
                                                         likedIcon,
                                                         width: 12,

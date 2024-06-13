@@ -301,15 +301,13 @@ class TicketListState extends State<TicketList> {
                                   Column(
                                     children: [
                                       const SizedBox(height: 8),
-                                      Container(
-                                        child: Text(
-                                          ticket.ticketCategory!.parent != null
-                                              ? "${ticket.ticketCategory!.parent!.name} / ${ticket.ticketCategory!.name}"
-                                              : ticket.ticketCategory!.name,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Color(0xff5C6169),
-                                          ),
+                                      Text(
+                                        ticket.ticketCategory!.parent != null
+                                            ? "${ticket.ticketCategory!.parent!.name} / ${ticket.ticketCategory!.name}"
+                                            : ticket.ticketCategory!.name,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Color(0xff5C6169),
                                         ),
                                       ),
                                     ],

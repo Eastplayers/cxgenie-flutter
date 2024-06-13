@@ -30,13 +30,12 @@ class MessageContentRendererState extends State<MessageContentRenderer> {
         ? HtmlWidget(
             """<div class="container">${widget.content?.trim()}<div/>""",
             onTapUrl: (url) async {
-            if (await canLaunchUrl(Uri.parse(url!))) {
+            if (await canLaunchUrl(Uri.parse(url))) {
               await launchUrl(Uri.parse(url));
               return true;
             }
             return false;
           }, customStylesBuilder: (element) {
-            print(element.localName);
             if (element.classes.contains('container')) {
               return {
                 'color': widget.isMine ? 'white' : '#2C2E33',

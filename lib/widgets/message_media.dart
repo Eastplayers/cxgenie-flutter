@@ -1,7 +1,6 @@
 import 'package:cxgenie/models/message.dart';
 import 'package:cxgenie/widgets/video.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 class MessageMediaView extends StatefulWidget {
   final List<MessageMedia>? media;

@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:cxgenie/enums/language.dart';
 import 'package:cxgenie/models/ticket.dart';
 import 'package:cxgenie/providers/ticket_provider.dart';

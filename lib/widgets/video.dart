@@ -1,5 +1,6 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:video_player/video_player.dart';
 
 class Video extends StatefulWidget {
@@ -20,6 +21,7 @@ class VideoState extends State<Video> {
   late VideoPlayerController _controller;
   ChewieController? _chewieController;
   int? bufferDelay;
+  var logger = Logger();
 
   @override
   void initState() {
@@ -54,7 +56,7 @@ class VideoState extends State<Video> {
       );
       setState(() {});
     } catch (e) {
-      print(e);
+      logger.e(e);
     }
   }
 

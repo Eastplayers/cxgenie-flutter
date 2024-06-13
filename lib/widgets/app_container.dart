@@ -73,7 +73,7 @@ class AppContainerState extends State<AppContainer> {
                         )
                       : widget.isTicket == true
                           ? TicketContainer(
-                              workspaceId: "${bot.workspace!.id}",
+                              workspaceId: bot.workspace!.id,
                               customerId: customer.id,
                               themeColor: bot.themeColor,
                               language: widget.language,

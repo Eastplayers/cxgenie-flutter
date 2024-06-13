@@ -10,7 +10,7 @@ Ticket _$TicketFromJson(Map<String, dynamic> json) => Ticket(
       id: json['id'] as String,
       name: json['name'] as String,
       status: json['status'] as String,
-      code: json['code'] as int,
+      code: (json['code'] as num).toInt(),
       assigneeId: json['assignee_id'] as String?,
       targetTicketId: json['target_ticket_id'] as String?,
       createdAt: json['created_at'] as String,

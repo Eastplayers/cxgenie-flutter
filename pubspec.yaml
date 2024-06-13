@@ -1,6 +1,6 @@
 name: cxgenie
 description: The cxgenie Flutter Package seamlessly integrates https://cxgenie.ai cutting-edge Conversational AI and NLP capabilities into Flutter apps.
-version: 2.4.4
+version: 2.4.5
 homepage: https://cxgenie.ai
 
 environment:
@@ -11,9 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   chewie: ^1.7.5
-  flutter_custom_tab_bar: ^1.2.1
   flutter_form_builder: ^9.1.1
-  flutter_linkify: ^6.0.0
   flutter_portal: ^1.1.4
   flutter_svg: ^2.0.7
   flutter_widget_from_html_core: ^0.15.1
@@ -21,22 +19,21 @@ dependencies:
   http: ^1.1.0
   image_picker: ^1.0.4
   intl: ^0.19.0
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
   linkify: ^5.0.0
   logger: ^2.3.0
   provider: ^6.0.5
   socket_io_client: ^2.0.3+1
   url_launcher: ^6.2.3
   uuid: ^4.2.2
-  video_player_platform_interface: ^6.2.2
   video_player: ^2.8.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
-  build_runner: ^2.4.6
-  json_serializable: ^6.7.1
+  build_runner: ^2.4.11
+  json_serializable: ^6.8.0
 
 flutter:
   assets:

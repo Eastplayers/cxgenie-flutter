@@ -102,14 +102,14 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
       Provider.of<AppProvider>(context, listen: false)
           .addMessage(internalNewMessage);
       Timer(
-          const Duration(milliseconds: 750),
+          const Duration(milliseconds: 250),
           () => Provider.of<AppProvider>(context, listen: false).updateMessage(
               Message.fromJson({...localMessage, 'sending_status': 'sent'})));
       Timer(
-          const Duration(milliseconds: 1500),
+          const Duration(milliseconds: 500),
           () => Provider.of<AppProvider>(context, listen: false).updateMessage(
               Message.fromJson({...localMessage, 'sending_status': 'seen'})));
-      Timer(const Duration(milliseconds: 1750),
+      Timer(const Duration(milliseconds: 500),
           () => socket.emit('message.bot.create', newMessage));
     }
   }
@@ -131,12 +131,15 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
       }
     });
     socket.on('message.created', (data) {
-      if (data['receiver_id'] == widget.customerId ||
-          data['sender_id'] == widget.customerId) {
+      var cloneData = Map<String, dynamic>.from(data);
+      if (cloneData['receiver_id'] == widget.customerId ||
+          cloneData['sender_id'] == widget.customerId) {
         Provider.of<AppProvider>(context, listen: false)
             .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
-        Message newMessage = Message.fromJson(data);
+        cloneData['reactions'] = Map<String, dynamic>.from({});
+
+        Message newMessage = Message.fromJson(cloneData);
 
         Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
       }

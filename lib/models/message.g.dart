@@ -87,6 +87,9 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       metaTags: (json['meta_tags'] as List<dynamic>)
           .map((e) => MessageMetaTag.fromJson(e as Map<String, dynamic>))
           .toList(),
+      variables: (json['variables'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, e as String),
+      ),
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -100,6 +103,7 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'reactions': instance.reactions,
       'unsent': instance.unsent,
       'block': instance.block,
+      'variables': instance.variables,
       'receiver_id': instance.receiverId,
       'sender_id': instance.senderId,
       'bot_id': instance.botId,

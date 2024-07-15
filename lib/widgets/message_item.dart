@@ -79,8 +79,9 @@ class MessageItemState extends State<MessageItem> {
         .updateSelectedTicketMessage(null);
   }
 
-  void sendMessage(BlockAction? action) async {
+  void sendMessage(BlockAction? action, bool? isCreateLocalMessage) async {
     if (action != null) {
+      if (isCreateLocalMessage == true) {}
       Provider.of<AppProvider>(context, listen: false)
           .updateSelectedTicketMessage(null);
 
@@ -97,7 +98,8 @@ class MessageItemState extends State<MessageItem> {
         'local_id': const Uuid().v4(),
         'sending_status': 'sending',
         'action_id': action.id,
-        'unsent': false
+        'unsent': false,
+        'meta_tags': [],
       };
       var localMessage = <String, dynamic>{
         ...newMessage,
@@ -107,17 +109,19 @@ class MessageItemState extends State<MessageItem> {
 
       Message internalNewMessage = Message.fromJson(localMessage);
 
-      Provider.of<AppProvider>(context, listen: false)
-          .addMessage(internalNewMessage);
+      if (isCreateLocalMessage == true) {
+        Provider.of<AppProvider>(context, listen: false)
+            .addMessage(internalNewMessage);
+      }
       Timer(
-          const Duration(milliseconds: 750),
+          const Duration(milliseconds: 250),
           () => Provider.of<AppProvider>(context, listen: false).updateMessage(
               Message.fromJson({...localMessage, 'sending_status': 'sent'})));
       Timer(
-          const Duration(milliseconds: 1500),
+          const Duration(milliseconds: 500),
           () => Provider.of<AppProvider>(context, listen: false).updateMessage(
               Message.fromJson({...localMessage, 'sending_status': 'seen'})));
-      Timer(const Duration(milliseconds: 1750),
+      Timer(const Duration(milliseconds: 500),
           () => socket.emit('message.bot.create', newMessage));
     }
   }
@@ -433,6 +437,8 @@ class MessageItemState extends State<MessageItem> {
                                                     .message.block!.actions,
                                                 color: color,
                                                 onActionPress: sendMessage,
+                                                variables:
+                                                    widget.message.variables,
                                               ),
                                             if (widget.isLastMessage &&
                                                 widget.message.block!.type ==
@@ -769,8 +775,8 @@ class MessageItemState extends State<MessageItem> {
                                                       reactions.dislike != null
                                                           ? dislikedIcon
                                                           : dislikeIcon,
-                                                  reacted: reactions.dislike !=
-                                                      null,
+                                                  reacted:
+                                                      reactions.dislike != null,
                                                   reactMessage: () =>
                                                       reactMessage('dislike'),
                                                   bgColor: reactions.dislike !=

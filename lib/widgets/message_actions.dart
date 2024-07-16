@@ -77,16 +77,14 @@ class MessageActionsState extends State<MessageActions> {
             onTap: () async {
               if (action.type == "LINK") {
                 var content = getValueFromVariable(action.data.content ?? '');
-                print(await canLaunchUrl(Uri.parse(content)));
-                if (await canLaunchUrl(Uri.parse(content))) {
-                  await launchUrl(Uri.parse(content),
-                      mode: content.startsWith('https')
-                          ? LaunchMode.platformDefault
-                          : LaunchMode.externalApplication);
-                }
-              } else {
-                widget.onActionPress(action, action.type != "LINK");
+                var parsedUri = Uri.parse(Uri.encodeFull(content));
+                // if (await canLaunchUrl(parsedUri)) {
+                await launchUrl(parsedUri);
+                // } else {
+                //   print('Could not launch $parsedUri');
+                // }
               }
+              widget.onActionPress(action);
             },
           );
         }).toList(),
@@ -94,11 +92,11 @@ class MessageActionsState extends State<MessageActions> {
     );
   }
 
-  getValueFromVariable(String key) {
+  String getValueFromVariable(String key) {
     if (key.startsWith('{{')) {
       print(key.length);
       var extractedKey = key.substring(2, key.length - 2);
-      return widget.variables![extractedKey];
+      return widget.variables![extractedKey] as String;
     }
 
     return key;

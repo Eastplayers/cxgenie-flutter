@@ -79,9 +79,8 @@ class MessageItemState extends State<MessageItem> {
         .updateSelectedTicketMessage(null);
   }
 
-  void sendMessage(BlockAction? action, bool? isCreateLocalMessage) async {
+  void sendMessage(BlockAction? action) async {
     if (action != null) {
-      if (isCreateLocalMessage == true) {}
       Provider.of<AppProvider>(context, listen: false)
           .updateSelectedTicketMessage(null);
 
@@ -109,10 +108,8 @@ class MessageItemState extends State<MessageItem> {
 
       Message internalNewMessage = Message.fromJson(localMessage);
 
-      if (isCreateLocalMessage == true) {
-        Provider.of<AppProvider>(context, listen: false)
-            .addMessage(internalNewMessage);
-      }
+      Provider.of<AppProvider>(context, listen: false)
+          .addMessage(internalNewMessage);
       Timer(
           const Duration(milliseconds: 250),
           () => Provider.of<AppProvider>(context, listen: false).updateMessage(

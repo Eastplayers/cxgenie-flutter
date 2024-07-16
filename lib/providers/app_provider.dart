@@ -64,6 +64,9 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> addMessage(Message newMessage) async {
+    if (_messages.any((m) => m.localId == newMessage.localId)) {
+      return;
+    }
     _messages = [newMessage, ..._messages];
     notifyListeners();
   }

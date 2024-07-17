@@ -5,7 +5,7 @@ part 'bot.g.dart';
 @JsonSerializable()
 class Workspace {
   String id;
-  String logo;
+  String? logo;
   String name;
 
   @JsonKey(name: "company_name")
@@ -16,9 +16,9 @@ class Workspace {
 
   Workspace({
     required this.id,
-    required this.companyName,
-    required this.customTicketDomain,
-    required this.logo,
+    this.companyName,
+    this.customTicketDomain,
+    this.logo,
     required this.name,
   });
 

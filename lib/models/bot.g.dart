@@ -10,7 +10,7 @@ Workspace _$WorkspaceFromJson(Map<String, dynamic> json) => Workspace(
       id: json['id'] as String,
       companyName: json['company_name'] as String?,
       customTicketDomain: json['custom_ticket_domain'] as String?,
-      logo: json['logo'] as String,
+      logo: json['logo'] as String?,
       name: json['name'] as String,
     );
 

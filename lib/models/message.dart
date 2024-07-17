@@ -100,7 +100,7 @@ class Message {
   Message? quotedFrom;
 
   @JsonKey(name: "meta_tags")
-  List<MessageMetaTag> metaTags;
+  List<MessageMetaTag>? metaTags;
 
   Message({
     this.id,
@@ -122,7 +122,7 @@ class Message {
     this.quotedFrom,
     required this.unsent,
     this.block,
-    required this.metaTags,
+    this.metaTags,
     this.variables,
   });
 

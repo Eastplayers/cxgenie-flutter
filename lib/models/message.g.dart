@@ -84,8 +84,8 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       block: json['block'] == null
           ? null
           : Block.fromJson(json['block'] as Map<String, dynamic>),
-      metaTags: (json['meta_tags'] as List<dynamic>)
-          .map((e) => MessageMetaTag.fromJson(e as Map<String, dynamic>))
+      metaTags: (json['meta_tags'] as List<dynamic>?)
+          ?.map((e) => MessageMetaTag.fromJson(e as Map<String, dynamic>))
           .toList(),
       variables: (json['variables'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),

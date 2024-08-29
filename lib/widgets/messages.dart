@@ -138,6 +138,7 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
             .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
         cloneData['reactions'] = Map<String, dynamic>.from({});
+        cloneData['local_id'] = Uuid().v4();
 
         Message newMessage = Message.fromJson(cloneData);
 

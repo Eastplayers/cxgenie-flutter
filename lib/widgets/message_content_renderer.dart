@@ -40,7 +40,7 @@ class MessageContentRendererState extends State<MessageContentRenderer> {
               return {
                 'color': widget.isMine ? 'white' : '#2C2E33',
                 'font-size': '14px',
-                'padding': '6px 8px',
+                'padding': '0px 8px',
                 'margin': '0px',
                 'width': 'auto'
               };

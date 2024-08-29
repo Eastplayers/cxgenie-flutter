@@ -88,7 +88,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           ?.map((e) => MessageMetaTag.fromJson(e as Map<String, dynamic>))
           .toList(),
       variables: (json['variables'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
+        (k, e) => MapEntry(k, e as String?),
       ),
     );
 

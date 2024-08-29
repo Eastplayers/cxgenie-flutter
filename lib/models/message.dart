@@ -70,7 +70,7 @@ class Message {
   MessageReactions? reactions;
   bool? unsent;
   Block? block;
-  Map<String, String>? variables;
+  Map<String, String?>? variables;
 
   @JsonKey(name: "receiver_id")
   String? receiverId;

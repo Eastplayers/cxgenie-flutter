@@ -16,7 +16,7 @@ class MessageActions extends StatefulWidget {
   final List<BlockAction> actions;
   final String color;
   final Function onActionPress;
-  final Map<String, String>? variables;
+  final Map<String, String?>? variables;
 
   @override
   MessageActionsState createState() => MessageActionsState();
@@ -57,7 +57,7 @@ class MessageActionsState extends State<MessageActions> {
                 children: [
                   Expanded(
                     child: Text(
-                      actionLabel,
+                      actionLabel ?? '',
                       style: TextStyle(
                           color: Color(int.parse(
                             widget.color,
@@ -77,12 +77,14 @@ class MessageActionsState extends State<MessageActions> {
             onTap: () async {
               if (action.type == "LINK") {
                 var content = getValueFromVariable(action.data.content ?? '');
-                var parsedUri = Uri.parse(Uri.encodeFull(content));
-                // if (await canLaunchUrl(parsedUri)) {
-                await launchUrl(parsedUri);
-                // } else {
-                //   print('Could not launch $parsedUri');
-                // }
+                if (content != null) {
+                  var parsedUri = Uri.parse(Uri.encodeFull(content));
+                  // if (await canLaunchUrl(parsedUri)) {
+                  await launchUrl(parsedUri);
+                  // } else {
+                  //   print('Could not launch $parsedUri');
+                  // }
+                }
               }
               widget.onActionPress(action);
             },
@@ -92,11 +94,10 @@ class MessageActionsState extends State<MessageActions> {
     );
   }
 
-  String getValueFromVariable(String key) {
+  String? getValueFromVariable(String key) {
     if (key.startsWith('{{')) {
-      print(key.length);
       var extractedKey = key.substring(2, key.length - 2);
-      return widget.variables![extractedKey] as String;
+      return widget.variables![extractedKey] as String?;
     }
 
     return key;

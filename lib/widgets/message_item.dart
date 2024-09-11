@@ -79,7 +79,7 @@ class MessageItemState extends State<MessageItem> {
         .updateSelectedTicketMessage(null);
   }
 
-  void sendMessage(BlockAction? action, bool? isLink) async {
+  void sendMessage(BlockAction? action, [bool isLink = false]) async {
     if (action != null) {
       Provider.of<AppProvider>(context, listen: false)
           .updateSelectedTicketMessage(null);
@@ -101,26 +101,31 @@ class MessageItemState extends State<MessageItem> {
         'meta_tags': [],
         'is_cta': isLink,
       };
-      var localMessage = <String, dynamic>{
-        ...newMessage,
-        'id': const Uuid().v4(),
-        'created_at': isoDate,
-      };
 
-      Message internalNewMessage = Message.fromJson(localMessage);
-
-      Provider.of<AppProvider>(context, listen: false)
-          .addMessage(internalNewMessage);
-      Timer(
-          const Duration(milliseconds: 250),
-          () => Provider.of<AppProvider>(context, listen: false).updateMessage(
-              Message.fromJson({...localMessage, 'sending_status': 'sent'})));
-      Timer(
-          const Duration(milliseconds: 500),
-          () => Provider.of<AppProvider>(context, listen: false).updateMessage(
-              Message.fromJson({...localMessage, 'sending_status': 'seen'})));
-      Timer(const Duration(milliseconds: 500),
-          () => socket.emit('message.bot.create', newMessage));
+      if (!isLink) {
+        var localMessage = <String, dynamic>{
+          ...newMessage,
+          'id': const Uuid().v4(),
+          'created_at': isoDate,
+        };
+        Message internalNewMessage = Message.fromJson(localMessage);
+        Provider.of<AppProvider>(context, listen: false)
+            .addMessage(internalNewMessage);
+        Timer(
+            const Duration(milliseconds: 250),
+            () => Provider.of<AppProvider>(context, listen: false)
+                .updateMessage(Message.fromJson(
+                    {...localMessage, 'sending_status': 'sent'})));
+        Timer(
+            const Duration(milliseconds: 500),
+            () => Provider.of<AppProvider>(context, listen: false)
+                .updateMessage(Message.fromJson(
+                    {...localMessage, 'sending_status': 'seen'})));
+        Timer(const Duration(milliseconds: 500),
+            () => socket.emit('message.bot.create', newMessage));
+      } else {
+        socket.emit('message.bot.create', newMessage);
+      }
     }
   }
 

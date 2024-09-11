@@ -116,7 +116,7 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://datnguyen.ngrok.dev', <String, dynamic>{
+    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -131,7 +131,6 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
       }
     });
     socket.on('message.created', (data) {
-      print("New message from SOCKET");
       var cloneData = Map<String, dynamic>.from(data);
       if (cloneData['receiver_id'] == widget.customerId ||
           cloneData['sender_id'] == widget.customerId) {
@@ -139,9 +138,9 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
             .updateSelectedTicketMessage(null);
         _isSendingMessage = false;
         cloneData['reactions'] = Map<String, dynamic>.from({});
-        // cloneData['local_id'] = Uuid().v4();
-        print(data['content']);
-        print(cloneData['local_id']);
+        if (cloneData['local_id'] == null || cloneData['local_id'] == '') {
+          cloneData['local_id'] = Uuid().v4();
+        }
 
         Message newMessage = Message.fromJson(cloneData);
 

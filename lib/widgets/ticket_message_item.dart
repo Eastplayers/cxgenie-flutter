@@ -55,7 +55,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://datnguyen.ngrok.dev', <String, dynamic>{
+    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });

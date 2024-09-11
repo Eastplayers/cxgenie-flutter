@@ -370,7 +370,7 @@ class DynamicHeightDialogState extends State<DynamicHeightDialog> {
   late io.Socket socket;
 
   void connectSocket() {
-    socket = io.io('https://datnguyen.ngrok.dev', <String, dynamic>{
+    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });

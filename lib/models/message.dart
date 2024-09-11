@@ -70,7 +70,7 @@ class Message {
   MessageReactions? reactions;
   bool? unsent;
   Block? block;
-  Map<String, String?>? variables;
+  Map<String, String>? variables;
 
   @JsonKey(name: "receiver_id")
   String? receiverId;
@@ -102,6 +102,9 @@ class Message {
   @JsonKey(name: "meta_tags")
   List<MessageMetaTag>? metaTags;
 
+  @JsonKey(name: "is_cta")
+  bool? isCta;
+
   Message({
     this.id,
     this.content,
@@ -124,6 +127,7 @@ class Message {
     this.block,
     this.metaTags,
     this.variables,
+    this.isCta,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) =>

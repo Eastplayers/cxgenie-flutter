@@ -64,11 +64,21 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> addMessage(Message newMessage) async {
+    print("New Message Event");
+    print(newMessage.localId);
+    print(_messages.any((m) => m.localId == newMessage.localId));
+
     if (_messages.any((m) => m.localId == newMessage.localId)) {
+      print("Existed!!!!");
+      var mess = _messages.firstWhere((m) => m.localId == newMessage.localId);
+      print(mess?.content);
+      print('=======');
       return;
+    } else {
+      print('=======');
+      _messages = [newMessage, ..._messages];
+      notifyListeners();
     }
-    _messages = [newMessage, ..._messages];
-    notifyListeners();
   }
 
   Future<void> updateMessage(Message newMessage) async {

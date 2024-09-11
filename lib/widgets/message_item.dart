@@ -53,7 +53,7 @@ class MessageItemState extends State<MessageItem> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://datnguyen.ngrok.dev', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -79,7 +79,7 @@ class MessageItemState extends State<MessageItem> {
         .updateSelectedTicketMessage(null);
   }
 
-  void sendMessage(BlockAction? action) async {
+  void sendMessage(BlockAction? action, bool? isLink) async {
     if (action != null) {
       Provider.of<AppProvider>(context, listen: false)
           .updateSelectedTicketMessage(null);
@@ -99,6 +99,7 @@ class MessageItemState extends State<MessageItem> {
         'action_id': action.id,
         'unsent': false,
         'meta_tags': [],
+        'is_cta': isLink,
       };
       var localMessage = <String, dynamic>{
         ...newMessage,

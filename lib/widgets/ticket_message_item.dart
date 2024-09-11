@@ -55,7 +55,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
 
   /// Connect to socket to receive messages in real-time
   void connectSocket() {
-    socket = io.io('https://api.cxgenie.ai', <String, dynamic>{
+    socket = io.io('https://datnguyen.ngrok.dev', <String, dynamic>{
       'transports': ['websocket'],
       'forceNew': true,
     });
@@ -66,7 +66,7 @@ class TicketMessageItemState extends State<TicketMessageItem> {
             MessageReactions.fromJson(data['message']['reactions']);
         Provider.of<TicketProvider>(context, listen: false)
             .updateMessageReactions("${widget.message.id}", reactions);
-              // setState(() {
+        // setState(() {
         //   reactions = MessageReactions.fromJson(data['message']['reactions']);
         // });
       }

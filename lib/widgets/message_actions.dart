@@ -86,7 +86,7 @@ class MessageActionsState extends State<MessageActions> {
                   // }
                 }
               }
-              widget.onActionPress(action);
+              widget.onActionPress(action, action.type == "LINK");
             },
           );
         }).toList(),

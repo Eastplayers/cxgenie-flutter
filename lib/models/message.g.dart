@@ -88,8 +88,9 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           ?.map((e) => MessageMetaTag.fromJson(e as Map<String, dynamic>))
           .toList(),
       variables: (json['variables'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String?),
+        (k, e) => MapEntry(k, e as String),
       ),
+      isCta: json['is_cta'] as bool?,
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -114,4 +115,5 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'quoted_id': instance.quotedId,
       'quoted_from': instance.quotedFrom,
       'meta_tags': instance.metaTags,
+      'is_cta': instance.isCta,
     };

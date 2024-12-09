@@ -16,7 +16,7 @@ class MessageActions extends StatefulWidget {
   final List<BlockAction> actions;
   final String color;
   final Function onActionPress;
-  final Map<String, String?>? variables;
+  final Map<String, dynamic>? variables;
 
   @override
   MessageActionsState createState() => MessageActionsState();
@@ -95,9 +95,32 @@ class MessageActionsState extends State<MessageActions> {
   }
 
   String? getValueFromVariable(String key) {
-    if (key.startsWith('{{')) {
+    if (key.startsWith('{{') && key.endsWith('}}')) {
       var extractedKey = key.substring(2, key.length - 2);
-      return widget.variables![extractedKey] as String?;
+
+      dynamic getNestedValue(Map<String, dynamic> map, String path) {
+        List<String> keys = path.split('.');
+        dynamic current = map;
+
+        for (String key in keys) {
+          if (current is Map<String, dynamic> && current.containsKey(key)) {
+            current = current[key];
+          } else {
+            return null;
+          }
+        }
+        return current;
+      }
+
+      final value = getNestedValue(widget.variables!, extractedKey);
+
+      if (value is String) {
+        return value;
+      } else if (value != null) {
+        return value.toString();
+      } else {
+        return null;
+      }
     }
 
     return key;

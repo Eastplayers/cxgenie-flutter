@@ -87,9 +87,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
       metaTags: (json['meta_tags'] as List<dynamic>?)
           ?.map((e) => MessageMetaTag.fromJson(e as Map<String, dynamic>))
           .toList(),
-      variables: (json['variables'] as Map<String, dynamic>?)?.map(
-        (k, e) => MapEntry(k, e as String),
-      ),
+      variables: json['variables'] as Map<String, dynamic>?,
       isCta: json['is_cta'] as bool?,
     );
 

@@ -140,7 +140,7 @@ class AppService {
   Future<List<Message>> getMessages(String customerId) async {
     try {
       final url =
-          '$baseUrl/messages/customer?limit=1000&offset=0&order=desc&customer_id=$customerId';
+          '$baseUrl/messages/customer?limit=500&offset=0&order=desc&customer_id=$customerId';
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,

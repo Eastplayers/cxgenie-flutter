@@ -133,6 +133,9 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
     socket.on('message.created', (data) {
       try {
         var cloneData = Map<String, dynamic>.from(data);
+        if (cloneData['type'] == 'SYSTEM_NOTIFICATION') {
+          return;
+        }
         if (cloneData['receiver_id'] == widget.customerId ||
             cloneData['sender_id'] == widget.customerId) {
           Provider.of<AppProvider>(context, listen: false)

@@ -145,7 +145,7 @@ class AppService {
   Future<List<Message>> getMessages(String customerId, String? token) async {
     try {
       final url =
-          '$baseUrl/messages/guest-auth/customer?limit=100&offset=0&order=desc&customer_id=$customerId';
+          '$baseUrl/messages/guest-auth/customer?limit=100&offset=0&order=desc&customer_id=$customerId&remove_system_message=true';
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,

@@ -133,10 +133,6 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
     socket.on('message.created', (data) {
       try {
         var cloneData = Map<String, dynamic>.from(data);
-        print("IDDDDD");
-        print(cloneData['receiver_id']);
-        print(widget.customerId);
-        print("===============");
         if (cloneData['receiver_id'] == widget.customerId ||
             cloneData['sender_id'] == widget.customerId) {
           Provider.of<AppProvider>(context, listen: false)
@@ -148,18 +144,12 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
           }
 
           Message newMessage = Message.fromJson(cloneData);
-          print("Message");
-          print(newMessage);
-          print("===============");
 
           Provider.of<AppProvider>(context, listen: false)
               .addMessage(newMessage);
         }
       } catch (e, stacktrace) {
-        print("ERROR");
         print(e);
-        print(stacktrace);
-        print("===============");
       }
     });
     socket.on('message.unsend.success', (data) {
@@ -175,6 +165,12 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
         Provider.of<AppProvider>(context, listen: false)
             .updateMessageMetaTags(data['local_id'], convertedMetaTags);
       }
+    });
+    socket.on('message.reaction.created', (data) {
+      MessageReactions reactions =
+          MessageReactions.fromJson(data['message']['reactions'] ?? "{}");
+      Provider.of<AppProvider>(context, listen: false)
+          .updateMessageReactions(data['message']['id'], reactions);
     });
     socket.onDisconnect((_) {
       socket.emit('room.conversation.leave', widget.customerId);
@@ -193,7 +189,6 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
             source: source, imageQuality: 70, maxWidth: 1000, maxHeight: 1000);
         if (pickedFile != null) {
           var result = await _service.uploadFiles([pickedFile], accessToken);
-          print(result);
           setState(() {
             _uploadedFiles = [
               ..._uploadedFiles,

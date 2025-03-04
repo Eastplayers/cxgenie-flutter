@@ -89,6 +89,7 @@ Message _$MessageFromJson(Map<String, dynamic> json) => Message(
           .toList(),
       variables: json['variables'] as Map<String, dynamic>?,
       isCta: json['is_cta'] as bool?,
+      rating: (json['rating'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
@@ -103,6 +104,7 @@ Map<String, dynamic> _$MessageToJson(Message instance) => <String, dynamic>{
       'unsent': instance.unsent,
       'block': instance.block,
       'variables': instance.variables,
+      'rating': instance.rating,
       'receiver_id': instance.receiverId,
       'sender_id': instance.senderId,
       'bot_id': instance.botId,

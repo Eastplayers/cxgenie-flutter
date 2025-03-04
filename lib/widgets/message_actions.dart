@@ -79,11 +79,7 @@ class MessageActionsState extends State<MessageActions> {
                 var content = getValueFromVariable(action.data.content ?? '');
                 if (content != null) {
                   var parsedUri = Uri.parse(Uri.encodeFull(content));
-                  // if (await canLaunchUrl(parsedUri)) {
                   await launchUrl(parsedUri);
-                  // } else {
-                  //   print('Could not launch $parsedUri');
-                  // }
                 }
               }
               widget.onActionPress(action, action.type == "LINK");

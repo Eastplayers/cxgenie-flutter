@@ -85,22 +85,25 @@ class AppService {
     String customerId,
     String blockId,
     String? ticketId,
+    String? token,
   ) async {
     try {
       final url = '$baseUrl/messages/guest-auth/flows/feedbacks';
       final uri = Uri.parse(url);
-      final payload = <String, String>{
+      final payload = <String, dynamic>{
         'bot_id': botId,
-        'rating': rating,
+        'rating': int.parse(rating),
         'customer_id': customerId,
         'block_id': blockId,
+        'content': ''
       };
       if (ticketId != null) {
         payload['ticket_id'] = ticketId;
       }
       final response = await http.post(uri,
           headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8'
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token'
           },
           body: jsonEncode(payload));
       if (response.statusCode < 300) {

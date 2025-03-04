@@ -51,7 +51,7 @@ class MessageFeedbackState extends State<MessageFeedback> {
       _selectedItem = rating;
     });
     await _service.createFeedback(rating, widget.botId, widget.customerId,
-        widget.blockId, widget.ticketId);
+        widget.blockId, widget.ticketId, widget.accessToken);
   }
 
   @override

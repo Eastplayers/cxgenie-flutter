@@ -57,15 +57,6 @@ class MessageItemState extends State<MessageItem> {
       'transports': ['websocket'],
       'forceNew': true,
     });
-
-    socket.on('message.reaction.created', (data) {
-      if (data['message']['id'] == widget.message.id) {
-        MessageReactions reactions =
-            MessageReactions.fromJson(data['message']['reactions'] ?? "{}");
-        Provider.of<AppProvider>(context, listen: false)
-            .updateMessageReactions("${widget.message.id}", reactions);
-      }
-    });
   }
 
   void reactMessage(type) {
@@ -217,15 +208,49 @@ class MessageItemState extends State<MessageItem> {
       });
     }
 
-    if (widget.message.type == 'FEEDBACK') {
+    if (widget.message.type == 'FEEDBACK' && widget.message.content!.isEmpty) {
+      return Container();
+    }
+
+    if (widget.message.type == 'ICON') {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Image.asset(
-            AssetImage('images/${widget.message.content}.png').assetName,
-            width: 80,
-            height: 80,
+            AssetImage('images/${widget.message.rating}.png').assetName,
+            width: 30,
+            height: 30,
             package: 'cxgenie',
+          ),
+          // Container(
+          //   padding: const EdgeInsets.symmetric(vertical: 8),
+          //   child: widget.message.content == 'HEART'
+          //       ? Row(
+          //           crossAxisAlignment: CrossAxisAlignment.end,
+          //           mainAxisAlignment: MainAxisAlignment.end,
+          //           children: [1, 2, 3, 4, 5].map((index) {
+          //             return Image.asset(
+          //               index <= (widget.message.rating ?? 0)
+          //                   ? 'images/heart.png'
+          //                   : 'images/heart_empty.png',
+          //               width: 30,
+          //               height: 30,
+          //               package: 'cxgenie',
+          //             );
+          //           }).toList(),
+          //         )
+          //       : Image.asset(
+          //           AssetImage('images/${widget.message.rating}.png').assetName,
+          //           width: 30,
+          //           height: 30,
+          //           package: 'cxgenie',
+          //         ),
+          // ),
+          Text(
+            isToday(createdAt)
+                ? "Hôm nay, ${formatter.format(createdAt)}"
+                : formatter.format(createdAt),
+            style: const TextStyle(fontSize: 11, color: Color(0xffA3A9B3)),
           )
         ],
       );

@@ -8,7 +8,7 @@ The cxgenie Flutter Package seamlessly integrates https://cxgenie.ai cutting-edg
 
 ```yaml
 dependencies:
-  cxgenie: ^2.4.19
+  cxgenie: ^2.4.20
 ```
 
 2. Import the package and use it in your Flutter App.

@@ -7,12 +7,12 @@ part 'block_action.g.dart';
 class BlockAction {
   BlockData data;
   String id;
-  String type;
+  String? type;
 
   BlockAction({
     required this.data,
     required this.id,
-    required this.type,
+    this.type,
   });
 
   factory BlockAction.fromJson(Map<String, dynamic> json) =>

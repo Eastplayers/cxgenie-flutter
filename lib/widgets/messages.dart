@@ -131,20 +131,35 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
       }
     });
     socket.on('message.created', (data) {
-      var cloneData = Map<String, dynamic>.from(data);
-      if (cloneData['receiver_id'] == widget.customerId ||
-          cloneData['sender_id'] == widget.customerId) {
-        Provider.of<AppProvider>(context, listen: false)
-            .updateSelectedTicketMessage(null);
-        _isSendingMessage = false;
-        cloneData['reactions'] = Map<String, dynamic>.from({});
-        if (cloneData['local_id'] == null || cloneData['local_id'] == '') {
-          cloneData['local_id'] = Uuid().v4();
+      try {
+        var cloneData = Map<String, dynamic>.from(data);
+        print("IDDDDD");
+        print(cloneData['receiver_id']);
+        print(widget.customerId);
+        print("===============");
+        if (cloneData['receiver_id'] == widget.customerId ||
+            cloneData['sender_id'] == widget.customerId) {
+          Provider.of<AppProvider>(context, listen: false)
+              .updateSelectedTicketMessage(null);
+          _isSendingMessage = false;
+          cloneData['reactions'] = Map<String, dynamic>.from({});
+          if (cloneData['local_id'] == null || cloneData['local_id'] == '') {
+            cloneData['local_id'] = Uuid().v4();
+          }
+
+          Message newMessage = Message.fromJson(cloneData);
+          print("Message");
+          print(newMessage);
+          print("===============");
+
+          Provider.of<AppProvider>(context, listen: false)
+              .addMessage(newMessage);
         }
-
-        Message newMessage = Message.fromJson(cloneData);
-
-        Provider.of<AppProvider>(context, listen: false).addMessage(newMessage);
+      } catch (e, stacktrace) {
+        print("ERROR");
+        print(e);
+        print(stacktrace);
+        print("===============");
       }
     });
     socket.on('message.unsend.success', (data) {

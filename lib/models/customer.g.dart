@@ -12,6 +12,7 @@ Customer _$CustomerFromJson(Map<String, dynamic> json) => Customer(
       name: json['name'] as String,
       email: json['email'] as String?,
       autoReply: json['auto_reply'] as bool?,
+      accessToken: json['access_token'] as String?,
     );
 
 Map<String, dynamic> _$CustomerToJson(Customer instance) => <String, dynamic>{
@@ -19,5 +20,6 @@ Map<String, dynamic> _$CustomerToJson(Customer instance) => <String, dynamic>{
       'avatar': instance.avatar,
       'name': instance.name,
       'email': instance.email,
+      'access_token': instance.accessToken,
       'auto_reply': instance.autoReply,
     };

@@ -237,6 +237,7 @@ class MessageItemState extends State<MessageItem> {
           bool showReactions =
               value.selectedTicketMessageId == widget.message.id;
           Bot bot = widget.bot;
+          var customer = value.customer;
 
           return Container(
             padding: const EdgeInsets.symmetric(vertical: 6),
@@ -453,6 +454,8 @@ class MessageItemState extends State<MessageItem> {
                                                 blockId:
                                                     widget.message.block!.id,
                                                 themeColor: color,
+                                                accessToken:
+                                                    customer?.accessToken,
                                               ),
                                             Container(
                                               padding: const EdgeInsets.only(

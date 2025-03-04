@@ -15,7 +15,7 @@ class AppService {
       final url = '$baseUrl/bots/public/$id';
       final uri = Uri.parse(url);
       final response = await http.get(uri);
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data'];
         return Bot.fromJson(data);
@@ -30,7 +30,7 @@ class AppService {
 
   Future<Customer> startSession(String botId, String name, String email) async {
     try {
-      final url = '$baseUrl/bot-sessions/start-bot-session';
+      final url = '$baseUrl/bot-sessions/guest-auth/start-bot-session';
       final uri = Uri.parse(url);
       final response = await http.post(uri,
           headers: <String, String>{
@@ -38,14 +38,42 @@ class AppService {
           },
           body: jsonEncode(
               <String, String>{'bot_id': botId, 'name': name, 'email': email}));
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
-        final data = json['data'];
+        final data = json['data']['customer'];
+        data['access_token'] = json['data']['guest_token'];
         return Customer.fromJson(data);
       }
 
       final json = jsonDecode(response.body);
       throw Exception(json['error']['message']);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Customer?> startAuthorizedSession(String botId, String token) async {
+    try {
+      final url = '$baseUrl/bot-sessions/guest-auth/start-bot-session';
+      final uri = Uri.parse(url);
+      final response = await http.post(uri,
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8'
+          },
+          body: jsonEncode(
+              <String, String>{'bot_id': botId, 'customer_auth_token': token}));
+      if (response.statusCode < 300) {
+        final json = jsonDecode(response.body);
+        final data = json['data']['customer'];
+        data['access_token'] = json['data']['guest_token'];
+        if (data != null) {
+          return Customer.fromJson(data);
+        }
+
+        return null;
+      } else {
+        return null;
+      }
     } catch (e) {
       rethrow;
     }
@@ -59,7 +87,7 @@ class AppService {
     String? ticketId,
   ) async {
     try {
-      final url = '$baseUrl/messages/flows/feedbacks';
+      final url = '$baseUrl/messages/guest-auth/flows/feedbacks';
       final uri = Uri.parse(url);
       final payload = <String, String>{
         'bot_id': botId,
@@ -75,39 +103,13 @@ class AppService {
             'Content-Type': 'application/json; charset=UTF-8'
           },
           body: jsonEncode(payload));
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         return true;
       }
 
       return false;
     } catch (e) {
       return false;
-    }
-  }
-
-  Future<Customer?> startAuthorizedSession(String botId, String token) async {
-    try {
-      final url = '$baseUrl/bot-sessions/start-bot-session';
-      final uri = Uri.parse(url);
-      final response = await http.post(uri,
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8'
-          },
-          body: jsonEncode(
-              <String, String>{'bot_id': botId, 'customer_auth_token': token}));
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        final data = json['data'];
-        if (data != null) {
-          return Customer.fromJson(data);
-        }
-
-        return null;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      rethrow;
     }
   }
 
@@ -137,18 +139,19 @@ class AppService {
     }
   }
 
-  Future<List<Message>> getMessages(String customerId) async {
+  Future<List<Message>> getMessages(String customerId, String? token) async {
     try {
       final url =
-          '$baseUrl/messages/customer?limit=500&offset=0&order=desc&customer_id=$customerId';
+          '$baseUrl/messages/guest-auth/customer?limit=100&offset=0&order=desc&customer_id=$customerId';
       final uri = Uri.parse(url);
       final response = await http.get(
         uri,
         headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8'
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token'
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data']['messages'] as List;
         final messages = data.map((message) {
@@ -187,7 +190,7 @@ class AppService {
           'Content-Type': 'application/json; charset=UTF-8'
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data']['tickets'] as List;
         final tickets = data.map((ticket) {
@@ -215,7 +218,7 @@ class AppService {
           'Content-Type': 'application/json; charset=UTF-8'
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data'];
         return Ticket.fromJson(data);
@@ -246,7 +249,7 @@ class AppService {
           'Content-Type': 'application/json; charset=UTF-8'
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data'];
         return TicketStatusCount(
@@ -284,7 +287,7 @@ class AppService {
           'Content-Type': 'application/json; charset=UTF-8'
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data']['ticketCategories'] as List;
         final categories = data.map((category) {
@@ -320,7 +323,7 @@ class AppService {
           'Content-Type': 'application/json; charset=UTF-8'
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data']['ticketCategories'] as List;
         final categories = data.map((category) {
@@ -348,7 +351,7 @@ class AppService {
           'Content-Type': 'application/json; charset=UTF-8'
         },
       );
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data']['messages'] as List;
         final messages = data.map((message) {
@@ -424,7 +427,7 @@ class AppService {
       final url = '$baseUrl/customers/$id/public';
       final uri = Uri.parse(url);
       final response = await http.get(uri);
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         final json = jsonDecode(response.body);
         final data = json['data'];
         return Customer.fromJson(data);
@@ -437,10 +440,14 @@ class AppService {
     }
   }
 
-  Future<List<String>> uploadFiles(List<XFile> files) async {
-    final url = '$baseUrl/files/multiple-upload';
+  Future<List<Map<String, String>>> uploadFiles(
+      List<XFile> files, String? token) async {
+    final url = '$baseUrl/files/guest-auth/multiple-upload';
     final uri = Uri.parse(url);
     var request = http.MultipartRequest("POST", uri);
+
+    Map<String, String> headers = {'Authorization': 'Bearer $token'};
+    request.headers.addAll(headers);
 
     for (var i = 0; i < files.length; i++) {
       var file = await http.MultipartFile.fromPath('files', files[i].path);
@@ -449,14 +456,15 @@ class AppService {
 
     var streamResponse = await request.send();
     var response = await http.Response.fromStream(streamResponse);
-    if (response.statusCode == 200) {
+    if (response.statusCode < 300) {
       var json = jsonDecode(response.body);
 
-      return json['urls'] as List<String>;
+      return (json['urls'] as List).map((url) {
+        return {'url': url as String};
+      }).toList();
     }
 
-    final json = jsonDecode(response.body);
-    throw Exception(json['error']['message']);
+    return [] as List<Map<String, String>>;
   }
 
   Future<String> uploadFile(XFile xFile) async {
@@ -464,12 +472,13 @@ class AppService {
       final url = '$baseUrl/files/upload';
       final uri = Uri.parse(url);
       var request = http.MultipartRequest("POST", uri);
+
       var file = await http.MultipartFile.fromPath('file', xFile.path);
       request.files.add(file);
 
       var streamResponse = await request.send();
       var response = await http.Response.fromStream(streamResponse);
-      if (response.statusCode == 200) {
+      if (response.statusCode < 300) {
         var json = jsonDecode(response.body);
         return json['url'];
       }

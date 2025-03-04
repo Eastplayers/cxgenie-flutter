@@ -10,6 +10,7 @@ class MessageFeedback extends StatefulWidget {
     required this.blockId,
     required this.themeColor,
     this.ticketId,
+    this.accessToken,
   }) : super(key: key);
 
   final String color;
@@ -18,6 +19,7 @@ class MessageFeedback extends StatefulWidget {
   final String blockId;
   final String? ticketId;
   final String themeColor;
+  final String? accessToken;
 
   @override
   MessageFeedbackState createState() => MessageFeedbackState();

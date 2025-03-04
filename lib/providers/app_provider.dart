@@ -57,7 +57,8 @@ class AppProvider extends ChangeNotifier {
     isLoadingMessages = true;
     notifyListeners();
 
-    final response = await _service.getMessages(customerId);
+    final response =
+        await _service.getMessages(customerId, _customer?.accessToken);
     _messages = response;
     isLoadingMessages = false;
     notifyListeners();

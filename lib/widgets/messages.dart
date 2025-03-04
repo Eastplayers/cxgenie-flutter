@@ -168,29 +168,25 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
 
   /// onImagePicketPressed
   void _onImageButtonPressed(
-    ImageSource source, {
+    ImageSource source,
+    String? accessToken, {
     required BuildContext context,
   }) async {
     if (context.mounted) {
       try {
-        // final List<XFile> pickedFileList = await _picker.pickMultiImage(
-        //     imageQuality: 70, maxWidth: 1000, maxHeight: 1000);
         final XFile? pickedFile = await _picker.pickImage(
             source: source, imageQuality: 70, maxWidth: 1000, maxHeight: 1000);
-        // setState(() {
-        //   _mediaFileList = pickedFileList;
-        // });
         if (pickedFile != null) {
-          var result = await _service.uploadFile(pickedFile);
+          var result = await _service.uploadFiles([pickedFile], accessToken);
+          print(result);
           setState(() {
             _uploadedFiles = [
               ..._uploadedFiles,
-              {"url": result}
+              ...result,
             ];
           });
         }
       } catch (e) {
-        // ignore: avoid_print
         print(e);
       }
     }
@@ -236,6 +232,7 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Consumer<AppProvider>(builder: (context, value, child) {
       var bot = value.bot;
+      var customer = value.customer;
       return Container(
           width: (MediaQuery.of(context).size.width),
           height: (MediaQuery.of(context).size.height),
@@ -381,8 +378,10 @@ class MessagesState extends State<Messages> with WidgetsBindingObserver {
                                           Navigator.of(context).pop();
                                           FocusScope.of(context).unfocus();
                                           _onImageButtonPressed(
-                                              ImageSource.gallery,
-                                              context: context);
+                                            ImageSource.gallery,
+                                            customer?.accessToken,
+                                            context: context,
+                                          );
                                         },
                                       ),
                                       // CupertinoActionSheetAction(

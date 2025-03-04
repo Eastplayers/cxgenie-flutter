@@ -9,6 +9,9 @@ class Customer {
   final String name;
   final String? email;
 
+  @JsonKey(name: "access_token")
+  final String? accessToken;
+
   @JsonKey(name: "auto_reply")
   final bool? autoReply;
 
@@ -18,6 +21,7 @@ class Customer {
     required this.name,
     this.email,
     this.autoReply,
+    this.accessToken,
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) =>

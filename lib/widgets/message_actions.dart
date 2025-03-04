@@ -26,7 +26,7 @@ class MessageActionsState extends State<MessageActions> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
+      margin: const EdgeInsets.only(bottom: 4, top: 8),
       decoration: const BoxDecoration(
         border: Border(
           top: BorderSide(

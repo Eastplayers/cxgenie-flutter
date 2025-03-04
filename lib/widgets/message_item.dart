@@ -459,8 +459,10 @@ class MessageItemState extends State<MessageItem> {
                                               themeColor: widget.themeColor,
                                               isMine: isMine,
                                             ),
-                                            if (widget.message.block!.type !=
-                                                'FEEDBACK')
+                                            if (widget.message.block!.type ==
+                                                    'NORMAL' &&
+                                                widget.message.block!.actions
+                                                    .isNotEmpty)
                                               MessageActions(
                                                 actions: widget
                                                     .message.block!.actions,
